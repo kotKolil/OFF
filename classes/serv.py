@@ -35,7 +35,7 @@ class server:
         @self.error_decorator
         @self.__server.route('/')
         def index():
-            print(v)
+            # print(v)
             return "<h3>It works!</h3>"
         
     def runserver(self):
