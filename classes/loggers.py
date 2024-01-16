@@ -3,17 +3,7 @@ import logging
 import json
 import datetime
 from .tools import *
-
-class abc_log(ABC):
-    
-    @abstractclassmethod
-    def __init__(self, filename,p4th):
-        self.__p4th = p4th
-        self.__filename = filename
-
-    @abstractmethod
-    def log_message(text):
-        pass
+from .abc_class import *
 
 
 class txt_log(abc_log):
