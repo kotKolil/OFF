@@ -3,7 +3,7 @@ import logging
 import json
 import datetime
 from .tools import *
-from .abc_class import *
+from .abstract import *
 
 
 class txt_log(abc_log):

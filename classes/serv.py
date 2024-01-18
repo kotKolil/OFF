@@ -3,15 +3,16 @@ from typing import Self
 from flask import *
 from flask import render_template as render
 from .loggers import *
-
+from .forum import *
 
 class server:
 
     def error_decorator(self,func):
+        print("error_decorator")
         def wrapper():
             try:
-                resultant = func()
-                return resultant
+                resultat = func()
+                return resultat
             except Exception as e:
                 self.__class_logger.log_message(str(e))
                 return str(e)
@@ -26,6 +27,9 @@ class server:
         self.__server = Flask(__name__)
         self.__class_logger = class_logger
 
+
+
+
         #serving static files
         @self.__server.route("/static/<path:path>")
         def static_files(request, path):
@@ -35,8 +39,10 @@ class server:
         @self.error_decorator
         @self.__server.route('/')
         def index():
-            # print(v)
             return "<h3>It works!</h3>"
+        
+
+
         
     def runserver(self):
         try:

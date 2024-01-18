@@ -1,7 +1,7 @@
 from abc import *
 import sqlite3
 import psycopg2 as psql
-from .abc_class import *
+from .abstract import *
 
 class sql_lite3_db(abc_db):
 
