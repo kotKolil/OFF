@@ -1,4 +1,6 @@
 from abc import *
+from flask import *
+from .loggers import *
 
 class abc_db:
 
@@ -26,3 +28,16 @@ class abc_log:
     @abstractmethod
     def log_message(text):
         pass
+
+
+
+        
+
+
+        
+    def runserver(self):
+        try:
+            self.__server.run(port = self.__porT, debug = self.__dbG)
+            print(f"server started on {self.__hosT}:{self.__porT}. Debug mode is {self.__dbG}")
+        except Exception as e:
+            print(f"Server not started with error {str(e)}")

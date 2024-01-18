@@ -20,7 +20,7 @@ class sql_lite3_db(abc_db):
         return result
     
 
-class postres_db(abc_db):
+class postgres_db(abc_db):
     def __init__(self, port=5432, password="admin", user="admin", name="",host="127.0.0.1"):
         super.__init__(self,port = port, password=password, user=user, name=name, host=host)
 

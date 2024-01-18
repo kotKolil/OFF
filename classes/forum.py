@@ -38,3 +38,12 @@ class forum:
     
     def change(self,id_thd,name, decrpt):
         return self.__db.excute_query("UPDATE FROM threads WHERE id={id_thd} ({name}, {decrpt})")
+
+    #methods with messages
+    #structure of table messages : |id_thd|mess_id|author|text|time_of_publication
+
+    def get_thread_messages(self, id_thd):
+        return self.__db.execute_query(f"SELECT FROM messages WHERE id_thd = '{id_thd} ORDER BY time_sending' ")
+    
+    def delete_thread_message(self, mess_id):
+        return self.__db.execute_query(F"DELETE FROM messages WHERE id_thd = '{mess_id}'")
