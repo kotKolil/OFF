@@ -37,120 +37,72 @@ def initialise_database(db:object):
         #creating table, which represents the forum class
         #structure of table forum : name;date_of_creasting;id
 
-        db.excute_query("""CREATE TABLE IF NOT EXISTS forums (
-                
-                name text, 
-                date_of_creation text,
-                forum_id text UNIQUE PRIMARY KEY,
-                                                            )
+        #structure of table user password|user|is_admin|is_banned|logo_path|citate|time_of_join
+
+        db.excute_query(""" 
+
+                CREATE TABLE IF NOT EXISTS user (
+                    password TEXT,
+                    user TEXT UNIQUE,
+                    is_admin BOOLEAN,
+                    is_banned BOOLEAN,
+                    logo_path TEXT,
+                    citate TEXT,
+                    time_of_join TEXT
+                )
+                         
+                         
+                         """)
+
+        db.excute_query("""
+
+    CREATE TABLE IF NOT EXISTS forum (
+        name TEXT,
+        date_of_creation TEXT,
+        id TEXT
+    )
+
                         """)
         
         #creating table threads, which represents the thread class
         #structure of table: id_forum|id_thread|name|time_of_creation|author|decrpt (description)
 
-        db.excute_query("""CREATE TABLE IF NOT EXISTS thread (
-        
-        id_forum text REFERENCES forums.forum_id, 
-        id_thread text UNIQUE PRIMARY KEY,
-        time_of_creation text,
-        author text REFRENCES user.user,
-        decrpt text,
-                                                            )
-                        """)
+        db.excute_query("""
+                        
+    CREATE TABLE IF NOT EXISTS thread (
+        id_forum TEXT REFERENCES forum(id),
+        id_thread TEXT UNIQUE PRIMARY KEY,
+        time_of_creation TEXT,
+        author TEXT REFERENCES user(user),
+        decrpt TEXT
+    )
+
+                        
+""")
 
 
         #creating table messages, which represents the messages class
         #structure of table messages : |id_thd|mess_id|author|text|time_of_publication
 
-        db.excute_query(""" CREATE TABLE IF NOT EXISTS messages (
+        db.excute_query(""" 
                         
-                        id_thd text REFERENCES thread.id_thread,
-                        mess_id text UNIQUE PRIMARY KEY,
-                        author text REFRENCES user.user,
-                        text_of_publication text,
-                        time_of_publication text,
+    CREATE TABLE IF NOT EXISTS messages (
+        id_thd TEXT REFERENCES thread(id_thread),
+        mess_id TEXT UNIQUE PRIMARY KEY,
+        author TEXT REFERENCES user(user),
+        text_of_publication TEXT,
+        time_of_publication TEXT
+    )
 
-
-                                                                )
-                        
 
                         """)
 
-        #structure of table user password|user|is_admin|is_banned|logo_path|citate|time_of_join
-        db.execute_query(""" CREATE user (
-                         password text,
-                         user UNIQUE FOREIGN KEY ,
-                         is_admin boolean,
-                         is_banned boolean,
-                         logo_path TEXT,
-                         citate text,
-                         time_of_join text,
 
-
-                                        )
-                         
-                         
-                         """)
 
         
     elif db.__class__ == postgres_db:
 
-        #creating table, which represents the forum class
-        #structure of table forum : name;date_of_creasting;id
-
-        db.excute_query("""CREATE TABLE IF NOT EXISTS forums (
-                
-                name text, 
-                date_of_creation date,
-                forum_id text UNIQUE PRIMARY KEY,
-                                                            )
-                        """)
-        
-        #creating table threads, which represents the thread class
-        #structure of table: id_forum|id_thread|name|time_of_creation|author|decrpt (description)
-
-        db.excute_query("""CREATE TABLE IF NOT EXISTS thread (
-        
-        id_forum text REFERENCES forums.forum_id, 
-        id_thread text UNIQUE PRIMARY KEY,
-        time_of_creation date,
-        author text REFRENCES user.user,
-        decrpt text,
-                                                            )
-                        """)
-
-
-        #creating table messages, which represents the messages class
-        #structure of table messages : |id_thd|mess_id|author|text|time_of_publication
-
-        db.excute_query(""" CREATE TABLE IF NOT EXISTS messages (
-                        
-                        id_thd text REFERENCES thread.id_thread,
-                        mess_id text UNIQUE PRIMARY KEY,
-                        author text REFRENCES user.user,
-                        text_of_publication text,
-                        time_of_publication date,
-
-
-                                                                )
-                        
-                        """)
-        
-        #structure of table user password|user|is_admin|is_banned|logo_path|citate|time_of_join
-        db.execute_query(""" CREATE user (
-                         password text,
-                         user UNIQUE FOREIGN KEY ,
-                         is_admin boolean,
-                         is_banned boolean,
-                         logo_path TEXT,
-                         citate text,
-                         time_of_join date,
-
-
-                                        )
-                         
-                         
-                         """)
+        pass
 
 
 

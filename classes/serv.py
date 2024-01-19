@@ -24,20 +24,23 @@ class server:
         self.class_logger = class_logger
 
 
+        app = Flask(__name__, static_folder="static")
 
 
         #serving static files
-        @self.__server.route("/static/<path:path>")
+        @self.server.route("/static/<path:path>")
         def static_files(request, path):
+            print(path)
             return send_from_directory('static', path)
         
         #views
-        @self.error_decorator
-        @self.__server.route('/')
+        @self.server.route('/')
         def index():
-            print(v)
-            return "<h3>It works!</h3>"
+            return render("index.html")
 
+    def runserver(self):
+
+        self.server.run(host=self.hosT, port = self.porT, debug=self.dbG)
 
 
         

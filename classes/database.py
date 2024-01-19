@@ -13,7 +13,6 @@ class sql_lite3_db(abc_db):
         cursor = connection.cursor()
         cursor.execute(query)
         result = cursor.fetchall()
-        cursor.commit()
         cursor.close()
 
         #TODO convert result to list
@@ -32,7 +31,6 @@ class postgres_db(abc_db):
                                   host=self.host)
         cursor = connection.cursor()
         cursor.execute(query)
-        cursor.commit()
         result = cursor.fetchall()
         return result
 
