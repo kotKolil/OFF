@@ -1,5 +1,6 @@
 from random import *
 import datetime
+from .loggers import *
 from .database import *
 
 def get_current_time():
@@ -14,7 +15,6 @@ def generate_id():
 
     return lst
 
-
 def error_decorator(self,func):
     print("error_decorator")
     def wrapper(*args, **kwargs):
@@ -22,12 +22,12 @@ def error_decorator(self,func):
             resultat = func(*args, **kwargs)
             return resultat
         except Exception as e:
-            self.__class_logger.log_message(str(e))
+            self.class_logger.log_message(str(e))
             return str(e)
     return wrapper
 
 
-def initialise_database(db:object = sql_lite3_db("db.db")):
+def initialise_database(db:object):
 
 
 

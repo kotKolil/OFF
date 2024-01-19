@@ -3,7 +3,7 @@ import logging
 import json
 import datetime
 from .tools import *
-from .abstract import *
+from .abcd_classes import *
 
 
 class txt_log(abc_log):
@@ -27,17 +27,17 @@ class json_log(abc_log):
         super().__init__(filename, p4th)
 
         """initializing logger object"""
-        self.__logger = logging.getLogger('js_logger')
-        self.__logger.setLevel(logging.DEBUG)
+        self.logger = logging.getLogger('js_logger')
+        self.logger.setLevel(logging.DEBUG)
 
         file_handler = logging.FileHandler(f'{self.__filename}.json')
         file_handler.setFormatter(logging.Formatter('%(message)s'))
-        self.__logger.addHandler(file_handler)
+        self.logger.addHandler(file_handler)
         
     def log_message(text, self):
         data = {
         'message':text,
         "time":get_current_time(),
         }       
-        self.__logger.error(json.dumps(data))
+        self.logger.error(json.dumps(data))
         

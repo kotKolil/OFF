@@ -5,7 +5,7 @@ from flask import render_template as render
 from .loggers import *
 from .forum import *
 from .tools import *
-from .abstract import *
+from .abcd_classes import *
 
 
 class server:
@@ -17,11 +17,11 @@ class server:
     def __init__(self, prt=8000, dbg=False, hst="127.0.0.1", class_logger = txt_log(p4th="/", filename="default.log")):
 
         #settings of server's behavior
-        self.__hosT = hst
-        self.__porT = prt
-        self.__dbG = dbg
-        self.__server = Flask(__name__)
-        self.__class_logger = class_logger
+        self.hosT = hst
+        self.porT = prt
+        self.dbG = dbg
+        self.server = Flask(__name__)
+        self.class_logger = class_logger
 
 
 

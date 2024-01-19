@@ -1,7 +1,7 @@
 from abc import *
 import sqlite3
 import psycopg2 as psql
-from .abstract import *
+from .abcd_classes import abc_db
 
 class sql_lite3_db(abc_db):
 
@@ -9,7 +9,7 @@ class sql_lite3_db(abc_db):
         super().__init__(name=db_name)
 
     def excute_query(self, query):
-        connection = sqlite3.connect(self.__name)
+        connection = sqlite3.connect(self.name)
         cursor = connection.cursor()
         cursor.execute(query)
         result = cursor.fetchall()
@@ -25,11 +25,11 @@ class postgres_db(abc_db):
         super.__init__(self,port = port, password=password, user=user, name=name, host=host)
 
     def execute_query(self, query):
-        connection = psql.connect(user=self.__user,
-                                  port=self.__port,
-                                  password=self.__password,
-                                  database=self.__name,
-                                  host=self.__host)
+        connection = psql.connect(user=self.user,
+                                  port=self.port,
+                                  password=self.password,
+                                  database=self.name,
+                                  host=self.host)
         cursor = connection.cursor()
         cursor.execute(query)
         cursor.commit()
