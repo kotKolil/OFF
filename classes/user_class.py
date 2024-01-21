@@ -11,8 +11,14 @@ class user:
         self.logo_path = logo_path
         self.citate = citate
         self.token = generate_token(self.user_id, self.password)
+        db.execute_query("""INSERT INTO user VALUES (
+                         {self.password}, {self.user_id}, {self.is_admin},
+                          {self.is_banned}, {self.logo_path}, {self.citate} , 
+                         {self.time_of_join}, {self.token},
+                         
+                         )""")
         
-    def check_token(self, token, user):
+    def check_token(self, token):
         if self.db_execute(f"SELECT user FROM  user WHERE token = '{token}'") == user:
             return 1
         else:

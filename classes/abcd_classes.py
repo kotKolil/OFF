@@ -30,14 +30,27 @@ class abc_log:
         pass
 
 
+class sub_disscussion:
 
-        
+    __metaclass__ = ABCMeta
 
-
-        
-    def runserver(self):
-        try:
-            self.__server.run(port = self.__porT, debug = self.__dbG)
-            print(f"server started on {self.__hosT}:{self.__porT}. Debug mode is {self.__dbG}")
-        except Exception as e:
-            print(f"Server not started with error {str(e)}")
+    def __init__(self, time_of_creation, theme,author,about, sb_id, db:object):
+        self.time_of_creation = time_of_creation
+        self.theme = theme
+        self.author = author
+        self.about = about
+        self.name = about
+        self.sb_id = sb_id
+        self.db = db
+    def all(self):
+        pass
+    
+    def get(self, sb_id):
+        pass
+    def delete(self, sb_id):
+        pass
+    
+    def create(self, sb_id):
+        pass
+    def update(self, sb_id):
+        pass

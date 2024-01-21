@@ -10,11 +10,10 @@ from .abcd_classes import *
 
 class server:
 
-    __metaclass__ = ABCMeta
 
 
 
-    def __init__(self, prt=8000, dbg=False, hst="127.0.0.1", class_logger = txt_log(p4th="/", filename="default.log")):
+    def __init__(self, prt=8000, dbg=False, hst="127.0.0.1", class_logger = txt_log(p4th="/", filename="default.log"), db=sql_lite3_db("main.db"), frm=forum(db=sql_lite3_db("main.db"), name="Forum")):
 
         #settings of server's behavior
         self.hosT = hst
@@ -37,6 +36,15 @@ class server:
         @self.server.route('/')
         def index():
             return render("index.html")
+        
+
+        @self.server.route('/#<str:name>')
+        def thread_view(name):
+            return name
+        
+        @self.server.route('/topic/#<name>')
+        def topic_view(name):
+            return name
 
     def runserver(self):
 
