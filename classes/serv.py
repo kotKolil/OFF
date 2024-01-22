@@ -13,7 +13,7 @@ class server:
 
 
 
-    def __init__(self, prt=8000, dbg=False, hst="127.0.0.1", class_logger = txt_log(p4th="/", filename="default.log"), db=sql_lite3_db("main.db"), frm=forum(db=sql_lite3_db("main.db"), name="Forum")):
+    def __init__(self,  class_logger, db, prt=8000, dbg=False, hst="127.0.0.1",):
 
         #settings of server's behavior
         self.hosT = hst
@@ -32,19 +32,20 @@ class server:
             print(path)
             return send_from_directory('static', path)
         
-        #views
+        #index page
         @self.server.route('/')
         def index():
-            return render("index.html")
-        
+            return render("index.html")        
 
-        @self.server.route('/#<str:name>')
-        def thread_view(name):
-            return name
+        #thread page
+        @self.server.route('/thread/<string:thd_id>')
+        def thread(thd_id):
+            print(thd_id)
+            return render("tread.html", thd_id=thd_id)
         
-        @self.server.route('/topic/#<name>')
-        def topic_view(name):
-            return name
+        @self.server.route('/topic/<string:mes_id>')
+        def topic(mes_id):
+            return render("detail.html")
 
     def runserver(self):
 

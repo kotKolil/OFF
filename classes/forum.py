@@ -15,20 +15,20 @@ class forum:
 
         #creating table in database, which related with forum with SQL script
         #structure of table forum : name;date_of_creasting;id
-        db.excute_query(f"INSERT INTO forum VALUES ('{self.name}', '{get_current_time()}', '{generate_id}') ")
+        db.excute_query(f"INSERT INTO forum VALUES ('{self.name}', '{get_current_time()}', '{generate_id()}') ")
 
 
         
     #structure of table: id_forum|id_thread|name|time_of_creation|author|decrpt
         
     def all(self):
-        return self.db.execute_query("SELECT * FROM threads WHERE forum_name = '{self.__name}'")
+        return self.db.execute_query("SELECT * FROM threads WHERE forum_name = '{self.name}'")
     
     def create(self, id_thd):
         
-        self.db.excute_query(f"""INSERT INTO threads VALUES ('{self.__id_forum}', 
-                              '{self.__th_id}', '{self.__name}','{self.__toc}',
-                              '{self.__author}', {self.decrpt})""")
+        self.db.excute_query(f"""INSERT INTO threads VALUES ('{self.id_forum}', 
+                              '{self.th_id}', '{self.name}','{self.toc}',
+                              '{self.author}', {self.decrpt})""")
         
     def get(self,id_thd):
         return self.db.execute_query(f'SELECT * FROM threads WHERE id={id_thd}')

@@ -48,8 +48,8 @@ def initialise_database(db: object):
             CREATE TABLE IF NOT EXISTS forum (
                 name TEXT,
                 date_of_creation TEXT,
-                id TEXT
-            )
+                forum_id TEXT
+            );
         """)
 
         # structure of table user: password, user_id, is_admin, is_banned, logo_path, citate, time_of_join, token
@@ -64,7 +64,7 @@ def initialise_database(db: object):
                 citate TEXT,
                 time_of_join TEXT,
                 token TEXT UNIQUE NOT NULL
-            )
+            );
         """)
 
                 
@@ -79,13 +79,13 @@ def initialise_database(db: object):
                 time_of_creation TEXT,
                 author TEXT REFERENCES user(user_id),
                 decrypt TEXT
-            )
+            );
         """)
 
         # structure of table topic time_of_creation|theme|author|about|sb_id
 
 
-        db.excute("""
+        db.excute_query("""
             CREATE TABLE IF NOT EXISTS topic(
                 time_of_creation TEXT,
                 theme TEXT, 
@@ -94,7 +94,7 @@ def initialise_database(db: object):
                 sb_id TEXT REFERENCES thread(id_thread)
 
 
-            )
+            );
                   
                   
                   
@@ -111,7 +111,7 @@ def initialise_database(db: object):
                 author TEXT REFERENCES user(user_id),
                 text_of_publication TEXT,
                 time_of_publication TEXT
-            )
+            );
         """)
 
 
@@ -145,7 +145,7 @@ def initialise_database(db: object):
     CREATE TABLE IF NOT EXISTS forum (
         name TEXT,
         date_of_creation date,
-        id TEXT
+        forum_id TEXT
     )
 
                         """)
@@ -183,6 +183,21 @@ def initialise_database(db: object):
 
                         """)
 
+
+        db.excute_query("""
+            CREATE TABLE IF NOT EXISTS topic(
+                time_of_creation date,
+                theme TEXT, 
+                author TEXT REFERENCES user(user_id),
+                about TEXT,
+                sb_id TEXT REFERENCES thread(id_thread)
+
+
+            )
+                  
+                  
+                  
+                  """)
 
 
     else:
