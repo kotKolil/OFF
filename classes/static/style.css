@@ -1,396 +1,433 @@
 /* ########################################### */
+
+
 /*                 Global                      */
+
+
 /* ########################################### */
-*{
+
+* {
     box-sizing: border-box;
 }
 
-html{
+html {
     font-size: 14px;
     font-family: 'Titillium Web', sans-serif;
-    background-color:rgb(0,0,0);
-    color:#FEFEFE;
+    background-color: rgb(0, 0, 0);
+    color: #FEFEFE;
 }
 
-a{
-    color:#FF0042;
+a {
+    color: #FF0042;
     font-weight: bolder;
     text-decoration: none;
 }
 
-h1{
-    font-size:16px;
+h1 {
+    font-size: 16px;
     font-weight: bolder;
+}
+
+input {
+    margin: 10px;
 }
 
 
 /* ########################################### */
+
+
 /*           Forums.html                       */
+
+
 /* ########################################### */
-.container{
+
+.container {
     margin: 20px;
     padding: 20px;
 }
 
-.subforum{
-    margin-top:20px;
+.subforum {
+    margin-top: 20px;
 }
 
-.subforum-title{
-    background-color:#292B2E;
+.subforum-title {
+    background-color: #292B2E;
     padding: 5px;
     border-radius: 5px;
-    margin:4px;
+    margin: 4px;
 }
 
-.subforum-row{
+.subforum-row {
     display: grid;
     grid-template-columns: 7% 60% 13% 20%;
 }
 
-.subforum-column{
+.subforum-column {
     padding: 10px;
-    margin:4px;
+    margin: 4px;
     border-radius: 5px;
-    background-color:#111314;
+    background-color: #111314;
 }
 
-.subforum-description *{
+.subforum-description * {
     margin-block: 0;
 }
 
-.center{
+.center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.subforum-icon i{
+.subforum-icon i {
     font-size: 45px;
 }
 
-.subforum-devider{
-    display: none;   
+.subforum-devider {
+    display: none;
 }
 
 
 /* For the smartphones */
+
 @media screen and (max-width: 460px) {
-    .container{
+    .container {
         margin: 10px;
         padding: 10px;
     }
-
-    .subforum-row{
+    .subforum-row {
         display: grid;
         grid-template-columns: 25% 75%;
         grid-template-rows: 65% 35%;
     }
-
-    .subforum-devider{
+    .subforum-devider {
         display: block;
         border: 0;
         height: 1px;
         background-image: linear-gradient(to right, rgba(190, 190, 190, 0), rgba(255, 255, 255, 0.75), rgba(190, 190, 190, 0));
     }
+}
 
-    
-
-  }
 
 /* For the tablets */
+
 @media screen and (min-width: 460px) and (max-width: 1024px) {
-    .container{
+    .container {
         margin: 15px;
         padding: 15px;
     }
-
-    .subforum-row{
+    .subforum-row {
         display: grid;
         grid-template-columns: 10% 60% 10% 20%;
     }
-
-    .subforum-icon i{
+    .subforum-icon i {
         font-size: 35px;
     }
-
-    html{
+    html {
         font-size: 14px;
     }
-
-    h1{
+    h1 {
         font-size: 16px;
     }
+}
 
-  }
+
 /*   Header Section    */
 
-header{
+header {
     margin-inline: 10px;
 }
-  /* Nav Bar styles */
-.navbar{
-    display:flex;
+
+
+/* Nav Bar styles */
+
+.navbar {
+    display: flex;
     align-items: center;
 }
-.navigation{
-    background-color:#52057b;
+
+.navigation {
+    background-color: #52057b;
     padding: 10px;
     width: 65%;
     display: inline-block;
     border-radius: 5px;
     max-height: 80px;
-    margin-right:10px;
+    margin-right: 10px;
 }
 
-.close-icon i{
-    font-size:60px;
+.close-icon i {
+    font-size: 60px;
     float: left;
     cursor: pointer;
 }
 
-.nav-list{
-    list-style-type:none;
+.nav-list {
+    list-style-type: none;
     overflow: hidden;
 }
 
-.nav-item a{
+.nav-item a {
     float: right;
-    display:block;
+    display: block;
     text-align: center;
     margin-inline: 20px;
     font-size: 20px;
     padding: 10px;
-    color:#fff;
+    color: #fff;
 }
 
-.nav-item a:hover{
-    background-color: rgb(0,0,0,0.1);
+.nav-item a:hover {
+    background-color: rgb(0, 0, 0, 0.1);
 }
 
-.hide{
+.hide {
     display: none;
 }
 
-.bar-icon{
+.bar-icon {
     font-size: 60px;
     display: inline-block;
-    margin-right:10px;
+    margin-right: 10px;
     color: #fff;
     cursor: pointer;
 }
 
 @font-face {
-    font-family:aquire;
-    src:url(aquire.otf);
+    font-family: aquire;
+    src: url(aquire.otf);
 }
 
-.brand{
-    font-size:60px;
+.brand {
+    font-size: 60px;
     display: inline-block;
-    font-family:aquire;
+    font-family: aquire;
 }
+
 
 /*Navbar for the smartphones*/
-@media screen and (max-width: 460px){
-    .navigation{
+
+@media screen and (max-width: 460px) {
+    .navigation {
         max-height: auto;
     }
-    
-    .close-icon i{
-        font-size:30px;
+    .close-icon i {
+        font-size: 30px;
     }
-    
-    .nav-item a{
-        float:left;
-        display:inline;
+    .nav-item a {
+        float: left;
+        display: inline;
         margin-inline: 3px;
         font-size: 10px;
         padding: 5px;
     }
-    
-    
-    .bar-icon{
+    .bar-icon {
         font-size: 30px;
     }
- 
-    .brand{
-        font-size:20px;
+    .brand {
+        font-size: 20px;
     }
 }
 
-  /* Search Box styles */
-.search-box{
+
+/* Search Box styles */
+
+.search-box {
     border: solid 1px #52057b;
     margin-top: 20px;
     padding: 40px;
-    display:flex;
+    display: flex;
     justify-content: center;
-    box-shadow:1px 2px 3px #52057b;
+    box-shadow: 1px 2px 3px #52057b;
 }
 
-.search-box select{
+.search-box select {
     padding: 10px;
 }
 
-.search-box input{
+.search-box input {
     padding: 10px;
 }
 
-.search-box button{
+.search-box button {
     padding: 10px;
-    background-color:#fff;
-    color:#000000;
+    background-color: #fff;
+    color: #000000;
 }
 
-.search-box button:hover{
+.search-box button:hover {
     background-color: #000000;
     color: #fff;
     box-shadow: 1px 2px 3px #fff;
 }
 
+
 /* search box for smrtphones */
-@media screen and (max-width: 460px){
-    .search-box input, .search-box button, .search-box select{
+
+@media screen and (max-width: 460px) {
+    .search-box input,
+    .search-box button,
+    .search-box select {
         min-width: 300px;
         margin-top: 5px;
-    }    
-
+    }
 }
 
+
 /* forum info Styling */
-.forum-info{
+
+.forum-info {
     padding: 20px;
     background-color: #111314;
 }
 
-.chart{
-    font-size:20px;
-    font-weight:bold;
+.chart {
+    font-size: 20px;
+    font-weight: bold;
 }
+
+
 /* Footer Styling */
 
-footer{
+footer {
     margin-top: 20px;
     padding: 20px;
-    background-color:  #52057b;
+    background-color: #52057b;
     display: block;
     text-align: center;
 }
 
-/* ########################################### */
-/*            posts.html                       */
+
 /* ########################################### */
 
+
+/*            posts.html                       */
+
+
+/* ########################################### */
+
+
 /* posts table's head  */
-.table-head{
+
+.table-head {
     display: flex;
 }
 
-.table-head div{
+.table-head div {
     padding: 5px;
     margin: 2px;
     background-color: #2C2C2C;
     font-weight: bold;
 }
 
-.table-head .status{
+.table-head .status {
     flex: 5%;
 }
 
-.table-head .subjects{
+.table-head .subjects {
     flex: 70%;
 }
 
-.table-head .replies{
+.table-head .replies {
     flex: 10%;
 }
 
-.table-head .last-reply{
+.table-head .last-reply {
     flex: 15%;
 }
 
+
 /* posts table's body  */
 
-.table-row{
+.table-row {
     display: flex;
 }
 
-.table-row .status, .table-row .subjects, .table-row .replies, .table-row .last-reply{
+.table-row .status,
+.table-row .subjects,
+.table-row .replies,
+.table-row .last-reply {
     padding: 5px;
     margin: 2px;
     background-color: #131415;
 }
 
-.table-row .status{
+.table-row .status {
     flex: 5%;
     font-size: 30px;
     text-align: center;
 }
 
-.table-row .subjects{
+.table-row .subjects {
     flex: 70%;
 }
 
-.table-row .replies{
+.table-row .replies {
     flex: 10%;
 }
 
-.table-row .last-reply{
+.table-row .last-reply {
     flex: 15%;
 }
 
+
 /* navigation path*/
-.navigate{
+
+.navigate {
     margin-block: 20px;
     font-weight: lighter;
     font-size: 24px;
 }
 
-.navigate a{
+.navigate a {
     color: #fff;
 }
 
-.navigate a:hover{
-    color:#FF0042;
+.navigate a:hover {
+    color: #FF0042;
     font-weight: bolder;
 }
 
+
 /* Pagination*/
 
-.pagination{
+.pagination {
     padding: 20px;
     font-size: 15px;
 }
 
-.pagination a{
+.pagination a {
     color: #fff;
     margin-inline: 5px;
     padding: 5px 10px;
     border: solid 0.5px #fff;
 }
 
-.pagination a:hover{
+.pagination a:hover {
     opacity: 0.5;
 }
 
-.note{
-    background-color:#111314;
+.note {
+    background-color: #111314;
     padding: 20px;
     display: block;
 }
 
-.note span{
+.note span {
     font-size: 20px;
     margin-block: 5px;
 }
 
 
 /* ########################################### */
+
+
 /*            detail.html                      */
+
+
 /* ########################################### */
 
-.head{
+.head {
     display: flex;
     background-color: #2C2C2C;
     padding: 5px;
@@ -398,66 +435,116 @@ footer{
     font-size: 15px;
 }
 
-.authors{
+.authors {
     flex: 20%;
 }
 
-.content{
+.content {
     flex: 80%;
 }
 
-.body{
+.body {
     display: flex;
     background-color: #131415;
     padding: 10px;
     margin-top: 5px;
 }
 
-.body .authors .username{
+.body .authors .username {
     font-size: 20px;
 }
 
-.body .authors img{
+.body .authors img {
     max-width: 50px;
     max-height: 80px;
 }
 
-.body .content .comment button{
-    border:none;
-    padding:10px;
+.body .content .comment button {
+    border: none;
+    padding: 10px;
     font-weight: bolder;
     box-shadow: 4px 6px #fff;
     cursor: pointer;
     float: right;
 }
 
+
 /* comment section */
-.comment-area{
-    margin-bottom:50px;
+
+.comment-area {
+    margin-bottom: 50px;
 }
 
-.comment-area textarea{
+.comment-area textarea {
     width: 100%;
     min-height: 100px;
     padding: 10px;
     margin-block: 10px;
 }
 
-.comment-area input{
+.comment-area input {
     float: right;
     padding: 10px;
     border-radius: 10px;
     cursor: pointer;
 }
 
-.comment-area input:hover{
+.comment-area input:hover {
     border: solid 1px #000000;
 }
 
+.reg-box {
+    margin-top: 20px;
+    padding: 40px;
+    display: flex;
+    margin-top: 30px;
+    margin-left: 30px;
+    padding-left: 5px;
+    border-left: 5px solid #52057b;
+}
 
 
+/* style for oval button */
 
+.btn-oval {
+    border: #000000;
+    display: inline-block;
+    width: 200px;
+    height: 50px;
+    box-sizing: border-box;
+    text-align: center;
+    color: #fff;
+    text-decoration: none;
+    background-color: purple;
+    border-radius: 25px;
+    font: bold 20px/50px Arial;
+    box-shadow: inset 0 2px 2px #cce464, inset 1px 0 3px #b2dc2d, inset -1px 0 3px #b2dc2d, inset 0 -2px 2px #89d301, 0 0 3px rgba(0, 0, 0, 0.24);
+    position: relative;
+    text-shadow: 0 1px #45880d;
+    outline: none;
+}
 
+.btn-oval:before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+    background: #d7d7d7;
+    z-index: -1;
+    border-radius: 20px;
+    box-shadow: inset 0 1px 2px #bbb;
+}
 
+.btn-oval:hover {
+    background-color: violet;
+    box-shadow: inset 0 1px 0 #e2f498, inset 0 2px 0 #ceec87, inset 0 3px 0 #c3e67c, inset 0 5px 0 #bae475, inset 1px 0 3px #b2dc2d, inset -1px 0 3px #b2dc2d, inset 0 -2px 2px #89d301, 0 0 3px rgba(0, 0, 0, 0.24);
+}
 
-
+.btn-oval:active {
+    background-color: blue violet;
+    box-shadow: inset 0 3px 7px #3c7b00;
+    padding: 1px 0 0 1px;
+}

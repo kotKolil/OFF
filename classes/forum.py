@@ -22,20 +22,21 @@ class forum:
     #structure of table: id_forum|id_thread|name|time_of_creation|author|decrpt
         
     def all(self):
-        return self.db.execute_query("SELECT * FROM threads WHERE forum_name = '{self.name}'")
+        return self.db.excute_query("SELECT * FROM thread WHERE id_forum = '{self.id_forum}'")
     
-    def create(self, id_thd):
+    def create(self, name, decrypt, author:object):
         
-        self.db.excute_query(f"""INSERT INTO threads VALUES ('{self.id_forum}', 
-                              '{self.th_id}', '{self.name}','{self.toc}',
-                              '{self.author}', {self.decrpt})""")
+        # structure of table thread: id_forum, id_thread, name, time_of_creation, author, decrypt (description)
+        self.db.excute_query(f"""INSERT INTO thread VALUES ('{self.id_forum}', 
+                              '{generate_id()}', '{name}',
+                              '{get_current_time()}', {author.user_id},  {self.decrpt})""")
         
     def get(self,id_thd):
-        return self.db.execute_query(f'SELECT * FROM threads WHERE id={id_thd}')
+        return self.db.excute_query(f"SELECT * FROM thread WHERE id_forum='{id_thd}'")
     
     def delete(self, id_thd):
-        return self.db.excute_query(f"DELETE FROM threads WHERE id={id_thd}")
+        return self.db.excute_query(f"DELETE FROM thread WHERE id_forum={id_thd}")
     
     def change(self,id_thd,name, decrpt):
-        return self.db.excute_query("UPDATE FROM threads WHERE id={id_thd} ({name}, {decrpt})")
+        return self.db.excute_query("UPDATE FROM threadS WHERE id_forum={id_thd} ({name}, {decrpt})")
 

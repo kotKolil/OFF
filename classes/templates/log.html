@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+
+
+
+{% block bo_dy %}
+        
+    <div class="reg-box">
+
+        <br>
+        <form method="POST" action="/auth/log" enctype="multipart/form-data"> 
+            <H3>Log in</H3>
+            Enter you login
+            <input name="login" type="text"><br>
+            Enter you password
+            <input name="password" type="text"><br>
+            <input class="btn btn-oval"  type="submit" value="log in" />
+            <br>
+
+        </form>
+    
+    </div>
+
+   
+
+{% endblock bo_dy %}
+
+
+
+
+
+

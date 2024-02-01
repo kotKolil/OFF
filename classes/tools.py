@@ -2,11 +2,18 @@ from random import *
 import datetime
 from .loggers import *
 from .database import *
+from .settings import *
 import hashlib
 import os
 
 sample= '1h9K8L9h5d5v5Z4q7'
 
+
+
+def allowed_file(filename):
+    """ Функция проверки расширения файла """
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def generate_token(s1:str="vasya228", s2:str="12345"):
     token = hashlib.sha256(str.encode(s1 + s2 + os.urandom(16).hex())).hexdigest()
@@ -56,6 +63,7 @@ def initialise_database(db: object):
 
         db.excute_query("""
             CREATE TABLE IF NOT EXISTS user (
+                email TEXT NOT NULL UNIQUE,
                 password TEXT,
                 user_id TEXT UNIQUE,
                 is_admin BOOLEAN,

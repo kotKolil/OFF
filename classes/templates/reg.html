@@ -1,0 +1,38 @@
+
+{% extends "base.html" %}
+
+
+
+{% block bo_dy %}
+        
+    <div class="reg-box">
+
+        <br>
+        <form method="POST" action="/auth/reg" enctype="multipart/form-data"> 
+            <H3>Registration</H3>
+            Enter you login
+            <input name="login" type="text"><br>
+            Enter you email
+            <input name="email" type="email"><br>
+            Enter you password
+            <input name="password" type="text"><br>
+            your citate
+            <input name="password" type="citate"><br>
+            Upload logo of you user
+            <input enctype=multipart/form-data name="logo" type="file" accept=".jpg, .jpeg, .png, .gif,", multiple type = "file"><br>
+            <input class="btn btn-oval"  type="submit" value="reg in" />
+            <br>
+
+        </form>
+    
+    </div>
+
+   
+
+{% endblock bo_dy %}
+
+
+
+
+
+

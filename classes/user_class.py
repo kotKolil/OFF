@@ -11,12 +11,10 @@ class user:
         self.logo_path = logo_path
         self.citate = citate
         self.token = generate_token(self.user_id, self.password)
-        db.execute_query("""INSERT INTO user VALUES (
-                         {self.password}, {self.user_id}, {self.is_admin},
-                          {self.is_banned}, {self.logo_path}, {self.citate} , 
-                         {self.time_of_join}, {self.token},
-                         
-                         )""")
+        try: 
+            db.excute_query(f"INSERT INTO user VALUES ('{password}', '{user_id}', 0, 0, '{logo_path}', '{citate}', '{str(get_current_time())}', '{generate_token()}') ")
+        except:
+            raise Exception("Same user are exisiting")
         
     def check_token(self, token):
         if self.db_execute(f"SELECT user FROM  user WHERE token = '{token}'") == user:
