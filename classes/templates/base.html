@@ -46,5 +46,15 @@
             
             {% endblock bo_dy %}
 
+    <footer>
+        <span class="circle-image">
+            <img  src="media/{{logo_path | default('default.png')}}" width = "30" height = "30"   />
+        </span>
+        <span style="margin-left:4px;">|{{user | default('Anonim')  }} </span>
+        <a href="/auth/log">|log in</a> <a href="/auth/reg">|reg in</a>
+        
+    </footer>
+    <script src="main.js"></script>
+
     </body>
 </html>

@@ -3,3 +3,10 @@ venv
 *.log
 *.db
 *.sqlite3
+*.jpg
+*.png
+*.gif
+
+
+
+!default.png

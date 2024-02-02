@@ -51,8 +51,15 @@ class server:
         @self.server.route('/')
         def index():
             data  = self.frm.all()
-            return render("index.html", forum=self.frm.name)      
-        
+            tok = request.cookies.get('token')
+            print(tok)
+            data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+            print(data)
+
+            try:
+                return render("index.html", forum=self.frm.name, logo_path = data[0][4], user=data[0][1])      
+            except:
+                return render("index.html")
 
 
         #auth methods
@@ -62,7 +69,12 @@ class server:
             print(request.method)
             if request.method == "GET":
                 # return page of registration
-                return render_template("reg.html")
+                tok = request.cookies.get('token')
+                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                if len(data) > 0:
+                    return redirect("/")
+                else:
+                    return render_template("reg.html")
             elif request.method == "POST":
                 # getting data from POST request
                 citate = "я люблю собак"
@@ -89,7 +101,12 @@ class server:
         @self.server.route("/auth/log", methods=["GET", "POST"])
         def log():
             if request.method == "GET":
-                return render_template("log.html")
+                tok = request.cookies.get('token')
+                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                if len(data) > 0:
+                    return redirect("/")
+                else:
+                    return render_template("log.html")
             elif request.method == "POST":
                 login = request.form.get("login")
                 password = request.form.get("password")
