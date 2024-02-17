@@ -3,6 +3,8 @@ from .loggers import *
 from .tools import *
 from .abcd_classes import *
 from flask import *
+import zope.interface
+from .inter import *
 
 
 class forum:
@@ -20,7 +22,9 @@ class forum:
 
         
     #structure of table: id_forum|id_thread|name|time_of_creation|author|decrpt
-        
+
+    zope.interface.implementer(IModelMethod)
+    
     def all(self):
         return self.db.excute_query("SELECT * FROM thread WHERE id_forum = '{self.id_forum}'")
     
@@ -37,6 +41,6 @@ class forum:
     def delete(self, id_thd):
         return self.db.excute_query(f"DELETE FROM thread WHERE id_forum={id_thd}")
     
-    def change(self,id_thd,name, decrpt):
+    def update(self,id_thd,name, decrpt):
         return self.db.excute_query("UPDATE FROM threadS WHERE id_forum={id_thd} ({name}, {decrpt})")
 

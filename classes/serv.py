@@ -15,6 +15,7 @@ from .tools import *
 from .abcd_classes import *
 from .tools import *
 from .user_class import *
+from .topic import *
 
 
 
@@ -57,7 +58,7 @@ class server:
             print(data)
 
             try:
-                return render("index.html", forum=self.frm.name, logo_path = data[0][4], user=data[0][1])      
+                return render("index.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])      
             except:
                 return render("index.html")
 
@@ -89,7 +90,8 @@ class server:
                     open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close() 
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
-                    u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate, time_of_join= get_current_time(), db = db)
+                    u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+                             time_of_join= get_current_time(), db = db, email = email)
                     resp = redirect('/')
                     resp.set_cookie("token", u.token)
                     return resp
@@ -110,9 +112,9 @@ class server:
             elif request.method == "POST":
                 login = request.form.get("login")
                 password = request.form.get("password")
-                data = db.excute_query(f"SELECT * FROM user WHERE user_id = '{login}' and password = '{password}' ")[0]
+                u = user.get(login, password, db)[0]
                 resp = redirect("/")
-                resp.set_cookie("token", data[7])
+                resp.set_cookie("token", u[8])
                 return resp
             
 
@@ -125,11 +127,48 @@ class server:
         
 
         #topic view
-        @self.server.route("/topic", methods=["GET", "POST"])
+        @self.server.route("/topic", methods=["GET"])
         def topic():
-            request.args.get('id')
+            
+            tok = request.cookies.get('token')
+            print(tok)
+            data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+            print(data)
+
+            Id = request.args.get('id')
+            return render_template("topic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
+
+        #topic create
+        @self.server.route("/topic/create", methods = ["POST", "GET", "PATCH"])
+        def TopicCreate():
             if request.method == "GET":
-                return render_template("topic.html")
+
+                tok = request.cookies.get('token')
+                print(tok)
+                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                print(data)
+                
+                return render_template("CreateTopic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
+            elif request.method == "POST":
+
+                tok = request.cookies.get('token')
+                print(tok)
+                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                
+                #creating new thread
+                theme = request.form.get("name")
+                name = request.form.get("theme")
+                about = request.form.get("about")
+                
+                ThreadId = request.args.get('id')
+                
+
+                a = topic(get_current_time, theme,
+                          data[0][2], about,generate_id())
+                
+                
+            else:
+                return ["400"]
 
         
     def runserver(self):

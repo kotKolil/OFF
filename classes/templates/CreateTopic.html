@@ -1,0 +1,34 @@
+
+{% extends "base.html" %}
+
+
+
+{% block bo_dy %}
+        
+    <div class="reg-box">
+
+        <br>
+        <form method="POST" action="/topic/create" enctype="multipart/form-data"> 
+            <H3>Creating new topic</H3>
+            Enter name of new topic
+            <input name="name" type="text"><br>
+            Enter theme of new topic
+            <input name="theme" type = "text" ><br>
+            Enter description of you topic
+            <input name="about" type = "text" ><br>
+            <input class="btn btn-oval"  type="submit" value="reg in" />
+            <br>
+
+        </form>
+    
+    </div>
+
+   
+
+{% endblock bo_dy %}
+
+
+
+
+
+
