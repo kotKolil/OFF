@@ -21,7 +21,7 @@ class messages:
         return db.execute_query(f"SELECT * FROM messages WHERE id_thread = '{ThreadId}' ")
 
     @staticmethod
-    def all(ThreadId, db:object):
+    def all_(ThreadId, db:object):
         return db.execute_query(f"SELECT * FROM messages WHERE id_thread = '{ThreadId}' ")
 
     @staticmethod

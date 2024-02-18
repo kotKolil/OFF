@@ -57,10 +57,11 @@ class server:
             TopicsData = topic.all_(db)
             print(TopicsData)
             tok = request.cookies.get('token')
+            
             data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
             TopicString = """ """
             for i in TopicsData:
-                TopicString += tt_snippet(title=i[1], description=i[3], topic_num=i[4])
+                TopicString += tt_snippet(title=i[1], description=i[3], topic_num=i[4], author = data[0][2])
             try:
                 return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path = data[0][5], user=data[0][2])      
             except:
@@ -140,6 +141,8 @@ class server:
             print(data)
 
             Id = request.args.get('id')
+            MessageData = messages.all_(Id, db)
+            
             return render_template("topic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
 
         #topic create
@@ -167,6 +170,8 @@ class server:
                 
 
                 a = topic(get_current_time(), theme, data[0][2], about,generate_id(), db)
+
+                return redirect("/")
                 
                 
             else:
