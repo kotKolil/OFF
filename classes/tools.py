@@ -26,10 +26,11 @@ def get_current_time():
 
 def generate_id():
     lst = "qwertyuiopasdfghjklzxcvbnm1234567890"
+    Result = ""
     for i in range(len(lst)):
-        lst += lst[choice(range(1, len(lst)))]
+        Result += lst[choice(range(1, len(lst)))]
 
-    return lst
+    return Result
 
 def error_decorator(self,func):
     print("error_decorator")
@@ -86,7 +87,7 @@ def initialise_database(db: object):
                 theme TEXT, 
                 author TEXT REFERENCES user(user_id),
                 about TEXT,
-                sb_id TEXT REFERENCES thread(id_thread)
+                sb_id TEXT NOT NULL UNIQUE
 
 
             );
@@ -101,7 +102,7 @@ def initialise_database(db: object):
 
         db.excute_query("""
             CREATE TABLE IF NOT EXISTS messages (
-                id_thread TEXT REFERENCES thread(id_thread),
+                id_topic TEXT REFERENCES topic(sb_id),
                 message_id TEXT UNIQUE PRIMARY KEY,
                 author TEXT REFERENCES user(user_id),
                 text_of_publication TEXT,

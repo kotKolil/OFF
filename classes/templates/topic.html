@@ -4,6 +4,34 @@
 
 {% block bo_dy %}
 
+<div class="navigate">
+	<span>{{name}}|{{description}}</span>
+</div>
+
+
 {{HtmlContext | safe}}
+
+<form method="POST" action="/topic" enctype="multipart/form-data"> 
+            Write your message
+            <input name="Message" type="text"><br>
+	    <input name="TopicId" type="hidden" value=""><br>
+
+            <input class="btn btn-oval"  type="submit" value="send" />
+            <br>
+
+</form>
+
+<script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+
+    // Find the hidden input field with name "TopicId"
+    const topicIdInput = document.querySelector('input[name="TopicId"]');
+
+    // Set the value of the TopicId input field to the id from the URL parameter
+    topicIdInput.value = id;
+
+</script>
 
 {% endblock bo_dy %}

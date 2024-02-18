@@ -17,6 +17,7 @@ from .tools import *
 from .user_class import *
 from .topic import *
 from .snippets import *
+from .message import *
 
 global topic
 
@@ -53,7 +54,6 @@ class server:
         #index page
         @self.server.route('/')
         def index():
-            data  = self.frm.all()
             TopicsData = topic.all_(db)
             print(TopicsData)
             tok = request.cookies.get('token')
@@ -132,18 +132,45 @@ class server:
         
 
         #topic view
-        @self.server.route("/topic", methods=["GET"])
+        @self.server.route("/topic", methods=["GET", "POST"])
         def Topic():
-            
-            tok = request.cookies.get('token')
-            print(tok)
-            data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
-            print(data)
 
-            Id = request.args.get('id')
-            MessageData = messages.all_(Id, db)
-            
-            return render_template("topic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
+            if request.method == "GET":
+
+                Id = request.args.get('id')
+                TopicData = topic.get(db, Id)
+                os.system("cls")
+                print("===========")
+                print(TopicData)
+                
+                tok = request.cookies.get('token')
+                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+
+                
+                MessageData = messages.all_(Id, db)
+                MessageStr = """ """
+                for i in MessageData:
+                    Data = db.excute_query(f"SELECT * FROM user WHERE user_id = '{i[2]}' ")
+                    UserData = user.get(i[2], Data[0][1], db)
+                    MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
+                                                 i[1], UserData[0][6])
+                    
+                
+                return render_template("topic.html", forum=self.frm.name,
+                                       logo_path = data[0][5], user=data[0][2],
+                                       HtmlContext = MessageStr,name = TopicData[0][2],
+                                       description = TopicData[0][3])
+
+            elif request.method == "POST":
+                text = request.form.get("Message")
+                TopicId = request.form.get("TopicId")
+                tok = request.cookies.get('token')
+
+                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                #TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object
+                messages(get_current_time, text, data[0][2], TopicId, generate_id(), db)
+
+                return redirect(f"/topic?id={TopicId}")
 
         #topic create
         @self.server.route("/topic/create", methods = ["POST", "GET", "PATCH"])

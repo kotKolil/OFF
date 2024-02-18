@@ -22,6 +22,3 @@ class user:
     @staticmethod
     def get(user, password, db:object):
         return db.excute_query(f"SELECT * FROM user WHERE user_id = '{user}' and password = '{password}' ")
-
-        
-    

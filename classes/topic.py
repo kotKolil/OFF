@@ -35,14 +35,15 @@ class topic():
     def all_(db:object):
         return db.excute_query("SELECT * FROM topic")
 
-    def get(self, mess_id):
-        return self.db.execute_query(f"SELECT FROM topic WHERE id_thd = '{mess_id} ORDER BY time_sending' ")
+    @staticmethod
+    def get(db:object, sub_id):
+        return db.excute_query(f"SELECT * FROM topic WHERE sb_id = '{sub_id}' ")
     
     def delete(self, mess_id):
-        return self.db.execute_query(F"DELETE FROM topic WHERE id_thd = '{mess_id}'")
+        return self.db.excute_query(F"DELETE FROM topic WHERE id_topic = '{mess_id}'")
 
     def update(self,id_thd,text):
 
         # structure of table topic: id_thread, message_id, author, text, time_of_publication
         return self.db.excute_query(f"""UPDATE topic SET text='{text}' , 
-                                    time_of_publication='{get_current_time()}'  WHERE id_thread='{id_thd}'""")
+                                    time_of_publication='{get_current_time()}'  WHERE id_topic='{id_thd}'""")
