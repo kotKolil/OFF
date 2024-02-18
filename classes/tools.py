@@ -77,19 +77,6 @@ def initialise_database(db: object):
 
                 
 
-        # creating table threads, which represents the thread class
-        # structure of table thread: id_forum, id_thread, name, time_of_creation, author, decrypt (description)
-
-        db.excute_query("""
-            CREATE TABLE IF NOT EXISTS thread (
-                id_forum TEXT REFERENCES forum(id),
-                id_thread TEXT UNIQUE PRIMARY KEY,
-                time_of_creation TEXT,
-                author TEXT REFERENCES user(user_id),
-                decrypt TEXT
-            );
-        """)
-
         # structure of table topic time_of_creation|theme|author|about|sb_id
 
 

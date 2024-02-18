@@ -3,7 +3,7 @@ import zope.interface
 class IModelMethod(zope.interface.Interface):
     #they represented http methods for classes 
 
-    def all():
+    def all_():
         pass
     def create():
         pass

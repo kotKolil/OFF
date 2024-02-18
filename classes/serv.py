@@ -16,7 +16,9 @@ from .abcd_classes import *
 from .tools import *
 from .user_class import *
 from .topic import *
+from .snippets import *
 
+global topic
 
 
 class server:
@@ -52,13 +54,15 @@ class server:
         @self.server.route('/')
         def index():
             data  = self.frm.all()
+            TopicsData = topic.all_(db)
+            print(TopicsData)
             tok = request.cookies.get('token')
-            print(tok)
             data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
-            print(data)
-
+            TopicString = """ """
+            for i in TopicsData:
+                TopicString += tt_snippet(title=i[1], description=i[3], topic_num=i[4])
             try:
-                return render("index.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])      
+                return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path = data[0][5], user=data[0][2])      
             except:
                 return render("index.html")
 
@@ -128,7 +132,7 @@ class server:
 
         #topic view
         @self.server.route("/topic", methods=["GET"])
-        def topic():
+        def Topic():
             
             tok = request.cookies.get('token')
             print(tok)
@@ -159,12 +163,10 @@ class server:
                 theme = request.form.get("name")
                 name = request.form.get("theme")
                 about = request.form.get("about")
-                
-                ThreadId = request.args.get('id')
+
                 
 
-                a = topic(get_current_time, theme,
-                          data[0][2], about,generate_id())
+                a = topic(get_current_time(), theme, data[0][2], about,generate_id(), db)
                 
                 
             else:
