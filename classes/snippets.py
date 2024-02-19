@@ -1,18 +1,18 @@
-def tt_snippet(title, description, topic_num, author):
+def tt_snippet(title, description, author, TopicId):
 
        return f"""
-            <div class="subforum-row">
+            <div class="subforum-row" onclick = "window.location.replace('/topic?id={TopicId}')">
                 <div class="subforum-icon subforum-column center">
                     <i class="fa fa-car center"></i>
                 </div>
-                <div class="subforum-description subforum-column">
-                    <h4><a href="#">Description Title</a></h4>
-                    <p>{description}</p>
+                <div class="subforum-description subforum-column" onclick = "window.location.replace('/topic?id={TopicId}')">
+                    <h4 onclick = "window.location.replace('/topic?id={TopicId}')"><a href="#">{title}</a></h4>
+                    <a href="/topic?id={TopicId}" ><p>{description}</p> </a>
                 </div>
-                <div class="subforum-stats subforum-column center">
-                    <span>{title}</span>
+                <div class="subforum-stats subforum-column center" onclick = "window.location.replace('/topic?id={TopicId}')">
+                    <span onclick = "window.location.replace('/topic?id={TopicId}')">{title}</span>
                 </div>
-                <div class="subforum-info subforum-column">
+                <div class="subforum-info subforum-column" onclick = "window.location.replace('/topic?id={TopicId}')">
                     <br>{author}</small>
                 </div>
             </div>

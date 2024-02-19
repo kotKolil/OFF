@@ -4,6 +4,7 @@ from typing import Self
 from flask import *
 from flask import render_template as render
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import *
 from pathlib import *
 import os
 from pathlib import *
@@ -39,6 +40,25 @@ class server:
         self.frm = frm
         app = Flask(__name__, static_folder="static")
 
+        #views, wich handle errors
+        @app.errorhandler(404)
+        def Handler404(e):
+
+            tok = request.cookies.get('token')
+            
+            data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+            try:
+                return render("index.html", forum=self.frm.name, TopicHtml="<H1>404. Page not found", logo_path = data[0][5], user=data[0][2])      
+            except:
+                return render("index.html", forum=self.frm.name, logo_path="default.png")
+            
+            return render_template()
+
+
+
+        #in this place we are registring error handlers
+        app.register_error_handler(404, Handler404)
+
 
 
         #serving static files
@@ -61,11 +81,11 @@ class server:
             data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
             TopicString = """ """
             for i in TopicsData:
-                TopicString += tt_snippet(title=i[1], description=i[3], topic_num=i[4], author = data[0][2])
+                TopicString += tt_snippet(title=i[1], description=i[3],  author = i[2], TopicId =i[4])
             try:
                 return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path = data[0][5], user=data[0][2])      
             except:
-                return render("index.html")
+                return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path="default.png")
 
 
         #auth methods
@@ -181,8 +201,11 @@ class server:
                 print(tok)
                 data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
                 print(data)
-                
-                return render_template("CreateTopic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
+
+                try:
+                    return render_template("CreateTopic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
+                except:
+                    return redirect("/auth/log")
             elif request.method == "POST":
 
                 tok = request.cookies.get('token')

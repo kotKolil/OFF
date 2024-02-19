@@ -11,27 +11,40 @@
 
 {{HtmlContext | safe}}
 
-<form method="POST" action="/topic" enctype="multipart/form-data"> 
-            Write your message
-            <input name="Message" type="text"><br>
-	    <input name="TopicId" type="hidden" value=""><br>
+<hr>
 
-            <input class="btn btn-oval"  type="submit" value="send" />
-            <br>
+<form method="POST" action="/topic" enctype="multipart/form-data"> 
+    <label for="Message">Write your message</label>
+    <input name="Message" type="text">
+
+    <input name="TopicId" type="hidden" value="">
+
+    <input name="AuthToken" type="hidden" value="">
+
+    <input class="btn btn-oval" type="submit" value="send" />
+    
 
 </form>
 
 <script>
+function getTokenFromCookie() {
+  const cookie = document.cookie;
+  const token = cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
+  
+  return token;
+} 
 
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
 
     // Find the hidden input field with name "TopicId"
     const topicIdInput = document.querySelector('input[name="TopicId"]');
+    //Find the hidden input field with name "AuthToken"
+    const AuthTokenInput = document.querySelector('input[name="AuthToken"]');
 
     // Set the value of the TopicId input field to the id from the URL parameter
     topicIdInput.value = id;
-
+    AuthTokenInput = getTokenFromCookie();
 </script>
 
 {% endblock bo_dy %}
