@@ -236,23 +236,22 @@ class server:
         @self.server.route("/message", methods=["POST"])
         def PostMessage():
             if request.method == "POST":
-                #TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object):
+                #LogoPath,Username, Message, Phrase
                 tok = request.cookies.get('token')
                 Text = request.form.get("Message")
                 TopicId = request.form.get("TopicId")
                 AuthToken = request.form.get("AuthToken")
 
                 UserData = user.GetUserOnToken(tok, db)
+                print()
+                print(UserData)
 
                 messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
 
-                try:
-                    return "200"
+                return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
 
-                except:
-                    print("Not have auth token")
-                    return "403"
 
+            
         
 
         
