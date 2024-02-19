@@ -19,7 +19,7 @@ initialise_database(db=db)
 
 
 fr_m = forum(db, "Forum")
-A = server(dbg=False, class_logger=a_logger, db=db ,frm=fr_m)
+A = server(dbg=True, class_logger=a_logger, db=db ,frm=fr_m)
 A.runserver()
 
 

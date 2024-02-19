@@ -13,12 +13,11 @@ class user:
         self.token = generate_token(self.user_id, self.password)
         db.excute_query(f"INSERT INTO user VALUES ('{email}', '{password}', '{user_id}', 0, 0, '{logo_path}', '{citate}', '{str(get_current_time())}', '{generate_token()}') ")
         
-    def check_token(self, token):
-        if self.db_execute(f"SELECT user FROM  user WHERE token = '{token}'") == user:
-            return 1
-        else:
-            return 0
 
     @staticmethod
     def get(user, password, db:object):
         return db.excute_query(f"SELECT * FROM user WHERE user_id = '{user}' and password = '{password}' ")
+
+    @staticmethod
+    def GetUserOnToken(Token, db:object):
+        return db.excute_query(f"SELECT * FROM user WHERE token = '{Token}' ")

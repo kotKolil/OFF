@@ -173,11 +173,16 @@ class server:
                     Data = db.excute_query(f"SELECT * FROM user WHERE user_id = '{i[2]}' ")
                     UserData = user.get(i[2], Data[0][1], db)
                     MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
-                                                 i[1], UserData[0][6])
+                                                 i[3], UserData[0][6])
                     
-                
-                return render_template("topic.html", forum=self.frm.name,
+                try:
+                    return render_template("topic.html", forum=self.frm.name,
                                        logo_path = data[0][5], user=data[0][2],
+                                       HtmlContext = MessageStr,name = TopicData[0][2],
+                                       description = TopicData[0][3])
+
+                except:
+                    return render_template("topic.html", forum=self.frm.name,
                                        HtmlContext = MessageStr,name = TopicData[0][2],
                                        description = TopicData[0][3])
 
@@ -226,6 +231,29 @@ class server:
                 
             else:
                 return ["400"]
+
+
+        @self.server.route("/message", methods=["POST"])
+        def PostMessage():
+            if request.method == "POST":
+                #TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object):
+                tok = request.cookies.get('token')
+                Text = request.form.get("Message")
+                TopicId = request.form.get("TopicId")
+                AuthToken = request.form.get("AuthToken")
+
+                UserData = user.GetUserOnToken(tok, db)
+
+                messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
+
+                try:
+                    return "200"
+
+                except:
+                    print("Not have auth token")
+                    return "403"
+
+        
 
         
     def runserver(self):

@@ -3,16 +3,6 @@
 
 
 {% block bo_dy %}
-
-<div class="navigate">
-	<span>{{name}}|{{description}}</span>
-</div>
-
-
-{{HtmlContext | safe}}
-
-<hr>
-
 <form method="POST" action="/topic" enctype="multipart/form-data"> 
     <label for="Message">Write your message</label>
     <input name="Message" type="text">
@@ -27,24 +17,47 @@
 </form>
 
 <script>
-function getTokenFromCookie() {
-  const cookie = document.cookie;
-  const token = cookie.split('; ').find(row => row.startsWith('token=')).split('=')[1];
-  
-  return token;
-} 
+    // Clear text input field after form submission
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
+        const messageInput = document.querySelector('input[name="Message"]');
+        const message = messageInput.value.trim(); // Remove leading and trailing whitespace
+        if (message === '') {
+            console.log('Message is empty. Please enter a message.');
+            return; // Do not submit form if message is empty
+        }
 
-    // Find the hidden input field with name "TopicId"
-    const topicIdInput = document.querySelector('input[name="TopicId"]');
-    //Find the hidden input field with name "AuthToken"
-    const AuthTokenInput = document.querySelector('input[name="AuthToken"]');
+        const formData = new FormData();
+        formData.append('Message', message);
+        formData.append('TopicId', document.querySelector('input[name="TopicId"]').value);
+        formData.append('AuthToken', document.querySelector('input[name="AuthToken"]').value);
 
-    // Set the value of the TopicId input field to the id from the URL parameter
-    topicIdInput.value = id;
-    AuthTokenInput = getTokenFromCookie();
+        fetch('/message', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if(response.ok) {
+                console.log('Message sent successfully');
+                messageInput.value = ''; // Clear the input field after successful submission
+            } else {
+                console.error('Failed to send message');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 </script>
+
+<div class="navigate">
+	<span>{{name}}|{{description}}</span>
+</div>
+
+
+{{HtmlContext | safe}}
+
+<hr>
+
+
 
 {% endblock bo_dy %}

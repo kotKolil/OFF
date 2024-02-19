@@ -16,8 +16,8 @@ class messages:
         self.MessageId = MessageId
         self.Text = Text
 
-        db.excute_query(f"""INSERT INTO messages VALUES ({ThreadId},
-{MessageId}, {UserId}, {Text}, {TimeOfCreation}) """)
+        db.excute_query(f"""INSERT INTO messages VALUES ('{ThreadId}',
+'{MessageId}', '{UserId}', '{Text}', '{TimeOfCreation}') """)
         
 
     @staticmethod     
