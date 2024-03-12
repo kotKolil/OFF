@@ -6,14 +6,15 @@ from .tools import *
 from .abcd_classes import *
 
 
-class txt_log(abc_log):
+class txt_log:
     
-    def __init__(self, filename,p4th):
-        super().__init__(filename,p4th)
+    def __init__(self, filename,Path):
+	self.filename = filename
+	self.Path = Path
 
-    def log_message(self, text):
+    def log(self, text):
         try:
-            with open(self.__p4th + self.__filename, "r") as file:
+            with open(self.Path + self.filename, "r") as file:
                 file.write(f"[{get_current_time}] text \n")
                 file.close()
 
@@ -21,23 +22,24 @@ class txt_log(abc_log):
         except Exception as e:
             return [str(e), 0]
         
-class json_log(abc_log):
+class json_log:
 
-    def __init__(self,filename, p4th):
-        super().__init__(filename, p4th)
+    def __init__(self,filename, Path):
+        self.filename = filename
+	self.path = Path
 
         """initializing logger object"""
         self.logger = logging.getLogger('js_logger')
         self.logger.setLevel(logging.DEBUG)
 
-        file_handler = logging.FileHandler(f'{self.__filename}.json')
+        file_handler = logging.FileHandler(self.filename)
         file_handler.setFormatter(logging.Formatter('%(message)s'))
         self.logger.addHandler(file_handler)
-        
-    def log_message(text, self):
+
+    def log(text, self):
         data = {
         'message':text,
         "time":get_current_time(),
-        }       
+        }
         self.logger.error(json.dumps(data))
         
