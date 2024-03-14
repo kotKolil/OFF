@@ -74,19 +74,18 @@ class server:
         #index page
         @self.server.route('/')
         def index():
-            TopicsData = topic.all_(db)
+            TopicsData = topic.all(db)
             print(TopicsData)
             tok = request.cookies.get('token')
             
             data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
-            TopicString = """ """
+            TopicString = ""
             for i in TopicsData:
                 TopicString += tt_snippet(title=i[1], description=i[3],  author = i[2], TopicId =i[4])
             try:
                 return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path = data[0][5], user=data[0][2])      
             except:
                 return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path="default.png")
-
 
         #auth methods
         # structure of table user: password, user_id, is_admin, is_banned, logo_path, citate, time_of_join, token
@@ -157,7 +156,7 @@ class server:
 
             if request.method == "GET":
 
-                Id = request.args.get('id')
+		Id = request.args.get('id')
                 TopicData = topic.get(db, Id)
                 os.system("cls")
                 print("===========")
@@ -175,7 +174,8 @@ class server:
                     MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
                                                  i[3], UserData[0][6])
                     
-                try:
+               """
+		 try:
                     return render_template("topic.html", forum=self.frm.name,
                                        logo_path = data[0][5], user=data[0][2],
                                        HtmlContext = MessageStr,name = TopicData[0][2],
@@ -250,13 +250,100 @@ class server:
 
                 return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
 
+	#this API is giving tokens for log in system
+	@self.server.route("api/auth")
+	def ApiAuth(request):
+		if request.method == "GET":
+			data = request.get_json(force=False, silent=False, cache=True)
+			if len(data) == 0:
+				return JsonResponse(["400", "bad request"], status=400)
+			pswd = data["pswd"]
+			login = data["login"]
+			data = user.get(login, pswd, db)
+			return data[0][8]
 
-            
-        
+	#this API is registrating users
+	@self.server.route("api/reg")
+	def RegAPI(request):
+		if request.method == "POST":
+			data = request.get_json(force=False, silent=False, cache=True)
+			citate = data["citate"]
+        	        login = data["login"]
+	                email = data["email"]
+	                password = data["password"]
+	                citate = data["citate"]
+        	        file = data['logo']
+        	        if file and allowed_file(file.filename):
+                	    open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close()
+	                    filename = secure_filename(file.filename)
+        	            file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
+			    u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+                            time_of_join= get_current_time(), db = db, email = email)
+			    return JsonResponse([u.token, "201"], status=201)
+			else:
+				return JsonResponse(["400", "bad request"], status=400)
+		else:
+			return JsonResponse(["400", "bad request"], status=400)
+	#this API for work with topic
+	@self.server.route("/api/thread")
+	def ThreadAPI(request):
+		if request.method == "GET":
+			IsAll = request.args.get("all", default = 1, type = int)
+			if IsAll:
+				return topic.all(db)
+			TopicId = request.args.get("TopicId", type= str)
+			return topic.get(db, TopicId)
+		elif request.method == "POST":
+			data = request.get_json(force=False, silent=False, cache=True)
+			tok = data['token']
+	                UsrLogin = user.GetUserOnToken(tok, db)
 
-        
+	                #creating new thread
+	                theme = data["name"]
+                	name = data["theme"]
+        	        about = data["about"]
+
+
+			try:
+		                a = topic(get_current_time(), theme, UsrLogin[0][8], about,generate_id(), db)
+
+		                return 201
+			except Exception as e:
+				return [str(e), 400]
+
+
+	#this API send info about user
+	@self.server.route("api/GetUserInfo")
+	def GetUserInfo(request):
+		if request.method == "GET":
+			data = request.get_json(force=False, silent=False, cache=True)
+			try:
+				return user.GetUserOnToken(data["token"], db)
+			except:
+				return 400
+		return 400
+
+
+	#API for messages
+	@self.server.route("/message", methods=["POST"])
+        def PostMessage():
+            if request.method == "POST":
+		data = request.get_json(force=False, silent=False, cache=True)
+                #LogoPath,Username, Message, Phrase
+                tok = data['token']
+                Text = data["Message"]
+                TopicId = data["TopicId"]
+                AuthToken = data["AuthToken"]
+
+                UserData = user.GetUserOnToken(tok, db)
+
+                messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
+
+                return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
+
+
+
     def runserver(self):
-
         self.server.run(host=self.hosT, port = self.porT, debug=self.dbG)
 
 
