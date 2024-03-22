@@ -1,7 +1,7 @@
 import configparser
 from pathlib import *
 
-from classes.loggers import *
+from classes.logger import *
 from classes.tools import *
 from classes.forum import *
 from classes.user_class import *

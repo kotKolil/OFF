@@ -3,7 +3,7 @@ import psycopg2 as psql
 
 class sql_lite3_db:
 
-    def __init__(self,db_name=""):
+    def __init__(self, name=""):
         self.name = name
 
     def execute_query(self, query):
@@ -13,26 +13,18 @@ class sql_lite3_db:
         result = cursor.fetchall()
         connection.commit()
         cursor.close()
-
-        #TODO convert result to list
         return result
-    
 
 class postgres_db:
-    def __init__(self, port=5432, password="admin", user="admin", name="",host="127.0.0.1"):
+    def __init__(self, port=5432, password="admin", user="admin", name="", host="127.0.0.1"):
         self.port = port
-	self.password = password
-	self.user = user
-	self.name = name
-	self.host = host
-	#initialisng database
-
+        self.password = password
+        self.user = user
+        self.name = name
+        self.host = host
 
     def execute_query(self, query):
-        connection = psql.connect(user=self.user,
-                                  port=self.port,
-                                  password=self.password,
-                                  database=self.name,
+        connection = psql.connect(user=self.user, port=self.port, password=self.password, database=self.name,
                                   host=self.host)
         cursor = connection.cursor()
         cursor.execute(query)
@@ -40,6 +32,3 @@ class postgres_db:
         connection.commit()
         cursor.close()
         return result
-
-
-

@@ -1,6 +1,6 @@
 from random import *
 import datetime
-from .loggers import *
+from .logger import *
 from .database import *
 from .settings import *
 import hashlib

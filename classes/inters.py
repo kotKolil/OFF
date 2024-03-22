@@ -1,13 +1,4 @@
-class IDbMutable
-
-
-	def __init__(self, object):
-		self.object = object
-
-	def execute_query(self, query):
-		return self.object.execute_query(query)
-
-class IDbUnMutable:
+class IDataBase:
 
 	def __init__(self, object):
 		self.__object = object
@@ -15,15 +6,8 @@ class IDbUnMutable:
 	def execute_query(self, query):
 		return self.__object.execute_query(query)
 
-class ILoggerMutable:
 
-        def __init__(self, object):
-                self.object = object
-
-        def execute_query(self, mesaage):
-                return self.object.log(query)
-
-class  ILoggerUnMutable:
+class  ILogger:
 
         def __init__(self, object):
                 self.__object = object
