@@ -1,8 +1,9 @@
 from .database import *
-from .logger import *
+from .loggers import *
 from .tools import *
+from .abcd_classes import *
 from flask import *
-from .inters import *
+from .inter import *
 
 
 class forum:
@@ -20,6 +21,7 @@ class forum:
 
         
     #structure of table: id_forum|id_thread|name|time_of_creation|author|decrpt
+
     
     def all(self):
         return self.db.excute_query("SELECT * FROM thread WHERE id_forum = '{self.id_forum}'")

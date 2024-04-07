@@ -8,6 +8,7 @@ from werkzeug.exceptions import *
 from pathlib import *
 import os
 from pathlib import *
+from os import *
 
 # local classes
 from .loggers import *
@@ -20,7 +21,6 @@ from .topic import *
 from .snippets import *
 from .message import *
 
-global topic
 
 
 class server:
@@ -74,11 +74,15 @@ class server:
         #index page
         @self.server.route('/')
         def index():
-            TopicsData = topic.all(db)
+            TopicsData = topic.all_(db)
             print(TopicsData)
             tok = request.cookies.get('token')
             
             data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+
+            system("cls")
+            print(data)
+
             TopicString = ""
             for i in TopicsData:
                 TopicString += tt_snippet(title=i[1], description=i[3],  author = i[2], TopicId =i[4])
@@ -102,7 +106,6 @@ class server:
                     return render_template("reg.html")
             elif request.method == "POST":
                 # getting data from POST request
-                citate = "я люблю собак"
                 login = request.form.get("login")
                 email = request.form.get("email")
                 password = request.form.get("password")
@@ -111,14 +114,20 @@ class server:
                 if file.filename == '': 
                     return redirect(request.url)
                 if file and allowed_file(file.filename):
-                    open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close() 
+                    #open( os.path.join( os.getcwd(),"classes\media", file.filename ) , "w" ).close() 
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
-                    u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
-                             time_of_join= get_current_time(), db = db, email = email)
-                    resp = redirect('/')
-                    resp.set_cookie("token", u.token)
-                    return resp
+                    try:
+                        u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+                                time_of_join= get_current_time(), db = db, email = email, token = generate_token(login, password) )
+                        resp = redirect('/')
+                        system("cls")
+                        print(u.token)
+                        resp.set_cookie("token", u.token)
+                        return resp
+                    except sqlite3.IntegrityError:
+                        return render_template("reg.html", message="invalid username")
+  
                 else:
                     return "400 Bad Request"
 
@@ -134,12 +143,15 @@ class server:
                 else:
                     return render_template("log.html")
             elif request.method == "POST":
-                login = request.form.get("login")
-                password = request.form.get("password")
-                u = user.get(login, password, db)[0]
-                resp = redirect("/")
-                resp.set_cookie("token", u[8])
-                return resp
+                try:
+                    login = request.form.get("login")
+                    password = request.form.get("password")
+                    u = user.get(login, password, db)[0]
+                    resp = redirect("/")
+                    resp.set_cookie("token", u[8])
+                    return resp
+                except IndexError:
+                    return redirect("auth/log")
             
 
         #logging out
@@ -156,7 +168,7 @@ class server:
 
             if request.method == "GET":
 
-		Id = request.args.get('id')
+                Id = request.args.get('id')
                 TopicData = topic.get(db, Id)
                 os.system("cls")
                 print("===========")
@@ -172,24 +184,24 @@ class server:
                     Data = db.excute_query(f"SELECT * FROM user WHERE user_id = '{i[2]}' ")
                     UserData = user.get(i[2], Data[0][1], db)
                     MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
-                                                 i[3], UserData[0][6])
-                    
-               """
-		 try:
+                                                    i[3], UserData[0][6])
+                        
+                try:
                     return render_template("topic.html", forum=self.frm.name,
-                                       logo_path = data[0][5], user=data[0][2],
-                                       HtmlContext = MessageStr,name = TopicData[0][2],
-                                       description = TopicData[0][3])
+                                    logo_path = data[0][5], user=data[0][2],
+                                    HtmlContext = MessageStr,name = TopicData[0][2],
+                                    description = TopicData[0][3])
 
                 except:
                     return render_template("topic.html", forum=self.frm.name,
-                                       HtmlContext = MessageStr,name = TopicData[0][2],
-                                       description = TopicData[0][3])
+                                    HtmlContext = MessageStr,name = TopicData[0][2],
+                                    description = TopicData[0][3])
 
             elif request.method == "POST":
                 text = request.form.get("Message")
-                TopicId = request.form.get("TopicId")
+                TopicId = request.args.get('id')
                 tok = request.cookies.get('token')
+                
 
                 data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
                 #TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object
@@ -234,7 +246,7 @@ class server:
 
 
         @self.server.route("/message", methods=["POST"])
-        def PostMessage():
+        def ZapostilMessage():
             if request.method == "POST":
                 #LogoPath,Username, Message, Phrase
                 tok = request.cookies.get('token')
@@ -250,85 +262,89 @@ class server:
 
                 return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
 
-	#this API is giving tokens for log in system
-	@self.server.route("api/auth")
-	def ApiAuth(request):
-		if request.method == "GET":
-			data = request.get_json(force=False, silent=False, cache=True)
-			if len(data) == 0:
-				return JsonResponse(["400", "bad request"], status=400)
-			pswd = data["pswd"]
-			login = data["login"]
-			data = user.get(login, pswd, db)
-			return data[0][8]
+        #this API is giving tokens for log in system
+        @self.server.route("/api/auth")
+        def ApiAuth(request):
+            if request.method == "GET":
+                data = request.get_json(force=False, silent=False, cache=True)
+                if len(data) == 0:  
+                    return JsonResponse(["400", "bad request"], status=400)
+                
+                pswd = data["pswd"]
+                login = data["login"]
+                data = user.get(login, pswd, db)
+                return data[0][8]
 
-	#this API is registrating users
-	@self.server.route("api/reg")
-	def RegAPI(request):
-		if request.method == "POST":
-			data = request.get_json(force=False, silent=False, cache=True)
-			citate = data["citate"]
-        	        login = data["login"]
-	                email = data["email"]
-	                password = data["password"]
-	                citate = data["citate"]
-        	        file = data['logo']
-        	        if file and allowed_file(file.filename):
-                	    open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close()
-	                    filename = secure_filename(file.filename)
-        	            file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
-			    u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
-                            time_of_join= get_current_time(), db = db, email = email)
-			    return JsonResponse([u.token, "201"], status=201)
-			else:
-				return JsonResponse(["400", "bad request"], status=400)
-		else:
-			return JsonResponse(["400", "bad request"], status=400)
-	#this API for work with topic
-	@self.server.route("/api/thread")
-	def ThreadAPI(request):
-		if request.method == "GET":
-			IsAll = request.args.get("all", default = 1, type = int)
-			if IsAll:
-				return topic.all(db)
-			TopicId = request.args.get("TopicId", type= str)
-			return topic.get(db, TopicId)
-		elif request.method == "POST":
-			data = request.get_json(force=False, silent=False, cache=True)
-			tok = data['token']
-	                UsrLogin = user.GetUserOnToken(tok, db)
+        #this API is registrating users
+        @self.server.route("/api/reg")
+        def RegAPI(request):
+            if request.method == "POST":
+                data = request.get_json(force=False, silent=False, cache=True)
+                citate = data["citate"]
+                login = data["login"]
+                email = data["email"]
+                password = data["password"]
+                citate = data["citate"]
+                file = data['logo']
+                if file and allowed_file(file.filename):
+                    open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close()
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
+                    u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+                                time_of_join= get_current_time(), db = db, email = email)
+                    return JsonResponse([u.token, "201"], status=201)
+                
+                else:
+                    return JsonResponse(["400", "bad request"], status=400)
+            else:
+                return JsonResponse(["400", "bad request"], status=400)
+            
 
-	                #creating new thread
-	                theme = data["name"]
-                	name = data["theme"]
-        	        about = data["about"]
+        #this API for work with topic
+        @self.server.route("/api/thread")
+        def ThreadAPI(request):
+            if request.method == "GET":
+                IsAll = request.args.get("all", default = 1, type = int)
+                if IsAll:
+                    return topic.all(db)
+                
+                TopicId = request.args.get("TopicId", type= str)
+                return topic.get(db, TopicId)
+            elif request.method == "POST":
+                data = request.get_json(force=False, silent=False, cache=True)
+                tok = data['token']
+                UsrLogin = user.GetUserOnToken(tok, db)
 
-
-			try:
-		                a = topic(get_current_time(), theme, UsrLogin[0][8], about,generate_id(), db)
-
-		                return 201
-			except Exception as e:
-				return [str(e), 400]
+                #creating new thread
+                theme = data["name"]
+                name = data["theme"]
+                about = data["about"]
 
 
-	#this API send info about user
-	@self.server.route("api/GetUserInfo")
-	def GetUserInfo(request):
-		if request.method == "GET":
-			data = request.get_json(force=False, silent=False, cache=True)
-			try:
-				return user.GetUserOnToken(data["token"], db)
-			except:
-				return 400
-		return 400
+                try:
+                    a = topic(get_current_time(), theme, UsrLogin[0][8], about,generate_id(), db)
+                    return 201
+                except Exception as e:
+                    return [str(e), 400]
 
 
-	#API for messages
-	@self.server.route("/message", methods=["POST"])
+        #this API send info about user
+        @self.server.route("/api/GetUserInfo")
+        def GetUserInfo(request):
+            if request.method == "GET":
+                data = request.get_json(force=False, silent=False, cache=True)
+                try:
+                    return user.GetUserOnToken(data["token"], db)
+                except:
+                    return 400
+            return 400
+
+
+        #API for messages
+        @self.server.route("/message", methods=["POST"])
         def PostMessage():
             if request.method == "POST":
-		data = request.get_json(force=False, silent=False, cache=True)
+                data = request.get_json(force=False, silent=False, cache=True)
                 #LogoPath,Username, Message, Phrase
                 tok = data['token']
                 Text = data["Message"]
@@ -347,4 +363,4 @@ class server:
         self.server.run(host=self.hosT, port = self.porT, debug=self.dbG)
 
 
-        
+

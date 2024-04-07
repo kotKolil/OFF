@@ -3,8 +3,7 @@
 
 
 {% block bo_dy %}
-
-<form method="POST" action="/message" enctype="multipart/form-data"> 
+<form method="POST" action="/topic" enctype="multipart/form-data"> 
     <label for="Message">Write your message</label>
     <input name="Message" type="text">
 
@@ -13,71 +12,51 @@
     <input name="AuthToken" type="hidden" value="">
 
     <input class="btn btn-oval" type="submit" value="send" />
+    
+
 </form>
 
 <script>
 
-function getParamFromUrl(url, name) {
-    const searchParams = new URLSearchParams(new URL(url).search);
-    return searchParams.get(name);
-}
-
-function getCookieValue(cookieName) {
-    const decodedCookies = decodeURIComponent(document.cookie); // Декодируем куки
-    const cookieArray = decodedCookies.split(';'); // Разделяем куки по ';'
-
-    for (let i = 0; i < cookieArray.length; i++) {
-        let cookie = cookieArray[i].trim(); // Обрезаем пробелы
-        if (cookie.startsWith(cookieName + '=')) { // Находим куку с нужным именем
-            return cookie.substring(cookieName.length + 1); // Возвращаем значение куки
-        }
+    function getQueryParam(name) {
+        const queryString = window.location.search.substring(1);
+        const urlParams = new URLSearchParams(queryString);
+        return urlParams.get(name);
     }
-
-    return ''; // Если куки с указанным именем не найдено
-}
-
+    
     // Clear text input field after form submission
-document.querySelector('form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const messageInput = document.querySelector('input[name="Message"]');
-    const message = messageInput.value.trim(); 
-    if (message === '') {
-        console.log('Message is empty. Please enter a message.');
-        return; 
-    }
-
-    const formData = new FormData();
-    formData.append('Message', message);
-    formData.append('TopicId', getParamFromUrl(window.location.href, "id")); // Получаем параметр "id" из URL
-    formData.append('AuthToken', getCookieValue("token")); // Получаем значение куки с именем "token"
-
-    fetch('/message', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if(response.ok) {
-            return response.json(); // Возвращаем JSON из ответа
-        } else {
-            throw new Error('Failed to send message');
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+    
+        const messageInput = document.querySelector('input[name="Message"]');
+        const message = messageInput.value.trim(); // Remove leading and trailing whitespace
+        if (message === '') {
+            console.log('Message is empty. Please enter a message.');
+            return; // Do not submit form if message is empty
         }
-    })
+    
+        const formData = new FormData();
+        formData.append('Message', message);
+        formData.append('TopicId', getQueryParam('id'));
+        formData.append('AuthToken', document.querySelector('input[name="AuthToken"]').value);
+    
+        fetch('/message', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if(response.ok) {
+                console.log('Message sent successfully');
+                
+                messageInput.value = ''; // Clear the input field after successful submission
+            } else {
+                console.error('Failed to send message');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
-
-.then(data => {
-    console.log('Message sent successfully');
-    console.log(data.MessageSnippet); // Получаем элемент JSON "MessageSnippet" из ответа
-
-    const messageSnippetElement = document.createElement('div');
-    messageSnippetElement.innerHTML = data.MessageSnippet; // HTML-содержимое MessageSnippet вместо текста
-
-    document.body.appendChild(messageSnippetElement); // Добавляем элемент на страницу
-    messageInput.value = ''; // Очищаем поле ввода после успешной отправки
-})
-
-
-});
+    
 </script>
 
 <div class="navigate">

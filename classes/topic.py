@@ -27,9 +27,12 @@ class topic():
 
 
 
+    # structure of table topic time_of_creation|theme|author|about|sb_id
+
+    zope.interface.implementer(IModelMethod)
 
     @staticmethod
-    def all(db:object):
+    def all_(db:object):
         return db.excute_query("SELECT * FROM topic")
 
     @staticmethod
