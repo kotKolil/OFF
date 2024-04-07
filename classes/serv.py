@@ -9,6 +9,8 @@ from pathlib import *
 import os
 from pathlib import *
 from os import *
+from flask_sock import *
+from time import *
 
 # local classes
 from .loggers import *
@@ -39,6 +41,35 @@ class server:
         self.class_logger = class_logger
         self.frm = frm
         app = Flask(__name__, static_folder="static")
+
+
+        sock = Sock(app)
+
+
+
+        @sock.route('/message')
+        def echo(sock):
+            """
+            json must be: 
+            {
+            "UserToken":"Vobla222",
+            "TheadId" : "Vobla333",
+            "Message" : "Hell to this world!",
+            }
+            """
+            while True:
+                data = sock.receive()
+                UserToken = data["UserToken"]
+                ThreadId = data["ThreadId"]
+                Message = data["Message"]
+                UserData = user.GetUserOnToken(UserToken, db)
+
+                messages(get_current_time(), Message, UserData[0][2], ThreadId, generate_id(), db)
+                sock.send( {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Message, UserData[0][6]), "TopicId" : "ThreadId"} ,broadcast=True)
+
+
+
+
 
         #views, wich handle errors
         @app.errorhandler(404)
@@ -341,7 +372,7 @@ class server:
 
 
         #API for messages
-        @self.server.route("/message", methods=["POST"])
+        @self.server.route("/message", methods=["POST", "GET"])
         def PostMessage():
             if request.method == "POST":
                 data = request.get_json(force=False, silent=False, cache=True)
@@ -356,7 +387,8 @@ class server:
                 messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
 
                 return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
-
+            
+                
 
 
     def runserver(self):

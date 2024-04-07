@@ -24,6 +24,21 @@
         return urlParams.get(name);
     }
     
+
+
+    const socket = new WebSocket('ws://' + location.host + '/message');
+    socket.addEventListener("message", (event) => {
+        console.log("Message from server ", event.data);
+        var data = event.data;
+        const ThreadId = data.ThreadId
+        const message = data.message
+        if (ThreadId === getQueryParam("id")) {
+            document.innerHTML += message;
+        }
+
+      });
+
+
     // Clear text input field after form submission
     document.querySelector('form').addEventListener('submit', function(event) {
         event.preventDefault();
