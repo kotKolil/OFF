@@ -65,7 +65,7 @@ function getQueryParam(name) {
         const Message = msg.Message;
         const ThreadId = msg.ThreadId;
     
-        if (ThreadId === parseInt(getQueryParam("id"))) {
+        if (ThreadId === getQueryParam("id")) {
             document.body.innerHTML += Message; // Добавляем текст в тело документа
         }
     });
