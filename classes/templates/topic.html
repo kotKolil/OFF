@@ -3,7 +3,109 @@
 
 
 {% block bo_dy %}
-<form method="POST" action="/topic" enctype="multipart/form-data"> 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script>
+
+  function getCookie(cookieName) {
+    const name = cookieName + "=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArray = decodedCookie.split(';');
+    
+    for (let cookie of cookieArray) {
+        while (cookie.charAt(0) == ' ') {
+            cookie = cookie.substring(1);
+        }
+        if (cookie.indexOf(name) == 0) {
+            return cookie.substring(name.length, cookie.length);
+        }
+    }
+    return "";
+}
+
+function getQueryParam(name) {
+  const queryString = window.location.search.substring(1);
+  const urlParams = new URLSearchParams(queryString);
+  return urlParams.get(name);
+}
+
+
+          /* 
+      json-request must be:
+
+      {
+      "UserToken":"Vobla222",
+      "ThreadId" : "Vobla333",
+      "Message" : "Hell to this world!",
+      }
+
+
+      json response must be:
+
+      {
+        "Message":"LoL oMg (it is HTML snippet, not plain text!)",
+        "ThreadId": "vobla333",
+      }
+      
+      */
+
+      var socket = io()
+
+    
+      socket.on('message', (msg) => {
+        console.log(msg); // Проверяем, получаем ли мы сообщение
+    
+        if (msg.error === "user is not exist") {  
+            const elem = document.getElementById("error");
+            elem.innerHTML = "You are not registered";
+            console.log(msg.error);
+            return;
+        }
+        
+        const Message = msg.Message;
+        const ThreadId = msg.ThreadId;
+    
+        if (ThreadId === parseInt(getQueryParam("id"))) {
+            document.body.innerHTML += Message; // Добавляем текст в тело документа
+        }
+    });
+
+
+    function SendMessage() {
+      var form = document.querySelector('form');
+      var messageInput = document.querySelector('input[name="Message"]');
+      var message = messageInput.value;
+      
+      // Проверка на пустое сообщение
+      if (message.trim() === '') {
+          alert('Введите сообщение перед отправкой');
+          return;
+      }
+      
+      var topicIdInput = getQueryParam("id");
+      var authTokenInput = getCookie("token");
+  
+      socket.emit("message", {
+          "UserToken": authTokenInput,
+          "ThreadId": topicIdInput,
+          "Message": message
+      });
+  
+      // Очистка поля сообщения
+      messageInput.value = '';
+  }
+
+
+    
+
+
+
+
+    
+</script>
+
+<p style="{color:red;}" id="error"></p>
+<form method="POST" enctype="multipart/form-data"> 
     <label for="Message">Write your message</label>
     <input name="Message" type="text">
 
@@ -11,68 +113,11 @@
 
     <input name="AuthToken" type="hidden" value="">
 
-    <input class="btn btn-oval" type="submit" value="send" />
+    <input class="btn btn-oval" type="button" onclick="SendMessage()" value="send" />
     
 
 </form>
 
-<script>
-
-    function getQueryParam(name) {
-        const queryString = window.location.search.substring(1);
-        const urlParams = new URLSearchParams(queryString);
-        return urlParams.get(name);
-    }
-    
-
-
-    const socket = new WebSocket('ws://' + location.host + '/message');
-    socket.addEventListener("message", (event) => {
-        console.log("Message from server ", event.data);
-        var data = event.data;
-        const ThreadId = data.ThreadId
-        const message = data.message
-        if (ThreadId === getQueryParam("id")) {
-            document.innerHTML += message;
-        }
-
-      });
-
-
-    // Clear text input field after form submission
-    document.querySelector('form').addEventListener('submit', function(event) {
-        event.preventDefault();
-    
-        const messageInput = document.querySelector('input[name="Message"]');
-        const message = messageInput.value.trim(); // Remove leading and trailing whitespace
-        if (message === '') {
-            console.log('Message is empty. Please enter a message.');
-            return; // Do not submit form if message is empty
-        }
-    
-        const formData = new FormData();
-        formData.append('Message', message);
-        formData.append('TopicId', getQueryParam('id'));
-        formData.append('AuthToken', document.querySelector('input[name="AuthToken"]').value);
-    
-        fetch('/message', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if(response.ok) {
-                console.log('Message sent successfully');
-                
-                messageInput.value = ''; // Clear the input field after successful submission
-            } else {
-                console.error('Failed to send message');
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
-    
-</script>
 
 <div class="navigate">
 	<span>{{name}}|{{description}}</span>
