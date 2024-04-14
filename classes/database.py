@@ -2,7 +2,7 @@ from abc import *
 import sqlite3
 import psycopg2 as psql
 
-class sql_lite3_db():
+class  sql_lite3_db():
 
     def __init__(self,db_name=""):
         super().__init__(name=db_name)
