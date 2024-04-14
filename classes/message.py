@@ -1,10 +1,8 @@
 import zope.interface
-from .inter import *
 from .tools import *
 
 class messages:
 
-    zope.interface.implementer(IModelMethod)
 
 
     def __init__(self, TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object):

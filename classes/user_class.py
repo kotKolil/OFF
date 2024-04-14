@@ -21,3 +21,4 @@ class user:
     @staticmethod
     def GetUserOnToken(Token, db:object):
         return db.excute_query(f"SELECT * FROM user WHERE token = '{Token}' ")
+

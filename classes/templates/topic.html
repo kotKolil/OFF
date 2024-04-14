@@ -1,12 +1,10 @@
+
 {% extends "base.html" %}
-
-
 
 {% block bo_dy %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script>
-
   function getCookie(cookieName) {
     const name = cookieName + "=";
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -29,105 +27,75 @@ function getQueryParam(name) {
   return urlParams.get(name);
 }
 
+var socket = io();
 
-          /* 
-      json-request must be:
+socket.on('message', (msg) => {
+  console.log(msg);
 
-      {
-      "UserToken":"Vobla222",
-      "ThreadId" : "Vobla333",
-      "Message" : "Hell to this world!",
-      }
-
-
-      json response must be:
-
-      {
-        "Message":"LoL oMg (it is HTML snippet, not plain text!)",
-        "ThreadId": "vobla333",
-      }
-      
-      */
-
-      var socket = io()
-
-    
-      socket.on('message', (msg) => {
-        console.log(msg); // Проверяем, получаем ли мы сообщение
-    
-        if (msg.error === "user is not exist") {  
-            const elem = document.getElementById("error");
-            elem.innerHTML = "You are not registered";
-            console.log(msg.error);
-            return;
-        }
-        
-        const Message = msg.Message;
-        const ThreadId = msg.ThreadId;
-    
-        if (ThreadId === getQueryParam("id")) {
-            document.body.innerHTML += Message; // Добавляем текст в тело документа
-        }
-    });
-
-
-    function SendMessage() {
-      var form = document.querySelector('form');
-      var messageInput = document.querySelector('input[name="Message"]');
-      var message = messageInput.value;
-      
-      // Проверка на пустое сообщение
-      if (message.trim() === '') {
-          alert('Введите сообщение перед отправкой');
-          return;
-      }
-      
-      var topicIdInput = getQueryParam("id");
-      var authTokenInput = getCookie("token");
-  
-      socket.emit("message", {
-          "UserToken": authTokenInput,
-          "ThreadId": topicIdInput,
-          "Message": message
-      });
-  
-      // Очистка поля сообщения
-      messageInput.value = '';
+  if (msg.error === "user is not exist") {  
+    const elem = document.getElementById("error");
+    elem.innerHTML = "You are not registered";
+    console.log(msg.error);
+    return;
   }
+  
+  const Message = msg.Message;
+  const ThreadId = msg.ThreadId;
 
+  if (ThreadId === getQueryParam("id")) {
+    document.body.innerHTML += Message;
+  }
+});
 
-    
+function SendMessage() {
+  var form = document.querySelector('form');
+  var messageInput = document.querySelector('input[name="Message"]');
+  var message = messageInput.value;
 
+  if (message.trim() === '') {
+    alert('Enter a message before sending');
+    return;
+  }
+  
+  var topicIdInput = getQueryParam("id");
+  var authTokenInput = getCookie("token");
 
+  socket.emit("message", {
+    "UserToken": authTokenInput,
+    "ThreadId": topicIdInput,
+    "Message": message
+  });
 
-
-    
+  messageInput.value = '';
+}
 </script>
 
-<p style="{color:red;}" id="error"></p>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+  $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
+});
+</script>
+
+<p style="color:red;" id="error"></p>
+<a href="/DeleteTopic" id="DeleteTopic">Delete Topic</a>
 <form method="POST" enctype="multipart/form-data"> 
-    <label for="Message">Write your message</label>
-    <input name="Message" type="text">
+  <label for="Message">Write your message</label>
+  <input name="Message" type="text">
 
-    <input name="TopicId" type="hidden" value="">
+  <input name="TopicId" type="hidden" value="">
 
-    <input name="AuthToken" type="hidden" value="">
+  <input name="AuthToken" type="hidden" value="">
 
-    <input class="btn btn-oval" type="button" onclick="SendMessage()" value="send" />
-    
-
+  <input class="btn btn-oval" type="button" onclick="SendMessage()" value="send" />
 </form>
 
-
 <div class="navigate">
-	<span>{{name}}|{{description}}</span>
+  <span>{{name}}|{{description}}</span>
 </div>
-
 
 {{HtmlContext | safe}}
 
 <hr>
-
-
 
 {% endblock bo_dy %}

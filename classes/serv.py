@@ -215,32 +215,36 @@ class server:
 
             if request.method == "GET":
 
-                Id = request.args.get('id')
-                TopicData = topic.get(db, Id)
-
-                
-                tok = request.cookies.get('token')
-                data = user.GetUserOnToken(tok, db)
-
-                
-                MessageData = messages.all_(Id, db)
-                MessageStr = """ """
-                for i in MessageData:
-                    Data = user.GetUserOnToken(i[2], db)
-                    UserData = user.get(i[2], Data[0][1], db)
-                    MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
-                                                    i[3], UserData[0][6])
-                        
                 try:
-                    return render_template("topic.html", forum=self.frm.name,
-                                    logo_path = data[0][5], user=data[0][2],
-                                    HtmlContext = MessageStr,name = TopicData[0][2],
-                                    description = TopicData[0][3])
 
-                except:
-                    return render_template("topic.html", forum=self.frm.name,
-                                    HtmlContext = MessageStr,name = TopicData[0][2],
-                                    description = TopicData[0][3])
+                    Id = request.args.get('id')
+                    TopicData = topic.get(db, Id)
+
+                    
+                    tok = request.cookies.get('token')
+                    data = user.GetUserOnToken(tok, db)
+
+                    
+                    MessageData = messages.all_(Id, db)
+                    MessageStr = """ """
+                    for i in MessageData:
+                        UserData = db.excute_query(f"SELECT * FROM user WHERE user_id = '{i[2]}' ")
+                        MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
+                                                        i[3], UserData[0][6])
+                            
+                    try:
+                        return render_template("topic.html", forum=self.frm.name,
+                                        logo_path = data[0][5], user=data[0][2],
+                                        HtmlContext = MessageStr,name = TopicData[0][2],
+                                        description = TopicData[0][3])
+
+                    except:
+                        return render_template("topic.html", forum=self.frm.name,
+                                        HtmlContext = MessageStr,name = TopicData[0][2],
+                                        description = TopicData[0][3])
+                    
+                except IndexError:
+                    return render_template("info.html", message="Topic not found")
 
             elif request.method == "POST":
                 text = request.form.get("Message")
@@ -400,6 +404,30 @@ class server:
             
 
         """
+
+
+        @self.server.route("/DeleteTopic")
+        def DeleteTopic():
+            UserToken = request.cookies.get('token')
+            Id = request.args.get('id')
+            UserData = user.GetUserOnToken(UserToken, db)
+            TopicData = topic.get(db, Id)
+            system("cls")
+            print(UserData)
+            print(TopicData)
+            print(UserData[0][2])
+            print(TopicData[0][2])
+            print(TopicData[0][4])
+            if UserData[0][2] != TopicData[0][2]:
+                return {"code":"403"}
+            else:
+                topic.delete(db, TopicData[0][4])
+                return {"code":"200"}
+
+
+
+
+        
             
 
         SockIO.run(self.server, host=hst,port=prt, debug=dbg)

@@ -4,8 +4,8 @@ import psycopg2 as psql
 
 class  sql_lite3_db():
 
-    def __init__(self,db_name=""):
-        super().__init__(name=db_name)
+    def __init__(self,name):
+        self.name = name
 
     def excute_query(self, query):
         connection = sqlite3.connect(self.name)
