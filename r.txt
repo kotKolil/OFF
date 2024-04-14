@@ -29,8 +29,6 @@ logging==0.4.9.6
 MarkupSafe==2.1.5
 MultiMapping==5.0
 multipart==0.2.4
-numpy==1.26.3
-opencv-python==4.9.0.80
 packaging==23.2
 PasteDeploy==3.1.0
 pefile==2023.2.7
@@ -38,7 +36,6 @@ Persistence==4.1
 persistent==5.2
 psycopg2==2.9.9
 pycparser==2.21
-pyinstaller==6.3.0
 pyinstaller-hooks-contrib==2023.12
 python-engineio==4.9.0
 python-gettext==5.0

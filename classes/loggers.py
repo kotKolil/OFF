@@ -3,13 +3,15 @@ import logging
 import json
 import datetime
 from .tools import *
-from .abcd_classes import *
 
 
-class txt_log(abc_log):
+
+class txt_log():
     
-    def __init__(self, filename,p4th):
-        super().__init__(filename,p4th)
+    def __init__(self, filename,path):
+        self.filename = filename
+        self.path = path
+        
 
     def log_message(self, text):
         try:
@@ -21,10 +23,12 @@ class txt_log(abc_log):
         except Exception as e:
             return [str(e), 0]
         
-class json_log(abc_log):
+class json_log():
 
-    def __init__(self,filename, p4th):
-        super().__init__(filename, p4th)
+    def __init__(self,filename, path):
+        self.filename = filename
+        self.path = path
+        
 
         """initializing logger object"""
         self.logger = logging.getLogger('js_logger')

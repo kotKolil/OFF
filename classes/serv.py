@@ -9,6 +9,7 @@ from pathlib import *
 import os
 from pathlib import *
 from os import *
+from flask import jsonify
 from flask_sock import *
 from time import *
 from flask_socketio import *
@@ -17,7 +18,6 @@ from flask_socketio import *
 from .loggers import *
 from .forum import *
 from .tools import *
-from .abcd_classes import *
 from .tools import *
 from .user_class import *
 from .topic import *
@@ -97,7 +97,7 @@ class server:
 
             tok = request.cookies.get('token')
             
-            data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+            data = user.GetUserOnToken(tok, db)
             try:
                 return render("index.html", forum=self.frm.name, TopicHtml="<H1>404. Page not found", logo_path = data[0][5], user=data[0][2])      
             except:
@@ -128,7 +128,7 @@ class server:
             TopicsData = topic.all_(db)
             tok = request.cookies.get('token')
             
-            data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+            data = user.GetUserOnToken(tok, db)
 
 
 
@@ -147,7 +147,7 @@ class server:
             if request.method == "GET":
                 # return page of registration
                 tok = request.cookies.get('token')
-                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                data = user.GetUserOnToken(tok, db)
                 if len(data) > 0:
                     return redirect("/")
                 else:
@@ -184,7 +184,7 @@ class server:
         def log():
             if request.method == "GET":
                 tok = request.cookies.get('token')
-                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                data = user.GetUserOnToken(tok, db)
                 if len(data) > 0:
                     return redirect("/")
                 else:
@@ -220,13 +220,13 @@ class server:
 
                 
                 tok = request.cookies.get('token')
-                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                data = user.GetUserOnToken(tok, db)
 
                 
                 MessageData = messages.all_(Id, db)
                 MessageStr = """ """
                 for i in MessageData:
-                    Data = db.excute_query(f"SELECT * FROM user WHERE user_id = '{i[2]}' ")
+                    Data = user.GetUserOnToken(i[2], db)
                     UserData = user.get(i[2], Data[0][1], db)
                     MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
                                                     i[3], UserData[0][6])
@@ -248,7 +248,7 @@ class server:
                 tok = request.cookies.get('token')
                 
 
-                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                data = user.GetUserOnToken(tok, db)
                 #TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object
                 messages(get_current_time, text, data[0][2], TopicId, generate_id(), db)
 
@@ -260,7 +260,7 @@ class server:
             if request.method == "GET":
 
                 tok = request.cookies.get('token')
-                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                data = user.GetUserOnToken(tok, db)
 
                 try:
                     return render_template("CreateTopic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
@@ -269,7 +269,7 @@ class server:
             elif request.method == "POST":
 
                 tok = request.cookies.get('token')
-                data = db.excute_query(f"SELECT * FROM user WHERE token = '{tok}'")
+                data = user.GetUserOnToken(tok, db)
                 
                 #creating new thread
                 theme = request.form.get("name")
@@ -308,7 +308,7 @@ class server:
             if request.method == "GET":
                 data = request.get_json(force=False, silent=False, cache=True)
                 if len(data) == 0:  
-                    return JsonResponse(["400", "bad request"], status=400)
+                    return jsonify(["400", "bad request"], status=400)
                 
                 pswd = data["pswd"]
                 login = data["login"]
@@ -332,12 +332,12 @@ class server:
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
                                 time_of_join= get_current_time(), db = db, email = email)
-                    return JsonResponse([u.token, "201"], status=201)
+                    return jsonify([u.token, "201"], status=201)
                 
                 else:
-                    return JsonResponse(["400", "bad request"], status=400)
+                    return jsonify(["400", "bad request"], status=400)
             else:
-                return JsonResponse(["400", "bad request"], status=400)
+                return jsonify(["400", "bad request"], status=400)
             
 
         #this API for work with topic

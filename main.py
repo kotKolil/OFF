@@ -1,4 +1,5 @@
 import configparser
+import os
 from pathlib import *
 
 from classes.loggers import *
@@ -10,10 +11,19 @@ from classes.database import *
 
 
 
+#getting data about Postgres database
+#you can change on another db
+
+port = os.environ.get('port')
+password =  os.environ.get("password")
+user = os.environ.get("user")
+name = os.environ.get("name")
+host = os.eenviron.get("host")
+
 
 
 a_logger = txt_log(p4th=Path.cwd(),filename="a.log")
-db  = sql_lite3_db("main.db")
+db  = PostgresDb(port=port, password=password, user=user, name=name, host = host)
 initialise_database(db=db)
 
 
