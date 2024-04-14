@@ -1,53 +1,55 @@
 <H3 align="center">Object-Oriented Flask Forum </H3>
 <hr>
-Представляю вам свой собственный веб-форум. На нём можно зарегистрироваться, создавать свои треды и писать в них сообщения, которые будут приходить в реальном времени без обновления страницы
-<br>
-<br>
+I present to you my own web forum. You can register on it, create your own threads, and write messages in them that will appear in real-time without refreshing the page.
+
+
+
+
 <img src="screenshot.jpg">
-<H4>О структуре проекта</H4>
+<H4>About the project structure</H4>
 ..OFF<p>
 └───classes<p>
 &emsp;├───media<p>
 &emsp;├───static<p>
 &emsp;├───templates<p>
-Данный форум использует систему классов для того чтобы сделать проект безопасным и лёгким в поддержке. Все части приложения (логгер, база данных бизнес-логика) выполнены в виде классов. При старте приложения пользователь передаёт данные в бизнес-логику, которая запускает веб-сокеты и использует части приложения для ответов на входящие запросы. 
+This forum uses a class system to make the project safe and easy to maintain. All parts of the application (logger, database, business logic) are implemented as classes. When the application is started, the user passes data to the business logic, which starts web sockets and uses parts of the application to respond to incoming requests.
 
-<H4>Классы</H4>
+<H4>Classes</H4>
 
 <ol>
- <li>sql_lite3_db & PostgresDb - отвечают за взаимодействи с базой данных, выполняют переданный запрос и возвращают ответ. sqlite3_db принимает только имя базы данных, PostgresDb принимает порт, пароль, имя базы данных и хост.Оба класса имеют метод excute_query(), принимающий строку с запросом к базе данных. Возвращает результат  запроса. </li>
+ <li>sql_lite3_db & PostgresDb - responsible for interacting with the database, executing the given query, and returning the response. sqlite3_db takes only the database name, PostgresDb takes the port, password, database name, and host. Both classes have the method execute_query(), which takes a query string to the database and returns the query result. </li>
  <li>
  
- txt_log & json_log - логгируют  в файлах переданную информацию. Оба классы принимают имя файла (filename)  и путь к нему (path). Имеют метод  log_message(), принимающимй текст.
+ txt_log & json_log - log information provided in files. Both classes take the file name (filename) and the path to it (path) as input. They have the log_message() method, which takes text as input.
 
  </li>
 
  <li>
-server - класс, представляющий собой бизнес логику, 
-принимающий запросы  и запускающий глваный цикл приложения. 
-Принимает class_logger - класс логгера, 
-db - класс базы данных, frm - класс форума, 
-prt - порт, на котором будет принимать запросы приложение, 
-dbg - принимает булево значение, которое определяет режиим
-работы приложения в отладке /нет. 
-forum - отвечает за треды. принимает db - база данных,
-name - имя. Имеет методы all() - возвращает все когда-либо 
-созданные треды, get - получаем тред по его id,
-delete - удаляет тред, update - обновляет данные о треде
+server - a class representing the business logic, 
+accepting requests and starting the main application loop. 
+Takes class_logger - logger class, 
+db - database class, frm - forum class, 
+prt - port on which the application will accept requests, 
+dbg - boolean value determining the application's debugging mode.
+forum - responsible for threads, takes db - database,
+name - name. Has methods all() - returns all threads ever created, 
+get - get a thread by its id,
+delete - delete a thread, update - update thread information.
  </li>
 
 
- <H4>Контейнизирация приложения </H4>
- В папке приложения лежит dockerfile. Если вы будете использовать
- PostgresSQL, вам нужно устаноивить переменные окружения,
- из которых берётся информация для подключения к базе данных.
+ <H4>Containerization of the application</H4>
+ In the application folder, there is a Dockerfile. If you are using PostgresSQL, you need to set environment variables 
+ from which information for connecting to the database is taken.
  <p>
- Выполните в папке приложения: 
+ Execute in the application folder: 
 
  ```
  sudo docker build - t forum .
  ```
- когда построение закончится, выполните:
+ 
+ Once the build is complete, execute:
+
  ```
  sudo docker run forum
  ```
