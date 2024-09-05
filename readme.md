@@ -54,4 +54,33 @@ delete - delete a thread, update - update thread information.
  sudo docker run forum
  ```
 
+<H4> Working with in config </H4>
+ If you want configure OFF, you need to find readme.md in root of OFF
+ Variables in config:
+ 
+ port - set the port of server
+ host - set the adress of server
+
+ user (If you use postrgres DB) - define name of postgres database username
+ name (If you use postgtres Name) - set name of postgrses data base
+
+ forum_name - set the name of forum on page
+ is_debug - on/off debug mode of server. In the production better use "False"
+
+<h4> Working with postgres DB: </h4>
+
+If you want to  use postgres db, you need to do this steps:
+
+<ol>
+<li>
+set variables of DB in config.py
+</li>
+<li>
+Change <code> db = sql_lite3_db(name)</code> on <code>PostgresDb(port, password, user, name, host) </code> in main.py
+</li>
+<li>
+run the server!
+</li>
+
+
 </ol>

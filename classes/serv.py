@@ -31,7 +31,7 @@ class server:
 
 
 
-    def __init__(self,  class_logger, db, frm , prt=8000, dbg=True, hst="127.0.0.1"):
+    def __init__(self,  class_logger, db, frm , prt=8000, dbg=True, hst="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = ""):
 
         #settings of server's behavior
         self.hosT = hst
@@ -41,7 +41,13 @@ class server:
         self.server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
         self.class_logger = class_logger
         self.frm = frm
+        self.AdminName = AdminName
+        self.AdminUser = AdminUser
+        self.AdminPassword = AdminPassword
         SockIO = SocketIO(self.server)
+
+        user(password=self.AdminPassword, user_id=self.AdminUser, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+                                time_of_join= get_current_time(), db = db, email = "admin@example.com", token = generate_token(self.AdminPassword, self.AdminUser) )
 
 
         """
@@ -241,7 +247,7 @@ class server:
                     except:
                         return render_template("topic.html", forum=self.frm.name,
                                         HtmlContext = MessageStr,name = TopicData[0][2],
-                                        description = TopicData[0][3])
+                                        description = TopicData[0][3], DeleteTopicId = TopicData[0][4])
                     
                 except IndexError:
                     return render_template("info.html", message="Topic not found")
@@ -408,21 +414,27 @@ class server:
 
         @self.server.route("/DeleteTopic")
         def DeleteTopic():
-            UserToken = request.cookies.get('token')
-            Id = request.args.get('id')
-            UserData = user.GetUserOnToken(UserToken, db)
-            TopicData = topic.get(db, Id)
-            system("cls")
-            print(UserData)
-            print(TopicData)
-            print(UserData[0][2])
-            print(TopicData[0][2])
-            print(TopicData[0][4])
-            if UserData[0][2] != TopicData[0][2]:
-                return {"code":"403"}
-            else:
-                topic.delete(db, TopicData[0][4])
-                return {"code":"200"}
+            try:
+                UserToken = request.cookies.get('token')
+                Id = request.args.get('id')
+                UserData = user.GetUserOnToken(UserToken, db)
+                TopicData = topic.get(db, Id)
+                system("cls")
+                print(UserData)
+                print(TopicData)
+                print(UserData[0][2])
+                print(TopicData[0][2])
+                print(TopicData[0][4])
+                if UserData[0][2] != TopicData[0][2]:
+                    return return render_template("info.html", message="You dont have permession to delete thread")
+                elif UserData[0][2] == AdminUser:
+                    topic.delete(db, TopicData[0][4])
+                    return render_template("info.html", message="Your deleted a thread")
+                else:
+                    topic.delete(db, TopicData[0][4])
+                    return render_template("info.html", message="Your deleted a thread")
+            except:
+                return render_template("info.html", message="You dont have permession to delete thread")
 
 
 

@@ -4,28 +4,12 @@
 {% block bo_dy %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src = "/static/main.js"> </script>
 <script>
-  function getCookie(cookieName) {
-    const name = cookieName + "=";
-    const decodedCookie = decodeURIComponent(document.cookie);
-    const cookieArray = decodedCookie.split(';');
-    
-    for (let cookie of cookieArray) {
-        while (cookie.charAt(0) == ' ') {
-            cookie = cookie.substring(1);
-        }
-        if (cookie.indexOf(name) == 0) {
-            return cookie.substring(name.length, cookie.length);
-        }
-    }
-    return "";
-}
 
-function getQueryParam(name) {
-  const queryString = window.location.search.substring(1);
-  const urlParams = new URLSearchParams(queryString);
-  return urlParams.get(name);
-}
+DeleteTopic = document.getElementById("DeleteTopic")
+DeleteTopic.href = `DeleteTopic?id=${getQueryParam("id")}`
+
 
 var socket = io();
 
@@ -72,13 +56,13 @@ function SendMessage() {
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-$(document).ready(function() {
-  $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
-});
-</script>
+  $(document).ready(function() {
+    $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
+  });
+  </script>
 
 <p style="color:red;" id="error"></p>
-<a href="/DeleteTopic" id="DeleteTopic">Delete Topic</a>
+<a href= "/DeleteTopic" id="DeleteTopic">Delete Topic</a>
 <form method="POST" enctype="multipart/form-data"> 
   <label for="Message">Write your message</label>
   <input name="Message" type="text">

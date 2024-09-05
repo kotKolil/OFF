@@ -1,5 +1,4 @@
 import configparser
-import os
 from pathlib import *
 
 from classes.loggers import *
@@ -8,30 +7,12 @@ from classes.forum import *
 from classes.user_class import *
 from classes.serv import *
 from classes.database import *
+from config import *
 
 
-"""
-#getting data about Postgres database
-#you can change on another db
-
-port = os.environ.get('port')
-password =  os.environ.get("password")
-user = os.environ.get("user")
-name = os.environ.get("name")
-host = os.eenviron.get("host")
-
-"""
-
-
-a_logger = txt_log(path=Path.cwd(),filename="a.log")
-#db  = PostgresDb(port=port, password=password, user=user, name=name, host = host)
-db = sql_lite3_db("main.db")
+a_logger = txt_log(path=LogPath,filename=LogFilename)
+db = sql_lite3_db(DBname)
 initialise_database(db=db)
 
-
-
-fr_m = forum(db, "Forum")
-A = server(dbg=True, class_logger=a_logger, db=db ,frm=fr_m)
-
-
-
+fr_m = forum(db, forum_name)
+A = server(dbg=is_debug, class_logger=a_logger, db=db ,frm=fr_m, AdminUser =  AdminUser, AdminName =  AdminName, AdminPassword =  AdminPassword)
