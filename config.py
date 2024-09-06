@@ -24,4 +24,5 @@ except:
     AdminUser = "tomfox"
     AdminPassword = "14037176"
     AdminName = "Abu"
+    AdminCitate = "der mench is bose"
     

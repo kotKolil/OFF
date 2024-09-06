@@ -18,6 +18,11 @@ class user:
     def get(user, password, db:object):
         return db.excute_query(f"SELECT * FROM user WHERE user_id = '{user}' and password = '{password}' ")
 
+
+    @staticmethod
+    def delete(Token, db:object):
+        db.excute_query(f"DELETE from user WHERE user_id = '{user}'")
+
     @staticmethod
     def GetUserOnToken(Token, db:object):
         return db.excute_query(f"SELECT * FROM user WHERE token = '{Token}' ")

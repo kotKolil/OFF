@@ -31,8 +31,7 @@ class server:
 
 
 
-    def __init__(self,  class_logger, db, frm , prt=8000, dbg=True, hst="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = ""):
-
+    def __init__(self,  class_logger, db, frm , prt=8000, dbg=True, hst="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right"):
         #settings of server's behavior
         self.hosT = hst
         self.porT = prt
@@ -44,11 +43,15 @@ class server:
         self.AdminName = AdminName
         self.AdminUser = AdminUser
         self.AdminPassword = AdminPassword
+        self.AdminCitate = AdminCitate
+        self.AdminToken = generate_token(self.AdminPassword, self.AdminUser)
         SockIO = SocketIO(self.server)
 
-        user(password=self.AdminPassword, user_id=self.AdminUser, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+        try:
+            user(password=self.AdminPassword, user_id=self.AdminUser, is_admin = 0, is_banned=0, logo_path = "admin.png",citate =  AdminCitate ,
                                 time_of_join= get_current_time(), db = db, email = "admin@example.com", token = generate_token(self.AdminPassword, self.AdminUser) )
-
+        except:
+            pass
 
         """
             json-request must be: 
@@ -77,11 +80,12 @@ class server:
                 UserData = user.GetUserOnToken(UserToken, db)
 
 
-                messages(get_current_time(), Message, UserData[0][2], ThreadId, generate_id(), db)
-
-
-
+                message(get_current_time(), Message, UserData[0][2], ThreadId, generate_id(), db)
                 emit("message", {"Message":MessageSnippet(UserData[0][5],UserData[0][2], Message, UserData[0][6]), "ThreadId":ThreadId}, broadcast=True)
+
+
+
+                
             except IndexError:
                 emit("message", {"error":"user is not exist"})
             
@@ -425,16 +429,29 @@ class server:
                 print(UserData[0][2])
                 print(TopicData[0][2])
                 print(TopicData[0][4])
-                if UserData[0][2] != TopicData[0][2]:
-                    return return render_template("info.html", message="You dont have permession to delete thread")
-                elif UserData[0][2] == AdminUser:
+                if UserData[0][2] == TopicData[0][2] or UserData[0][2] == AdminUser:
                     topic.delete(db, TopicData[0][4])
                     return render_template("info.html", message="Your deleted a thread")
                 else:
-                    topic.delete(db, TopicData[0][4])
                     return render_template("info.html", message="Your deleted a thread")
             except:
                 return render_template("info.html", message="You dont have permession to delete thread")
+
+
+
+        @self.server.route("/AdminPage")
+        def AdminPage():
+            try:
+                UserToken = request.cookies.get('token')
+                UserData = user.GetUserOnToken(UserToken, db)
+                if self.AdminUser == UserData[0][2]:
+                    page_content = ""
+                    return render_template("info.html", message=page_content)
+                else:
+                    return render_template("info.html", message = "You dont have permession")
+            except:
+                return redirect("/auth/reg")
+
 
 
 
