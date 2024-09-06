@@ -15,10 +15,14 @@
     <body>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-        var UserData = UserDataGet(getCookie("token"));
-        $(document).ready(function() {
-            $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
-        });
+        $(document).ready ( async () => {
+            var UserData = await UserDataGet(getCookie("token"));
+            console.log(UserData)
+            $("#LogoImage").attr("src", `/media/${UserData[0][5]}`);
+            $("#UserName").text(`${UserData[0][2]}`)
+    }
+
+)
         </script>
         <header>
             <!--NavBar Section-->
@@ -39,9 +43,9 @@
 
     <footer style="position:fixed; bottom:0;">
         <span class="circle-image">
-            <img  src="media/{{logo_path | default('default.png')}}" width = "30" height = "30"   />
+            <img  src="" width = "30" height = "30" id = "LogoImage"   />
         </span>
-        <span style="margin-left:4px;">|{{user | default('Anonim')  }} </span>
+        <span style="margin-left:4px;" id="UserName"></span>
         <a href="/auth/log">|log in</a> <a href="/auth/reg">|reg in</a>
         
     </footer>

@@ -146,9 +146,9 @@ class server:
             for i in TopicsData:
                 TopicString += tt_snippet(title=i[1], description=i[3],  author = i[2], TopicId =i[4])
             try:
-                return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path = data[0][5], user=data[0][2])      
+                return render("index.html", forum=self.frm.name, TopicHtml = TopicString)      
             except:
-                return render("index.html", forum=self.frm.name, TopicHtml = TopicString, logo_path="default.png")
+                return render("index.html", forum=self.frm.name, TopicHtml = TopicString)
 
         #auth methods
         # structure of table user: password, user_id, is_admin, is_banned, logo_path, citate, time_of_join, token
@@ -356,7 +356,7 @@ class server:
 
         #this API for work with topic
         @self.server.route("/api/thread")
-        def ThreadAPI(request):
+        def ThreadAPI():
             if request.method == "GET":
                 IsAll = request.args.get("all", default = 1, type = int)
                 if IsAll:
@@ -383,14 +383,14 @@ class server:
 
         #this API send info about user
         @self.server.route("/api/GetUserInfo")
-        def GetUserInfo(request):
+        def GetUserInfo():
             if request.method == "GET":
                 data = request.args.get('token')
                 try:
-                    return user.GetUserOnToken(data["token"], db)
-                except:
-                    return 400
-            return 400
+                    return user.GetUserOnToken(data, db)
+                except Exception as e:
+                    return [400, str(e)]
+            return [400]
         
 
         """

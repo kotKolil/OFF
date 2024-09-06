@@ -21,7 +21,6 @@ function getQueryParam(name) {
 }
 
 var UserDataGet = async (token) => {
-    var UserRequest = await fetch("/api/GetUserInfo");
-    var UserData = await UserRequest.json
-    return UserData
+    UserRequest = await fetch(`/api/GetUserInfo?token=${token}`);
+    return await UserRequest.json()
 }
