@@ -19,3 +19,9 @@ function getQueryParam(name) {
     }
     return "";
 }
+
+var UserDataGet = async (token) => {
+    var UserRequest = await fetch("/api/GetUserInfo");
+    var UserData = await UserRequest.json
+    return UserData
+}

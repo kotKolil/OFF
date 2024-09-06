@@ -385,7 +385,7 @@ class server:
         @self.server.route("/api/GetUserInfo")
         def GetUserInfo(request):
             if request.method == "GET":
-                data = request.get_json(force=False, silent=False, cache=True)
+                data = request.args.get('token')
                 try:
                     return user.GetUserOnToken(data["token"], db)
                 except:
@@ -445,7 +445,9 @@ class server:
                 UserToken = request.cookies.get('token')
                 UserData = user.GetUserOnToken(UserToken, db)
                 if self.AdminUser == UserData[0][2]:
-                    page_content = ""
+                    Topics = topic._all()
+                    Msg = message.all_()
+                    page_content = "Admin Page"
                     return render_template("info.html", message=page_content)
                 else:
                     return render_template("info.html", message = "You dont have permession")

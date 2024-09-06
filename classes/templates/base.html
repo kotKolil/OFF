@@ -13,6 +13,13 @@
 </head>
 
     <body>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+        var UserData = UserDataGet(getCookie("token"));
+        $(document).ready(function() {
+            $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
+        });
+        </script>
         <header>
             <!--NavBar Section-->
             <div class="navbar">
