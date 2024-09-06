@@ -16,10 +16,18 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
         $(document).ready ( async () => {
-            var UserData = await UserDataGet(getCookie("token"));
-            console.log(UserData)
-            $("#LogoImage").attr("src", `/media/${UserData[0][5]}`);
-            $("#UserName").text(`${UserData[0][2]}`)
+            //loading info about user via js and api
+            var UserToken = getCookie("token")
+            if (UserToken === "" || UserToken === "Null") {
+                $("#LogoImage").attr("src", "/media/default.png");
+                $("#UserName").text("Anonim")
+            }
+            else {
+                var UserData = await UserDataGet(UserToken);
+                $("#LogoImage").attr("src", `/media/${UserData[0][5]}`);
+                $("#UserName").text(`${UserData[0][2]}`);
+            }
+
     }
 
 )
@@ -46,7 +54,7 @@
             <img  src="" width = "30" height = "30" id = "LogoImage"   />
         </span>
         <span style="margin-left:4px;" id="UserName"></span>
-        <a href="/auth/log">|log in</a> <a href="/auth/reg">|reg in</a>
+        <a href="/auth/log">|log in</a> <a href="/auth/reg">|reg in</a> <a href="/auth/dislog">|log out</a>
         
     </footer>
 

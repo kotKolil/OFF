@@ -1,17 +1,20 @@
 from random import *
 import datetime
+import hashlib
+import os
+import time
+
 from .loggers import *
 from .database import *
 from .settings import *
-import hashlib
-import os
+
 
 sample= '1h9K8L9h5d5v5Z4q7'
 
 
 
 def allowed_file(filename):
-    """ Функция проверки расширения файла """
+    #function of checking file
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -20,8 +23,8 @@ def generate_token(s1:str="vasya228", s2:str="12345"):
     return token
 
 def get_current_time():
-    tim = str(datetime.datetime.now())
-    return tim
+    t = time.localtime()
+    return time.strftime("%D.%H:%M:%S", t)
 
 
 def generate_id():

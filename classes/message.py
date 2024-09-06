@@ -21,16 +21,16 @@ class messages:
     @staticmethod     
     def get(MessageId, db:object):
 
-        return db.execute_query(f"SELECT * FROM messages WHERE id_topic = '{ThreadId}' ")
+        return db.execute_query(f"SELECT * FROM messages WHERE id_topic == '{ThreadId}' ")
 
     @staticmethod
     def all_(ThreadId, db:object):
-        return db.excute_query(f"SELECT * FROM messages WHERE id_topic = '{ThreadId}' ")
+        return db.excute_query(f"SELECT * FROM messages WHERE id_topic == '{ThreadId}' ")
 
     @staticmethod
     def delete(ThreadId, db:object):
         try:
-            db.execute_query(f"DELETE FROM messages WHERE id_topic = '{mess_id}'")
+            db.execute_query(f"DELETE FROM messages WHERE id_topic == '{mess_id}'")
             return 1
         except Exception as e:
             return 0, str(e)

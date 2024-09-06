@@ -24,12 +24,7 @@ from .topic import *
 from .snippets import *
 from .message import *
 
-
-
 class server:
-
-
-
 
     def __init__(self,  class_logger, db, frm , prt=8000, dbg=True, hst="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right"):
         #settings of server's behavior
@@ -79,15 +74,20 @@ class server:
                 
                 UserData = user.GetUserOnToken(UserToken, db)
 
+                #cheking, do user banned or not
+                if UserData[0][4] == "1":
+                    emit("message", {"error":"user is banned"})
 
-                message(get_current_time(), Message, UserData[0][2], ThreadId, generate_id(), db)
-                emit("message", {"Message":MessageSnippet(UserData[0][5],UserData[0][2], Message, UserData[0][6]), "ThreadId":ThreadId}, broadcast=True)
+                else:
+                    message(get_current_time(), Message, UserData[0][2], ThreadId, generate_id(), db)
+                    emit("message", {"Message":MessageSnippet(UserData[0][5],UserData[0][2], Message, UserData[0][6]), "ThreadId":ThreadId}, broadcast=True)
 
 
 
                 
             except IndexError:
-                emit("message", {"error":"user is not exist"})
+                message(get_current_time(), Message, "Anonim", ThreadId, generate_id(), db)
+                emit("message", {"Message":MessageSnippet("default.png","", Message, ""), "ThreadId":ThreadId}, broadcast=True)
             
 
 
@@ -109,7 +109,7 @@ class server:
             
             data = user.GetUserOnToken(tok, db)
             try:
-                return render("index.html", forum=self.frm.name, TopicHtml="<H1>404. Page not found", logo_path = data[0][5], user=data[0][2])      
+                return render("index.html", forum=self.frm.name, TopicHtml="<H1>404. Page not found")      
             except:
                 return render("index.html", forum=self.frm.name, logo_path="default.png")
             
@@ -139,8 +139,6 @@ class server:
             tok = request.cookies.get('token')
             
             data = user.GetUserOnToken(tok, db)
-
-
 
             TopicString = ""
             for i in TopicsData:
@@ -222,40 +220,8 @@ class server:
         #topic view
         @self.server.route("/topic", methods=["GET", "POST"])
         def Topic():
-
             if request.method == "GET":
-
-                try:
-
-                    Id = request.args.get('id')
-                    TopicData = topic.get(db, Id)
-
-                    
-                    tok = request.cookies.get('token')
-                    data = user.GetUserOnToken(tok, db)
-
-                    
-                    MessageData = messages.all_(Id, db)
-                    MessageStr = """ """
-                    for i in MessageData:
-                        UserData = db.excute_query(f"SELECT * FROM user WHERE user_id = '{i[2]}' ")
-                        MessageStr += MessageSnippet(UserData[0][5], UserData[0][2],
-                                                        i[3], UserData[0][6])
-                            
-                    try:
-                        return render_template("topic.html", forum=self.frm.name,
-                                        logo_path = data[0][5], user=data[0][2],
-                                        HtmlContext = MessageStr,name = TopicData[0][2],
-                                        description = TopicData[0][3])
-
-                    except:
-                        return render_template("topic.html", forum=self.frm.name,
-                                        HtmlContext = MessageStr,name = TopicData[0][2],
-                                        description = TopicData[0][3], DeleteTopicId = TopicData[0][4])
-                    
-                except IndexError:
-                    return render_template("info.html", message="Topic not found")
-
+                return render_template("topic.html")
             elif request.method == "POST":
                 text = request.form.get("Message")
                 TopicId = request.args.get('id')
@@ -302,7 +268,7 @@ class server:
 
 
         @self.server.route("/message", methods=["POST"])
-        def ZapostilMessage():
+        def PostMessage():
             if request.method == "POST":
                 #LogoPath,Username, Message, Phrase
                 tok = request.cookies.get('token')
@@ -355,14 +321,20 @@ class server:
             
 
         #this API for work with topic
-        @self.server.route("/api/thread")
+        @self.server.route("/api/topic")
         def ThreadAPI():
             if request.method == "GET":
                 IsAll = request.args.get("all", default = 1, type = int)
-                if IsAll:
-                    return topic.all(db)
-                TopicId = request.args.get("TopicId", type= str)
-                return topic.get(db, TopicId)
+                if IsAll == "1":
+                    return topic.all_(db)
+
+                else:
+                    TopicId = request.args.get("TopicId", type= str)
+
+                    Messages = messages.all_(TopicId, db)
+                    print(Messages)
+
+                    return {"TopicInfo":topic.get(db, TopicId)[0], "Msgs":Messages}
             elif request.method == "POST":
                 data = request.get_json(force=False, silent=False, cache=True)
                 tok = data['token']
@@ -393,28 +365,22 @@ class server:
             return [400]
         
 
-        """
+        # #API for messages
+        # @self.server.route("/message", methods=["POST", "GET"])
+        # def PostMessage():
+        #     if request.method == "POST":
+        #         data = request.get_json(force=False, silent=False, cache=True)
+        #         #LogoPath,Username, Message, Phrase
+        #         tok = data['token']
+        #         Text = data["Message"]
+        #         TopicId = data["TopicId"]
+        #         AuthToken = data["AuthToken"]
 
-        #API for messages
-        @self.server.route("/message", methods=["POST", "GET"])
-        def PostMessage():
-            if request.method == "POST":
-                data = request.get_json(force=False, silent=False, cache=True)
-                #LogoPath,Username, Message, Phrase
-                tok = data['token']
-                Text = data["Message"]
-                TopicId = data["TopicId"]
-                AuthToken = data["AuthToken"]
+        #         UserData = user.GetUserOnToken(tok, db)
 
-                UserData = user.GetUserOnToken(tok, db)
+        #         messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
 
-                messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
-
-                return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
-            
-
-        """
-
+        #         return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
 
         @self.server.route("/DeleteTopic")
         def DeleteTopic():
