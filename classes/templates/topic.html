@@ -5,9 +5,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 <script src = "/static/main.js"> </script>
+<script src = "/static/snippet.js"> </script>
 <script>
-
-
 
 var socket = io();
 
@@ -52,7 +51,7 @@ function SendMessage() {
 }
 </script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script>
   //setting the "Delete Topic" link
   $(document).ready( async () => {
@@ -60,15 +59,25 @@ function SendMessage() {
   
 
   //setting info about topic
-  fetch(`/api/topic/?TopicId=${getQueryParam("id")}`)
+  fetch(`/api/topic?TopicId=${getQueryParam("id")}`)
 
   .then(function (response) {
     return response.json();
   })
   .then(function (data) {
+
     //Inserting topic information using jQuery
-    $("#TopicInfo").text(`${data.theme} | ${data.author} | ${data.about}`);
-  });
+    $("#TopicInfo").text(`${data.theme} | ${data.author} | ${data.about }`);
+
+    //Inserting messages
+    var HTMLcontent = ""
+    data.Msgs.forEach( async (element) => {
+      $("#Msgs").append( await MsgSnippet(element[2], element[3]));
+    });
+
+
+    }
+  );
 
 });
 
