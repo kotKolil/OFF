@@ -334,7 +334,7 @@ class server:
                     Messages = messages.all_(TopicId, db)
                     print(Messages)
 
-                    return {"TopicInfo":topic.get(db, TopicId)[0], "Msgs":Messages}
+                    return jsonify({"theme":topic.get(db, TopicId)[1], "author":topic.get(db, TopicId)[2], "about":topic.get(db, TopicId)[3], "Msgs":Messages})
             elif request.method == "POST":
                 data = request.get_json(force=False, silent=False, cache=True)
                 tok = data['token']

@@ -7,8 +7,6 @@
 <script src = "/static/main.js"> </script>
 <script>
 
-DeleteTopic = document.getElementById("DeleteTopic")
-DeleteTopic.href = `DeleteTopic?id=${getQueryParam("id")}`
 
 
 var socket = io();
@@ -56,10 +54,30 @@ function SendMessage() {
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-  $(document).ready(function() {
+  //setting the "Delete Topic" link
+  $(document).ready( async () => {
     $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
+  
+
+  //setting info about topic
+  fetch(`/api/topic/?TopicId=${getQueryParam("id")}`)
+
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (data) {
+    //Inserting topic information using jQuery
+    $("#TopicInfo").text(`${data.theme} | ${data.author} | ${data.about}`);
   });
+
+});
+
+
   </script>
+
+
+
+
 
 <p style="color:red;" id="error"></p>
 <a href= "/DeleteTopic" id="DeleteTopic">Delete Topic</a>
@@ -74,10 +92,12 @@ function SendMessage() {
 </form>
 
 <div class="navigate">
-  <span>{{name}}|{{description}}</span>
+  <span id="TopicInfo"></span>
 </div>
 
-{{HtmlContext | safe}}
+<div id = "Msgs">
+
+</div>
 
 <hr>
 
