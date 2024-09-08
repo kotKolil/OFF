@@ -3,6 +3,33 @@
 
 {% block bo_dy %}
 <a href="topic/create">Create Topic</a>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/static/main.js"></script>
+<script src="/static/snippet.js"></script>
+<script>
+
+$("document").ready( async () => 
+        {
+            fetch("/api/AllTopic")
+            .then( async  (response) => {
+                    return response.json()
+                }
+            )
+            .then ( async (data) => {
+                data.forEach( (element) => {
+                    $("#TopicList").append(TopicSnippet(element[1], element[3], element[2], element[4]))
+                });
+            }
+        )
+    }
+)
+
+</script>
+
+<div id = "TopicList">
+
+</div>
+
 {{TopicHtml | safe}}
 
 {% endblock bo_dy %}

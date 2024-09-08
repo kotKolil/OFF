@@ -135,18 +135,8 @@ class server:
         #index page
         @self.server.route('/')
         def index():
-            TopicsData = topic.all_(db)
-            tok = request.cookies.get('token')
-            
-            data = user.GetUserOnToken(tok, db)
+            return render("index.html", forum=self.frm.name)      
 
-            TopicString = ""
-            for i in TopicsData:
-                TopicString += tt_snippet(title=i[1], description=i[3],  author = i[2], TopicId =i[4])
-            try:
-                return render("index.html", forum=self.frm.name, TopicHtml = TopicString)      
-            except:
-                return render("index.html", forum=self.frm.name, TopicHtml = TopicString)
 
         #auth methods
         # structure of table user: password, user_id, is_admin, is_banned, logo_path, citate, time_of_join, token
@@ -324,17 +314,11 @@ class server:
         @self.server.route("/api/topic")
         def ThreadAPI():
             if request.method == "GET":
-                IsAll = request.args.get("all", default = 1, type = int)
-                if IsAll == "1":
-                    return topic.all_(db)
+                TopicId = request.args.get("TopicId", type= str)
 
-                else:
-                    TopicId = request.args.get("TopicId", type= str)
+                Messages = messages.all_(TopicId, db)
 
-                    Messages = messages.all_(TopicId, db)
-                    print(Messages)
-
-                    return jsonify({"theme":topic.get(db, TopicId)[0][1], "author":topic.get(db, TopicId)[0][2], "about":topic.get(db, TopicId)[0][3], "Msgs":Messages})
+                return jsonify({"theme":topic.get(db, TopicId)[0][1], "author":topic.get(db, TopicId)[0][2], "about":topic.get(db, TopicId)[0][3], "Msgs":Messages})
             elif request.method == "POST":
                 data = request.get_json(force=False, silent=False, cache=True)
                 tok = data['token']
@@ -352,6 +336,12 @@ class server:
                 except Exception as e:
                     return [str(e), 400]
 
+                
+        @self.server.route("/api/AllTopic")
+        def AllTopic():
+                Messages = topic.all_(db)
+
+                return Messages
 
         #this API send info about user
         @self.server.route("/api/GetUserInfo")
@@ -364,23 +354,6 @@ class server:
                     return [400, str(e)]
             return [400]
         
-
-        # #API for messages
-        # @self.server.route("/message", methods=["POST", "GET"])
-        # def PostMessage():
-        #     if request.method == "POST":
-        #         data = request.get_json(force=False, silent=False, cache=True)
-        #         #LogoPath,Username, Message, Phrase
-        #         tok = data['token']
-        #         Text = data["Message"]
-        #         TopicId = data["TopicId"]
-        #         AuthToken = data["AuthToken"]
-
-        #         UserData = user.GetUserOnToken(tok, db)
-
-        #         messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
-
-        #         return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
 
         @self.server.route("/DeleteTopic")
         def DeleteTopic():
