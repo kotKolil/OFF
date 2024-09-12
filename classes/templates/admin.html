@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+
+{% block bo_dy %}
+<a href="topic/create">Create Topic</a>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="/static/main.js"></script>
+<script src="/static/snippet.js"></script>
+<script>
+
+$("document").ready( async () => 
+        {
+            fetch("/api/AllTopic")
+            .then( async  (response) => {
+                    return response.json()
+                }
+            )
+            .then ( async (data) => {
+                    $("#TopicNumber").text = data.length
+                });
+            }
+        )
+
+
+</script>
+
+<p id = "TopicNumber"></p>
+
+
+{{TopicHtml | safe}}
+
+{% endblock bo_dy %}

@@ -380,18 +380,13 @@ class server:
 
         @self.server.route("/AdminPage")
         def AdminPage():
-            try:
-                UserToken = request.cookies.get('token')
-                UserData = user.GetUserOnToken(UserToken, db)
-                if self.AdminUser == UserData[0][2]:
-                    Topics = topic._all()
-                    Msg = message.all_()
-                    page_content = "Admin Page"
-                    return render_template("info.html", message=page_content)
-                else:
-                    return render_template("info.html", message = "You dont have permession")
-            except:
-                return redirect("/auth/reg")
+            UserToken = request.cookies.get('token')
+            UserData = user.GetUserOnToken(UserToken, db)
+            if self.AdminUser == UserData[0][2]:
+                return render_template("admin.html")
+            else:
+                return render_template("info.html", message = "You dont have permession")
+
 
 
 
