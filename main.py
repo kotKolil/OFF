@@ -9,7 +9,6 @@ from classes.serv import *
 from classes.database import *
 from config import *
 
-
 a_logger = txt_log(path=LogPath,filename=LogFilename)
 db = sql_lite3_db(DBname)
 initialise_database(db=db)

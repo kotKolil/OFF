@@ -1,39 +1,28 @@
-import zope.interface
 from .tools import *
+from .TableMetaClass import *
 
-class messages:
+class messages(TableMetaClass):
 
+    def get(self, MessageId):
+        super().get(self)
 
+        return DBworker(f"SELECT * FROM messages WHERE MessageId = {MessageId}")
 
-    def __init__(self, TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object):
+    def all_(self):
+        super().get(self)
 
-        self.TimeOfCreation = TimeOfCreation
-        self.Text = Text
-        self.UserId = UserId
-        self.ThreadId = ThreadId
-        self.MessageId = MessageId
-        self.Text = Text
+        return DBworker("SELECT * FROM messages")
 
-        db.excute_query(f"""INSERT INTO messages VALUES ('{ThreadId}',
-'{MessageId}', '{UserId}', '{Text}', '{TimeOfCreation}') """)
+    def delete(self, MessageId):
+        super().get(self)
+        return DBworker(f"DELETE * from messages WHERE MessageId = {MessageId}")
+    
+    def create(self, TopicId, MessageId, author, text, time_of_publication):
+        # TopicId, MessageId, author, text, time_of_publication
+        super().create(self)
         
-
-    @staticmethod     
-    def get(MessageId, db:object):
-
-        return db.execute_query(f"SELECT * FROM messages WHERE id_topic == '{ThreadId}' ")
-
-    @staticmethod
-    def all_(ThreadId, db:object):
-        return db.excute_query(f"SELECT * FROM messages WHERE id_topic == '{ThreadId}' ")
-
-    @staticmethod
-    def delete(ThreadId, db:object):
         try:
-            db.execute_query(f"DELETE FROM messages WHERE id_topic == '{mess_id}'")
+            self.DBworker(f"INSERT INTO messages VALUES '{TopicId}', '{generate_id()}', '{author}', '{text}', '{get_current_time()}'")
             return 1
-        except Exception as e:
-            return 0, str(e)
-
-        
-        
+        except:
+            return 0
