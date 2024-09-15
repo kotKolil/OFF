@@ -1,6 +1,12 @@
 import sqlite3
 import psycopg2 as psql
 
+from .tools import *
+
+from .user import *
+from .message import *
+from .topic import *
+
 class sqlite3():
 
     def __init__(self, path):
@@ -10,12 +16,13 @@ class sqlite3():
         con = sqlite3.connect(self.path)
         cursor = con.cursor()
         cursor.execute(query)
-
         data = cursor.fetchall()
-
         cursor.commit()
 
         return data
+    
+    def DBInit(self):
+        InitDB(self.work)
 
 class postgres():
 
@@ -30,15 +37,14 @@ class postgres():
         conn = psql.connect(dbname=self.name, user=self.user, password=self.password, host=self.host, port=self.port)
         cursor = conn.cursor()
         cursor.execute(query)
-
         data = cursor.fetchall()
-
         cursor.close()
         conn.close()
 
         return data
-
-
+    
+    def DBInit(self):
+        InitDB(self.work)
 
 class DB:
 

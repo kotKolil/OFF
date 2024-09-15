@@ -47,50 +47,34 @@ def error_decorator(self,func):
     return wrapper
 
 
-def initialise_database(db: object):
+def InitDB(DBWorker:object):
+        # structure of table user: email,  UserId, IsAdmin, IsBanned, LogoPath, citate, time, token
 
-    if db.__class__ == sql_lite3_db:
-
-        # sqlite3 doesn't handle date type, so date_of_creation and other similar variables must be in the format YYYY-MM-DD HH:MM:SS.SSS
-        # creating table, which represents the forum class
-        # structure of table forum: name, date_of_creation, id
-
-        db.excute_query("""
-            CREATE TABLE IF NOT EXISTS forum (
-                name TEXT,
-                date_of_creation TEXT,
-                forum_id TEXT
-            );
-        """)
-
-        # structure of table user: password, user_id, is_admin, is_banned, logo_path, citate, time_of_join, token
-
-        db.excute_query("""
+        DBWorker("""
             CREATE TABLE IF NOT EXISTS user (
                 email TEXT NOT NULL UNIQUE,
-                password TEXT,
-                user_id TEXT UNIQUE,
-                is_admin BOOLEAN,
-                is_banned BOOLEAN,
-                logo_path TEXT,
+                UserId TEXT UNIQUE,
+                IsAdmin BOOLEAN,
+                IsBanned BOOLEAN,
+                LogoPath TEXT,
                 citate TEXT,
-                time_of_join TEXT,
+                time TEXT,
                 token TEXT UNIQUE NOT NULL
             );
         """)
 
                 
 
-        # structure of table topic time_of_creation|theme|author|about|sb_id
+        # structure of table topic time|theme|author|about|TopicId
 
 
-        db.excute_query("""
+        DBWorker("""
             CREATE TABLE IF NOT EXISTS topic(
-                time_of_creation TEXT,
+                time TEXT,
                 theme TEXT, 
-                author TEXT REFERENCES user(user_id),
+                author TEXT REFERENCES user(UserId),
                 about TEXT,
-                sb_id TEXT NOT NULL UNIQUE
+                TopicId TEXT NOT NULL UNIQUE
 
 
             );
@@ -101,106 +85,14 @@ def initialise_database(db: object):
 
                 
         # creating table messages, which represents the message class
-        # structure of table messages: id_thread, message_id, author, text, time_of_publication
+        # structure of table messages: TopicId, MessageId, author, text, time
 
-        db.excute_query("""
+        DBWorker("""
             CREATE TABLE IF NOT EXISTS messages (
-                id_topic TEXT REFERENCES topic(sb_id),
-                message_id TEXT UNIQUE PRIMARY KEY,
-                author TEXT REFERENCES user(user_id),
-                text_of_publication TEXT,
-                time_of_publication TEXT
+                TopicId TEXT REFERENCES topic(TopicId),
+                MessageId TEXT UNIQUE PRIMARY KEY,
+                author TEXT REFERENCES user(UserId),
+                text TEXT,
+                time TEXT
             );
         """)
-
-
-
-        
-    elif db.__class__ == postgres_db:
-
-        # sqlite3 didn't handle date type, so date_of_creation and other similar variables must be like YYYY-MM-DD HH:MM:SS.SSS
-        #creating table, which represents the forum class
-        #structure of table forum : name;date_of_creasting;id
-
-        #structure of table user password|user_id|is_admin|is_banned|logo_path|citate|time_of_join
-
-        db.excute_query(""" 
-
-                CREATE TABLE IF NOT EXISTS user (
-                    password TEXT,
-                    user_id text UNIQUE,
-                    is_admin BOOLEAN,
-                    is_banned BOOLEAN,
-                    logo_path TEXT,
-                    citate TEXT,
-                    time_of_join date
-                )
-                         
-                         
-                         """)
-
-        db.excute_query("""
-
-    CREATE TABLE IF NOT EXISTS forum (
-        name TEXT,
-        date_of_creation date,
-        forum_id TEXT
-    )
-
-                        """)
-        
-        #creating table threads, which represents the thread class
-        #structure of table: id_forum|id_thread|name|time_of_creation|author|decrpt (description)
-
-        db.excute_query("""
-                        
-    CREATE TABLE IF NOT EXISTS thread (
-        id_forum TEXT REFERENCES forum(id),
-        id_thread TEXT UNIQUE PRIMARY KEY,
-        time_of_creation date,
-        author TEXT REFERENCES user(user),
-        decrpt TEXT
-    )
-
-                        
-""")
-
-
-        #creating table messages, which represents the messages class
-        #structure of table messages : |id_thd|mess_id|author|text|time_of_publication
-
-        db.excute_query(""" 
-                        
-    CREATE TABLE IF NOT EXISTS messages (
-        id_thd TEXT REFERENCES thread(id_thread),
-        mess_id TEXT UNIQUE PRIMARY KEY,
-        author TEXT REFERENCES user(user),
-        text_of_publication TEXT,
-        time_of_publication date
-    )
-
-
-                        """)
-
-
-        db.excute_query("""
-            CREATE TABLE IF NOT EXISTS topic(
-                time_of_creation date,
-                theme TEXT, 
-                author TEXT REFERENCES user(user_id),
-                about TEXT,
-                sb_id TEXT REFERENCES thread(id_thread)
-
-
-            )
-                  
-                  
-                  
-                  """)
-
-
-    else:
-        raise TypeError('object must be in databases classes, not in other')
-    
-
-
