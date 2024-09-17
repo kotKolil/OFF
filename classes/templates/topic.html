@@ -55,8 +55,8 @@ function SendMessage() {
 <script>
   //setting the "Delete Topic" link
   $(document).ready( async () => {
-    $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
-  
+      $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
+
 
   //setting info about topic
   fetch(`/api/topic?TopicId=${getQueryParam("id")}`)

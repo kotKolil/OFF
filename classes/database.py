@@ -22,7 +22,7 @@ class sqlite3():
         return data
     
     def DBInit(self):
-        InitDB(self.work)
+        DBIinit(self.work)
 
 class postgres():
 
@@ -44,7 +44,7 @@ class postgres():
         return data
     
     def DBInit(self):
-        InitDB(self.work)
+        DBIinit(self.work)
 
 class DB:
 
@@ -57,6 +57,10 @@ class DB:
                 self.db = postgres(host, port, name, user, password)
             case _:
                 raise TypeError("Unkwon type of DB")
+            
+
+    def DBIinit(self):
+        self.db.DBInit()
 
     def User(self):
         return User(self.db.work)

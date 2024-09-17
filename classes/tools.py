@@ -47,7 +47,7 @@ def error_decorator(self,func):
     return wrapper
 
 
-def InitDB(DBWorker:object):
+def DBIinit(DBWorker:object):
         # structure of table user: email,  UserId, IsAdmin, IsBanned, LogoPath, citate, time, token
 
         DBWorker("""

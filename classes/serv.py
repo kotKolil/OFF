@@ -16,53 +16,32 @@ from flask_socketio import *
 
 # local classes
 from .loggers import *
-from .forum import *
 from .tools import *
-from .tools import *
-from .user_class import *
-from .topic import *
-from .snippets import *
-from .message import *
+
 
 class server:
 
-    def __init__(self,  class_logger, db, frm , prt=8000, dbg=True, hst="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right"):
+    def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png"):
         #settings of server's behavior
-        self.hosT = hst
-        self.porT = prt
-        self.dbG = dbg
+        self.host = host
+        self.port = port
+        self.IsDebug = IsDebug
         self.server = Flask(__name__)
         self.server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-        self.class_logger = class_logger
-        self.frm = frm
+        self.ClassLogger = ClassLoger
         self.AdminName = AdminName
         self.AdminUser = AdminUser
         self.AdminPassword = AdminPassword
         self.AdminCitate = AdminCitate
         self.AdminToken = generate_token(self.AdminPassword, self.AdminUser)
+        self.AdminLogoPath = AdminLogoPath
         SockIO = SocketIO(self.server)
 
         try:
-            user(password=self.AdminPassword, user_id=self.AdminUser, is_admin = 0, is_banned=0, logo_path = "admin.png",citate =  AdminCitate ,
-                                time_of_join= get_current_time(), db = db, email = "admin@example.com", token = generate_token(self.AdminPassword, self.AdminUser) )
-        except:
-            pass
-
-        """
-            json-request must be: 
-            {
-            "UserToken":"Vobla222",
-            "ThreadId" : "Vobla333",
-            "Message" : "Hell to this world!",
-            }
-
-            json response must be:
-
-            {
-                "Message":"LoL oMg (it is HTML snippet, not plain text!)",
-                "ThreadId": "vobla333"
-            }
-        """
+            DBWorker.User.create(self.AdminPassword,"",self.AdminUser,1,0,self.AdminLogoPath,AdminCitate)
+            ClassLoger.log_message("Admin user created")
+        except Exception as e:
+            ClassLoger.log_message(f"Admin user created; There are error ocurred:{e}")
 
         @SockIO.on("message")
         def my_event(message):
@@ -72,22 +51,22 @@ class server:
                 ThreadId = message["ThreadId"]
                 Message = message["Message"]
                 
-                UserData = user.GetUserOnToken(UserToken, db)
+                UserData = DBWorker.user.GetViaToken(UserToken)
 
                 #cheking, do user banned or not
-                if UserData[0][4] == "1":
+                if UserData.IsBanned == "1":
                     emit("message", {"error":"user is banned"})
 
                 else:
-                    message(get_current_time(), Message, UserData[0][2], ThreadId, generate_id(), db)
-                    emit("message", {"Message":MessageSnippet(UserData[0][5],UserData[0][2], Message, UserData[0][6]), "ThreadId":ThreadId}, broadcast=True)
+                    message(get_current_time(), Message, UserData.UserId, ThreadId, generate_id())
+                    emit("message", {}, broadcast=True)
 
 
 
                 
             except IndexError:
-                message(get_current_time(), Message, "Anonim", ThreadId, generate_id(), db)
-                emit("message", {"Message":MessageSnippet("default.png","", Message, ""), "ThreadId":ThreadId}, broadcast=True)
+                DBWorker.message.create(ThreadId,"Anonim",Message,get_current_time())
+                emit("message", {"Message":Message, "ThreadId":ThreadId}, broadcast=True)
             
 
 
@@ -107,13 +86,12 @@ class server:
 
             tok = request.cookies.get('token')
             
-            data = user.GetUserOnToken(tok, db)
+            data = DBWorker.User.GetViaToken(tok)
             try:
                 return render("index.html", forum=self.frm.name, TopicHtml="<H1>404. Page not found")      
             except:
                 return render("index.html", forum=self.frm.name, logo_path="default.png")
             
-            return render_template()
 
 
 
@@ -145,7 +123,7 @@ class server:
             if request.method == "GET":
                 # return page of registration
                 tok = request.cookies.get('token')
-                data = user.GetUserOnToken(tok, db)
+                data = DBWorker.user.GetViaTokenJson(tok)
                 if len(data) > 0:
                     return redirect("/")
                 else:
@@ -164,8 +142,7 @@ class server:
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
-                        u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
-                                time_of_join= get_current_time(), db = db, email = email, token = generate_token(login, password) )
+                        u = DBWorker.User.create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate)
                         resp = redirect('/')
                         
                         resp.set_cookie("token", u.token)
@@ -182,7 +159,7 @@ class server:
         def log():
             if request.method == "GET":
                 tok = request.cookies.get('token')
-                data = user.GetUserOnToken(tok, db)
+                data = DBWorker.user.GetViaTokenJson(tok)
                 if len(data) > 0:
                     return redirect("/")
                 else:
@@ -191,9 +168,9 @@ class server:
                 try:
                     login = request.form.get("login")
                     password = request.form.get("password")
-                    u = user.get(login, password, db)[0]
+                    u = DBWorker.User.get(login, password)
                     resp = redirect("/")
-                    resp.set_cookie("token", u[8])
+                    resp.set_cookie("token", u.token)
                     return resp
                 except IndexError:
                     return redirect("auth/log")
@@ -217,10 +194,11 @@ class server:
                 TopicId = request.args.get('id')
                 tok = request.cookies.get('token')
                 
+                UserData = DBWorker.user.GetViaToken(tok)
 
-                data = user.GetUserOnToken(tok, db)
-                #TimeOfCreation, Text, UserId, ThreadId, MessageId, db:object
-                messages(get_current_time, text, data[0][2], TopicId, generate_id(), db)
+                data = DBWorker.GetViaToken(tok)
+                # TopicId, MessageId, author, text, time_of_publication
+                DBWorker.messages.create(TopicId, generate_token(), UserData.UserId, text, get_current_time())
 
                 return redirect(f"/topic?id={TopicId}")
 
@@ -230,16 +208,16 @@ class server:
             if request.method == "GET":
 
                 tok = request.cookies.get('token')
-                data = user.GetUserOnToken(tok, db)
+                data = DBWorker.user.GetViaToken(tok)
 
                 try:
-                    return render_template("CreateTopic.html", forum=self.frm.name, logo_path = data[0][5], user=data[0][2])
+                    return render_template("CreateTopic.html", logo_path = data.LogoPath, user=data.UserId)
                 except:
                     return redirect("/auth/log")
             elif request.method == "POST":
 
                 tok = request.cookies.get('token')
-                data = user.GetUserOnToken(tok, db)
+                data = DBWorker.user.GetViaToken(tok)
                 
                 #creating new thread
                 theme = request.form.get("name")
@@ -248,7 +226,7 @@ class server:
 
                 
 
-                a = topic(get_current_time(), theme, data[0][2], about,generate_id(), db)
+                a = DBWorker.topic.create(generate_id(), theme, data.UserId, get_current_time())
 
                 return redirect("/")
                 
@@ -266,11 +244,11 @@ class server:
                 TopicId = request.form.get("TopicId")
                 AuthToken = request.form.get("AuthToken")
 
-                UserData = user.GetUserOnToken(tok, db)
+                UserData = DBWorker.user.GetViaToken(tok)
 
-                messages(get_current_time(), Text, UserData[0][2], TopicId, generate_id(), db)
+                DBWorker.messages.create(TopicId, UserData.UserId, Text, get_current_time())
 
-                return {"MessageSnippet":MessageSnippet(UserData[0][5],UserData[0][2], Text, UserData[0][6])}
+                return {"MessageSnippet":""}
 
         #this API is giving tokens for log in system
         @self.server.route("/api/auth")
@@ -282,7 +260,7 @@ class server:
                 
                 pswd = data["pswd"]
                 login = data["login"]
-                data = user.get(login, pswd, db)
+                data = DBWorker.user.get(login, pswd)
                 return data[0][8]
 
         #this API is registrating users
@@ -300,8 +278,8 @@ class server:
                     open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close()
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
-                    u = user(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
-                                time_of_join= get_current_time(), db = db, email = email)
+                    u = DBWorker.user.create(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+                                time_of_join= get_current_time(), email = email)
                     return jsonify([u.token, "201"], status=201)
                 
                 else:
@@ -316,13 +294,15 @@ class server:
             if request.method == "GET":
                 TopicId = request.args.get("TopicId", type= str)
 
-                Messages = messages.all_(TopicId, db)
+                Messages = DBWorker.messages.all_(TopicId)
 
-                return jsonify({"theme":topic.get(db, TopicId)[0][1], "author":topic.get(db, TopicId)[0][2], "about":topic.get(db, TopicId)[0][3], "Msgs":Messages})
+                TopicData = DBWorker.topic.get(TopicId)
+
+                return jsonify({"theme":TopicData.theme, "author":TopicData.author, "about":TopicData.about, "Msgs":Messages})
             elif request.method == "POST":
                 data = request.get_json(force=False, silent=False, cache=True)
                 tok = data['token']
-                UsrLogin = user.GetUserOnToken(tok, db)
+                UsrLogin = DBWorker.user.GetViaToken(tok)
 
                 #creating new thread
                 theme = data["name"]
@@ -331,7 +311,7 @@ class server:
 
 
                 try:
-                    a = topic(get_current_time(), theme, UsrLogin[0][8], about,generate_id(), db)
+                    a = DBWorker.topic.create(theme, UsrLogin.UserId, about)
                     return 201
                 except Exception as e:
                     return [str(e), 400]
@@ -339,7 +319,7 @@ class server:
                 
         @self.server.route("/api/AllTopic")
         def AllTopic():
-                Messages = topic.all_(db)
+                Messages = DBWorker.topic.AllJson()
 
                 return Messages
 
@@ -349,7 +329,7 @@ class server:
             if request.method == "GET":
                 data = request.args.get('token')
                 try:
-                    return user.GetUserOnToken(data, db)
+                    return DBWorker.user.GetViaTokenJson(data)
                 except Exception as e:
                     return [400, str(e)]
             return [400]
@@ -360,16 +340,11 @@ class server:
             try:
                 UserToken = request.cookies.get('token')
                 Id = request.args.get('id')
-                UserData = user.GetUserOnToken(UserToken, db)
-                TopicData = topic.get(db, Id)
-                system("cls")
-                print(UserData)
-                print(TopicData)
-                print(UserData[0][2])
-                print(TopicData[0][2])
-                print(TopicData[0][4])
-                if UserData[0][2] == TopicData[0][2] or UserData[0][2] == AdminUser:
-                    topic.delete(db, TopicData[0][4])
+                UserData = DBWorker.user.GetUserOnToken(UserToken)
+                TopicData = DBWorker.topic.GetViaToken(Id)
+
+                if UserData.UserId == TopicData.author or UserData.User.IsAdmin:
+                    DBWorker.topic.delete()
                     return render_template("info.html", message="Your deleted a thread")
                 else:
                     return render_template("info.html", message="Your deleted a thread")
@@ -381,21 +356,10 @@ class server:
         @self.server.route("/AdminPage")
         def AdminPage():
             UserToken = request.cookies.get('token')
-            UserData = user.GetUserOnToken(UserToken, db)
+            UserData = DBWorker.user.GetViaToken(UserToken)
             if self.AdminUser == UserData[0][2]:
                 return render_template("admin.html")
             else:
                 return render_template("info.html", message = "You dont have permession")
 
-
-
-
-
-
-        
-            
-
-        SockIO.run(self.server, host=hst,port=prt, debug=dbg)
-
-
-
+        SockIO.run(self.server, host=host,port=port, debug=IsDebug)
