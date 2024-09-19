@@ -1,13 +1,14 @@
+from mailbox import Message
 import sqlite3
 import psycopg2 as psql
 
-from .tools import *
-
-from .user import *
+from .user import user
 from .message import *
 from .topic import *
+from .user import user
+from .tools import *
 
-class sqlite3():
+class SQLite3:
 
     def __init__(self, path):
         self.path = path
@@ -17,12 +18,12 @@ class sqlite3():
         cursor = con.cursor()
         cursor.execute(query)
         data = cursor.fetchall()
-        cursor.commit()
+        con.commit()
 
         return data
     
     def DBInit(self):
-        DBIinit(self.work)
+        InitDB(self.work)
 
 class postgres():
 
@@ -44,32 +45,33 @@ class postgres():
         return data
     
     def DBInit(self):
-        DBIinit(self.work)
+        InitDB(self.work)
+
 
 class DB:
 
-    def __init__(self, DBType="sqlite3", path="", host="", port="", name="", user="", paassword=""):
+    def __init__(self, DBType="sqlite3", path="", host="", port="", name="", user="", password=""):
 
         match DBType:
             case "sqlite3":
-                self.db = sqlite3(path)
+                self.db = SQLite3(path)
             case "postgres":
                 self.db = postgres(host, port, name, user, password)
             case _:
                 raise TypeError("Unkwon type of DB")
             
 
-    def DBIinit(self):
+    def DBInit(self):
         self.db.DBInit()
 
     def User(self):
-        return User(self.db.work)
+        return user(self.db.work)
 
     def Topic(self):
-        return Topic(self.db.work)
+        return topic(self.db.work)
 
     def Message(self):
-        return Message(self.db.work)
+        return messages(self.db.work)
 
     
 

@@ -11,4 +11,4 @@ from config import *
 a_logger = txt_log(path=LogPath,filename=LogFilename)
 db = DB(DBType="sqlite3",path="main.db")
 db.DBInit()
-A = server(dbg=is_debug, class_logger=a_logger, db=db , AdminUser =  AdminUser, AdminName =  AdminName, AdminPassword =  AdminPassword, AdminCitate = AdminCitate,AdminLogoPath = AdminLogoPath)
+A = server(IsDebug=IsDebug, ClassLoger=a_logger, DBWorker=db , AdminUser =  AdminUser, AdminName =  AdminName, AdminPassword =  AdminPassword, AdminCitate = AdminCitate,AdminLogoPath = AdminLogoPath, ForumName = ForumName)

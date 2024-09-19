@@ -4,8 +4,6 @@ import hashlib
 import os
 import time
 
-from .loggers import *
-from .database import *
 from .settings import *
 
 
@@ -47,7 +45,7 @@ def error_decorator(self,func):
     return wrapper
 
 
-def DBIinit(DBWorker:object):
+def InitDB(DBWorker:object):
         # structure of table user: email,  UserId, IsAdmin, IsBanned, LogoPath, citate, time, token
 
         DBWorker("""

@@ -13,6 +13,7 @@ from flask import jsonify
 from flask_sock import *
 from time import *
 from flask_socketio import *
+import sqlite3
 
 # local classes
 from .loggers import *
@@ -21,7 +22,7 @@ from .tools import *
 
 class server:
 
-    def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png"):
+    def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum"):
         #settings of server's behavior
         self.host = host
         self.port = port
@@ -35,6 +36,9 @@ class server:
         self.AdminCitate = AdminCitate
         self.AdminToken = generate_token(self.AdminPassword, self.AdminUser)
         self.AdminLogoPath = AdminLogoPath
+        self.ForumName = ForumName
+
+
         SockIO = SocketIO(self.server)
 
         try:
@@ -113,7 +117,7 @@ class server:
         #index page
         @self.server.route('/')
         def index():
-            return render("index.html", forum=self.frm.name)      
+            return render("index.html", forum=self.ForumName)      
 
 
         #auth methods
@@ -123,8 +127,8 @@ class server:
             if request.method == "GET":
                 # return page of registration
                 tok = request.cookies.get('token')
-                data = DBWorker.user.GetViaTokenJson(tok)
-                if len(data) > 0:
+                data = DBWorker.User().GetViaTokenJson(tok)
+                if data:
                     return redirect("/")
                 else:
                     return render_template("reg.html")
@@ -142,7 +146,7 @@ class server:
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
-                        u = DBWorker.User.create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate)
+                        u = DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate)
                         resp = redirect('/')
                         
                         resp.set_cookie("token", u.token)
@@ -159,8 +163,7 @@ class server:
         def log():
             if request.method == "GET":
                 tok = request.cookies.get('token')
-                data = DBWorker.user.GetViaTokenJson(tok)
-                if len(data) > 0:
+                if DBWorker.User().GetViaTokenJson(tok):
                     return redirect("/")
                 else:
                     return render_template("log.html")
@@ -168,12 +171,13 @@ class server:
                 try:
                     login = request.form.get("login")
                     password = request.form.get("password")
-                    u = DBWorker.User.get(login, password)
+                    u = DBWorker.User().get(login, password)
                     resp = redirect("/")
                     resp.set_cookie("token", u.token)
                     return resp
                 except IndexError:
                     return redirect("auth/log")
+
             
 
         #logging out

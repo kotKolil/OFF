@@ -2,10 +2,10 @@ from .tools import *
 from .storage import *
 from .TableMetaClass import *
 
-class Topic(TableMetaClass):
+class topic(TableMetaClass):
 
     def __init__(self, DBworker):
-        super().__init__(self, DBworker)
+        super().__init__(DBworker)
 
     def get(self, TopicId):
         super().get(self)

@@ -18,8 +18,8 @@ except:
     DBname = "main.db"
     DBhost = ""
 
-    forum_name = "Awesome Forum"
-    is_debug = True
+    ForumName = "Awesome Forum"
+    IsDebug = True
 
     AdminUser = "tomfox"
     AdminPassword = "14037176"

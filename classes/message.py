@@ -5,7 +5,7 @@ from .storage import *
 class messages(TableMetaClass):
 
     def __init__(self, DBworker):
-        super().__init__(self, DBworker)
+        super().__init__(DBworker)
 
     def get(self, MessageId):
         super().get(self)
