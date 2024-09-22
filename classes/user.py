@@ -2,6 +2,9 @@ from .tools import *
 from .storage import *
 from .TableMetaClass import *
 
+
+import os
+
 class user(TableMetaClass):
 
     def __init__(self, DBworker):
@@ -63,8 +66,9 @@ class user(TableMetaClass):
 
         super().create()
 
+
         # try:
-        self.DBworker(f"INSERT INTO user VALUES '{email}', '{user}', {is_admin}, {is_banned} , '{logo_path}', '{citate}', '{get_current_time()}',  '{generate_token(user, password)}'")
+        self.DBworker(f"""INSERT INTO user VALUES ('{email}', '{user}', {is_admin}, {is_banned} , '{logo_path}', '{citate}', '{get_current_time()}',  '{generate_token(user, password)}' ) """)
         return self.get(user, password)
         # except:
         #     return 0

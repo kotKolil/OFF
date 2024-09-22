@@ -8,7 +8,7 @@ class topic(TableMetaClass):
         super().__init__(DBworker)
 
     def get(self, TopicId):
-        super().get(self)
+        super().get()
 
         return TopicStorage(self.DBworker(f"SELECT * FROM topic WHERE TopicId = {TopicId}"))
     
@@ -18,7 +18,7 @@ class topic(TableMetaClass):
         return {"time":TopicData[0], "theme":TopicData[1], "author":TopicData[2], "about":TopicData[3], "TopicId":TopicData[4]}
 
     def all_(self):
-        super().get(self)
+        super().get()
 
         return [TopicStorage(i) for i in self.DBworker("SELECT * FROM topic")]
     
@@ -26,15 +26,15 @@ class topic(TableMetaClass):
         return [{"time":TopicData[0], "theme":TopicData[1], "author":TopicData[2], "about":TopicData[3], "TopicId":TopicData[4]} for TopicData in self.DBworker("SELECT * FROM topic")]
 
     def delete(self, TopicId):
-        super().get(self)
+        super().get()
         self.DBworker(f"DELETE * from topic WHERE TopicId = {TopicId}")
 
     def create(self, theme, author, about):
         # time_of_creation|theme|author|about|sb_id
-        super().create(self)
+        super().create()
         
         try:
-            self.DBworker(f"INSERT INTO topic VALUES '{get_current_time()}', '{theme}', '{author}', '{about}', '{generate_id()}'")
+            self.DBworker(f"INSERT INTO topic VALUES ('{get_current_time()}', '{theme}', '{author}', '{about}', '{generate_id()}')")
             return 1
         except:
             return 0

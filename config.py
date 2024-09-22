@@ -25,5 +25,5 @@ except:
     AdminPassword = "14037176"
     AdminName = "Abu"
     AdminCitate = "der mench is bose"
-    AdminLogoPath = "/media/admin.png"
+    AdminLogoPath = "admin.png"
     

@@ -42,7 +42,7 @@ class server:
         SockIO = SocketIO(self.server)
 
         try:
-            DBWorker.User.create(self.AdminPassword,"",self.AdminUser,1,0,self.AdminLogoPath,AdminCitate)
+            DBWorker.User().create(self.AdminPassword,"",self.AdminUser,1,0,self.AdminLogoPath,AdminCitate)
             ClassLoger.log_message("Admin user created")
         except Exception as e:
             ClassLoger.log_message(f"Admin user created; There are error ocurred:{e}")
@@ -55,7 +55,7 @@ class server:
                 ThreadId = message["ThreadId"]
                 Message = message["Message"]
                 
-                UserData = DBWorker.user.GetViaToken(UserToken)
+                UserData = DBWorker.User().GetViaToken(UserToken)
 
                 #cheking, do user banned or not
                 if UserData.IsBanned == "1":
@@ -69,7 +69,7 @@ class server:
 
                 
             except IndexError:
-                DBWorker.message.create(ThreadId,"Anonim",Message,get_current_time())
+                DBWorker.Message().create(ThreadId,"Anonim",Message,get_current_time())
                 emit("message", {"Message":Message, "ThreadId":ThreadId}, broadcast=True)
             
 
@@ -90,7 +90,7 @@ class server:
 
             tok = request.cookies.get('token')
             
-            data = DBWorker.User.GetViaToken(tok)
+            data = DBWorker.User().GetViaToken(tok)
             try:
                 return render("index.html", forum=self.frm.name, TopicHtml="<H1>404. Page not found")      
             except:
@@ -152,7 +152,7 @@ class server:
                         resp.set_cookie("token", u.token)
                         return resp
                     except sqlite3.IntegrityError:
-                        return render_template("reg.html", message="invalid username")
+                        return render_template("reg.html", message="Username already used")
   
                 else:
                     return "400 Bad Request"
@@ -198,11 +198,11 @@ class server:
                 TopicId = request.args.get('id')
                 tok = request.cookies.get('token')
                 
-                UserData = DBWorker.user.GetViaToken(tok)
+                UserData = DBWorker.User().GetViaToken(tok)
 
-                data = DBWorker.GetViaToken(tok)
+                data = DBWorker.User().GetViaToken(tok)
                 # TopicId, MessageId, author, text, time_of_publication
-                DBWorker.messages.create(TopicId, generate_token(), UserData.UserId, text, get_current_time())
+                DBWorker.Message().create(TopicId, UserData.UserId, text, get_current_time())
 
                 return redirect(f"/topic?id={TopicId}")
 
@@ -212,7 +212,7 @@ class server:
             if request.method == "GET":
 
                 tok = request.cookies.get('token')
-                data = DBWorker.user.GetViaToken(tok)
+                data = DBWorker.User().GetViaToken(tok)
 
                 try:
                     return render_template("CreateTopic.html", logo_path = data.LogoPath, user=data.UserId)
@@ -221,7 +221,7 @@ class server:
             elif request.method == "POST":
 
                 tok = request.cookies.get('token')
-                data = DBWorker.user.GetViaToken(tok)
+                data = DBWorker.User().GetViaToken(tok)
                 
                 #creating new thread
                 theme = request.form.get("name")
@@ -230,7 +230,7 @@ class server:
 
                 
 
-                a = DBWorker.topic.create(generate_id(), theme, data.UserId, get_current_time())
+                a = DBWorker.Topic().create(theme, data.UserId, get_current_time())
 
                 return redirect("/")
                 
@@ -248,9 +248,9 @@ class server:
                 TopicId = request.form.get("TopicId")
                 AuthToken = request.form.get("AuthToken")
 
-                UserData = DBWorker.user.GetViaToken(tok)
+                UserData = DBWorker.User().GetViaToken(tok)
 
-                DBWorker.messages.create(TopicId, UserData.UserId, Text, get_current_time())
+                DBWorker.Message().create(TopicId, UserData.UserId, Text, get_current_time())
 
                 return {"MessageSnippet":""}
 
@@ -264,7 +264,7 @@ class server:
                 
                 pswd = data["pswd"]
                 login = data["login"]
-                data = DBWorker.user.get(login, pswd)
+                data = DBWorker.User().get(login, pswd)
                 return data[0][8]
 
         #this API is registrating users
@@ -282,7 +282,7 @@ class server:
                     open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close()
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
-                    u = DBWorker.user.create(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
+                    u = DBWorker.User().create(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
                                 time_of_join= get_current_time(), email = email)
                     return jsonify([u.token, "201"], status=201)
                 
@@ -298,9 +298,9 @@ class server:
             if request.method == "GET":
                 TopicId = request.args.get("TopicId", type= str)
 
-                Messages = DBWorker.messages.all_(TopicId)
+                Messages = DBWorker.Message().AllJson(TopicId)
 
-                TopicData = DBWorker.topic.get(TopicId)
+                TopicData = DBWorker.Topic().get(TopicId)
 
                 return jsonify({"theme":TopicData.theme, "author":TopicData.author, "about":TopicData.about, "Msgs":Messages})
             elif request.method == "POST":
@@ -315,7 +315,7 @@ class server:
 
 
                 try:
-                    a = DBWorker.topic.create(theme, UsrLogin.UserId, about)
+                    a = DBWorker.Topic().create(theme, UsrLogin.UserId, about)
                     return 201
                 except Exception as e:
                     return [str(e), 400]
@@ -323,7 +323,7 @@ class server:
                 
         @self.server.route("/api/AllTopic")
         def AllTopic():
-                Messages = DBWorker.topic.AllJson()
+                Messages = DBWorker.Topic().AllJson()
 
                 return Messages
 
@@ -332,8 +332,9 @@ class server:
         def GetUserInfo():
             if request.method == "GET":
                 data = request.args.get('token')
+                print(data)
                 try:
-                    return DBWorker.user.GetViaTokenJson(data)
+                    return DBWorker.User().GetViaTokenJson(data)
                 except Exception as e:
                     return [400, str(e)]
             return [400]
@@ -344,8 +345,8 @@ class server:
             try:
                 UserToken = request.cookies.get('token')
                 Id = request.args.get('id')
-                UserData = DBWorker.user.GetUserOnToken(UserToken)
-                TopicData = DBWorker.topic.GetViaToken(Id)
+                UserData = DBWorker.User().GetUserOnToken(UserToken)
+                TopicData = DBWorker.Topic().GetViaToken(Id)
 
                 if UserData.UserId == TopicData.author or UserData.User.IsAdmin:
                     DBWorker.topic.delete()
@@ -360,7 +361,7 @@ class server:
         @self.server.route("/AdminPage")
         def AdminPage():
             UserToken = request.cookies.get('token')
-            UserData = DBWorker.user.GetViaToken(UserToken)
+            UserData = DBWorker.User().GetViaToken(UserToken)
             if self.AdminUser == UserData[0][2]:
                 return render_template("admin.html")
             else:

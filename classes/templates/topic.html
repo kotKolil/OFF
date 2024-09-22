@@ -72,7 +72,7 @@ function SendMessage() {
     //Inserting messages
     var HTMLcontent = ""
     data.Msgs.forEach( async (element) => {
-      $("#Msgs").append( await MsgSnippet(element[2], element[3]));
+      $("#Msgs").append( await MsgSnippet(element.author, element.text));
     });
 
 
