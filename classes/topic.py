@@ -10,10 +10,10 @@ class topic(TableMetaClass):
     def get(self, TopicId):
         super().get()
 
-        return TopicStorage(self.DBworker(f"SELECT * FROM topic WHERE TopicId = {TopicId}"))
+        return TopicStorage(self.DBworker(f"SELECT * FROM topic WHERE TopicId = '{TopicId}'"))
     
     def JsonGet(self, TopicId):
-        TopicData = self.DBworker(f"SELECT * FROM topic WHERE TopicId = {TopicId}")
+        TopicData = self.DBworker(f"SELECT * FROM topic WHERE TopicId = '{TopicId}'")
 
         return {"time":TopicData[0], "theme":TopicData[1], "author":TopicData[2], "about":TopicData[3], "TopicId":TopicData[4]}
 
@@ -27,7 +27,7 @@ class topic(TableMetaClass):
 
     def delete(self, TopicId):
         super().get()
-        self.DBworker(f"DELETE * from topic WHERE TopicId = {TopicId}")
+        self.DBworker(f"DELETE * from topic WHERE TopicId = '{TopicId}'")
 
     def create(self, theme, author, about):
         # time_of_creation|theme|author|about|sb_id

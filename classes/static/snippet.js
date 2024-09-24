@@ -8,13 +8,13 @@ var MsgSnippet = async (Author, Text) => {
                 <div class="authors">
                     <div class="username"><a href="">${Author}</a></div>
                      <span class="circle-image">
-                          <img  src="/media/${UserData[0][5]}" width = "90" height = "90"   />
+                          <img  src="/media/${UserData.LogoPath}" width = "90" height = "90"   />
                       </span>
                 </div>
                 <div class="content">
                         ${Text}
                     <hr>
-                    ${UserData[0][6]}
+                    ${UserData.citate}
                 </div>
             </div>
         </div>

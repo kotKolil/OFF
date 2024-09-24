@@ -16,7 +16,7 @@ except:
     DBpassword = ""
     DBuser = ""
     DBname = "main.db"
-    DBhost = ""
+    DBhost = "127.0.0.1"
 
     ForumName = "Awesome Forum"
     IsDebug = True

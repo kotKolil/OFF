@@ -15,7 +15,7 @@ class user(TableMetaClass):
         super().get()
 
         UserHash = generate_token(user, password)
-
+        
         return UserStorage(self.DBworker(f"SELECT * FROM user WHERE token = '{UserHash}'"))
     
 

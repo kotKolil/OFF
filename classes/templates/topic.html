@@ -11,20 +11,12 @@
 var socket = io();
 
 socket.on('message', (msg) => {
-  console.log(msg);
 
-  if (msg.error === "user is not exist") {  
-    const elem = document.getElementById("error");
-    elem.innerHTML = "You are not registered";
-    console.log(msg.error);
-    return;
-  }
-  
-  const Message = msg.Message;
-  const ThreadId = msg.ThreadId;
+    console.log(msg)
 
-  if (ThreadId === getQueryParam("id")) {
-    document.body.innerHTML += Message;
+  if (msg.MessageData.TopicId === getQueryParam("id")) {
+    console.log(msg.MessageData)
+    document.getElementById("Msgs") += MsgSnippet(msgs.UserData, msg.MessageData.text);
   }
 });
 

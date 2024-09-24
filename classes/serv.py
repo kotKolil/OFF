@@ -63,7 +63,8 @@ class server:
 
                 else:
                     message(get_current_time(), Message, UserData.UserId, ThreadId, generate_id())
-                    emit("message", {}, broadcast=True)
+                    MessageData = DBWorker.Message().AllJson(ThreadId)
+                    emit("message", {"MessageData":MessageData, "UserData":DBWorker.User().JsonGet(UserToken)}, broadcast=True)
 
 
 
@@ -92,9 +93,9 @@ class server:
             
             data = DBWorker.User().GetViaToken(tok)
             try:
-                return render("index.html", forum=self.frm.name, TopicHtml="<H1>404. Page not found")      
+                return render("index.html",  TopicHtml="<H1>404. Page not found")      
             except:
-                return render("index.html", forum=self.frm.name, logo_path="default.png")
+                return render("index.html", logo_path="default.png")
             
 
 
@@ -168,15 +169,20 @@ class server:
                 else:
                     return render_template("log.html")
             elif request.method == "POST":
+
                 try:
+
                     login = request.form.get("login")
                     password = request.form.get("password")
                     u = DBWorker.User().get(login, password)
                     resp = redirect("/")
                     resp.set_cookie("token", u.token)
                     return resp
-                except IndexError:
-                    return redirect("auth/log")
+                
+                except:
+                    
+                    return render_template("log.html", Text = "Incorret User or Password")
+
 
             
 
@@ -219,6 +225,7 @@ class server:
                 except:
                     return redirect("/auth/log")
             elif request.method == "POST":
+
 
                 tok = request.cookies.get('token')
                 data = DBWorker.User().GetViaToken(tok)
@@ -348,7 +355,7 @@ class server:
                 UserData = DBWorker.User().GetUserOnToken(UserToken)
                 TopicData = DBWorker.Topic().GetViaToken(Id)
 
-                if UserData.UserId == TopicData.author or UserData.User.IsAdmin:
+                if UserData.UserId == TopicData.author or UserData.IsAdmin:
                     DBWorker.topic.delete()
                     return render_template("info.html", message="Your deleted a thread")
                 else:
