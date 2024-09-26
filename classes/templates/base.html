@@ -28,6 +28,12 @@
                 $("#UserName").text(`${UserData.UserId}`);
             }
 
+            var ForumData = await fetch("/api/ForumInfo")
+            ForumData = await ForumData.json()
+
+            $("#ForumState").text(`There are ${ForumData.NumOfMessages} messages in ${ForumData.NumOfTopic} topics from ${ForumData.NumsOfUsers} users. Admin is ${ForumData.Admin}`)
+            $(".brand").text(ForumData.ForumName)
+
     }
 
 )
@@ -37,10 +43,11 @@
             <div class="navbar">
 
                 <a class="bar-icon" id="iconBar" onclick="hideIconBar()"><i class="fa fa-bars"></i></a>
-                <div class="brand">{{forum}}</div>
+                <div class="brand"></div>
             </div>
             <!--SearchBox Section-->
 
+            <P id="ForumState"></P>
 
         </header>
 

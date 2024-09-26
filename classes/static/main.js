@@ -21,6 +21,18 @@ function getQueryParam(name) {
 }
 
 var UserDataGet = async (token) => {
-    UserRequest = await fetch(`/api/GetUserInfo?token=${token}`);
-    return await UserRequest.json()
-}
+    const userRequest = await fetch(`/api/GetUserInfo?token=${token}`);
+  
+    if (await userRequest.ok) {
+      const userData = await userRequest.json();
+      if (Object.keys(userData).length === 0) {
+        return "0"; 
+      } else {
+        return userData;
+      }
+    } else {
+      return "0";
+    }
+  };
+
+

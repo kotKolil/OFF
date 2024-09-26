@@ -24,10 +24,35 @@ class messages(TableMetaClass):
         return [MessagesStorage(i) for i in self.DBworker(f"SELECT * FROM messages TopicId = '{TopicId}'")]
     
     def AllJson(self, TopicId):
+        messages = self.DBworker(f"SELECT * FROM messages WHERE TopicId = '{TopicId}'")
+        result = []
+        for MessageId in messages:
+            author_data = self.DBworker(f"SELECT * FROM user WHERE UserId = '{MessageId[2]}'")
+            if author_data:
+                author_data = author_data[0]
+                result.append({
+                    "TopicId": MessageId[0],
+                    "MessageId": MessageId[1],
+                    "author": {
+                        "email": author_data[0],
+                        "UserId": author_data[1],
+                        "IsAdmin": author_data[2],
+                        "IsBanned": author_data[3],
+                        "LogoPath": author_data[4],
+                        "citate": author_data[5],
+                        "time": author_data[6]
+                    },
+                    "text": MessageId[3],
+                    "time": MessageId[4]
+                })
+        return result
 
-        return [{"TopicId":MessageId[0], "MessageId":MessageId[1], "author":MessageId[2], "text":MessageId[3], "time":MessageId[4]} for MessageId in self.DBworker(f"SELECT * FROM messages WHERE TopicId = '{TopicId}'") ]
+    def AllJson_(self):
+
+        return [{"TopicId":MessageId[0], "MessageId":MessageId[1], "author":MessageId[2], "text":MessageId[3], "time":MessageId[4]} for MessageId in self.DBworker(f"SELECT * FROM messages") ]
 
     def delete(self, MessageId):
+
         super().get
         self.DBworker(f"DELETE * from messages WHERE MessageId = '{MessageId}'")
 

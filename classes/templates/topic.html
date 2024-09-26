@@ -58,6 +58,8 @@ function SendMessage() {
   })
   .then(function (data) {
 
+    console.log(data)
+
     //Inserting topic information using jQuery
     $("#TopicInfo").text(`${data.theme} | ${data.author} | ${data.about }`);
 
@@ -82,7 +84,8 @@ function SendMessage() {
 
 <p style="color:red;" id="error"></p>
 <a href= "/DeleteTopic" id="DeleteTopic">Delete Topic</a>
-<form method="POST" enctype="multipart/form-data"> 
+<p id=""></p>
+<form method="POST" enctype="multipart/form-data" onsubmit = "return  UserDataGet(getCookie('token')) == '0' "> 
   <label for="Message">Write your message</label>
   <input name="Message" type="text">
 

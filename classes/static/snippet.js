@@ -1,20 +1,19 @@
 var MsgSnippet = async (Author, Text) => {
     //Author, Text
 
-    var UserData = await UserDataGet(getCookie("token"));
     var TheDick =  `
         <div class="comments-container">
             <div class="body">
                 <div class="authors">
-                    <div class="username"><a href="">${Author}</a></div>
+                    <div class="username"><a href="">${Author.UserId}</a></div>
                      <span class="circle-image">
-                          <img  src="/media/${UserData.LogoPath}" width = "90" height = "90"   />
+                          <img  src="/media/${Author.LogoPath}" width = "90" height = "90"   />
                       </span>
                 </div>
                 <div class="content">
                         ${Text}
                     <hr>
-                    ${UserData.citate}
+                    ${Author.citate}
                 </div>
             </div>
         </div>

@@ -118,7 +118,7 @@ class server:
         #index page
         @self.server.route('/')
         def index():
-            return render("index.html", forum=self.ForumName)      
+            return render("index.html")      
 
 
         #auth methods
@@ -212,6 +212,7 @@ class server:
 
                 return redirect(f"/topic?id={TopicId}")
 
+
         #topic create
         @self.server.route("/topic/create", methods = ["POST", "GET", "PATCH"])
         def TopicCreate():
@@ -239,7 +240,7 @@ class server:
 
                 a = DBWorker.Topic().create(theme, data.UserId, get_current_time())
 
-                return redirect("/")
+                return redirect("/auth/log")
                 
                 
             else:
@@ -334,17 +335,17 @@ class server:
 
                 return Messages
 
-        #this API send info about user
         @self.server.route("/api/GetUserInfo")
         def GetUserInfo():
             if request.method == "GET":
-                data = request.args.get('token')
-                print(data)
                 try:
-                    return DBWorker.User().GetViaTokenJson(data)
-                except Exception as e:
-                    return [400, str(e)]
-            return [400]
+                    data = request.args.get('token')
+                    print(data)
+                    user_data = DBWorker.User().GetViaTokenJson(data)  # Assuming this returns a dictionary
+                    return jsonify(user_data)
+                except:
+                    return "0"
+            return "0"  # Or you might want to return an error response here as well.
         
 
         @self.server.route("/DeleteTopic")
@@ -364,14 +365,15 @@ class server:
                 return render_template("info.html", message="You dont have permession to delete thread")
 
 
+        @self.server.route("/api/ForumInfo")
+        def ForumInfo():
 
-        @self.server.route("/AdminPage")
-        def AdminPage():
-            UserToken = request.cookies.get('token')
-            UserData = DBWorker.User().GetViaToken(UserToken)
-            if self.AdminUser == UserData[0][2]:
-                return render_template("admin.html")
-            else:
-                return render_template("info.html", message = "You dont have permession")
+            NumOfTopic = len(DBWorker.Topic().AllJson())
+            NumOfMessages = len(DBWorker.Message().AllJson_())
+            NumsOfUsers = len(DBWorker.User().AllJson())
+
+            
+
+            return {"NumOfTopic":NumOfTopic, "NumOfMessages":NumOfMessages, "NumsOfUsers":NumsOfUsers, "Admin":AdminName, "ForumName": ForumName}
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)
