@@ -191,19 +191,6 @@ class server:
         def Topic():
             if request.method == "GET":
                 return render_template("topic.html")
-            elif request.method == "POST":
-                text = request.form.get("Message")
-                TopicId = request.args.get('id')
-                tok = request.cookies.get('token')
-                
-                UserData = DBWorker.User().GetViaToken(tok)
-
-                data = DBWorker.User().GetViaToken(tok)
-                # TopicId, MessageId, author, text, time_of_publication
-                DBWorker.Message().create(TopicId, UserData.UserId, text, get_current_time())
-
-                return redirect(f"/topic?id={TopicId}")
-
 
         #topic create
         @self.server.route("/topic/create", methods = ["POST", "GET", "PATCH"])
