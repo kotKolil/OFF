@@ -9,7 +9,6 @@ class UserStorage:
         self.LogoPath = Data[0][4]
         self.citate = Data[0][5]
         self.time = Data[0][6]
-        self.token = Data[0][7]
         
 class TopicStorage:
 

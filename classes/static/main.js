@@ -34,5 +34,3 @@ var UserDataGet = async (token) => {
       return "0";
     }
   };
-
-

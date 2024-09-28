@@ -23,13 +23,13 @@ class user(TableMetaClass):
 
         UserHash = generate_token(user, password)
         UserData = self.DBworker(f"SELECT * FROM user WHERE token = '{UserHash}'")
-        return {"email":UserData[0][0], "UserId":UserData[0][1], "IsAdmin":UserData[0][2], "IsBanned":UserData[0][3],"LogoPath":UserData[0][4], "citate":UserData[0][5], "time":UserData[0][6], "token":UserData[0][7]}
+        return {"email":UserData[0][0], "UserId":UserData[0][1], "IsAdmin":UserData[0][2], "IsBanned":UserData[0][3],"LogoPath":UserData[0][4], "citate":UserData[0][5], "time":UserData[0][6]}
     def GetViaTokenJson(self, token):
         UserData = self.DBworker(f"SELECT * FROM user WHERE token = '{token}'")
         if len(UserData) == 0:
             return False
         else:
-            return {"email":UserData[0][0], "UserId":UserData[0][1], "IsAdmin":UserData[0][2], "IsBanned":UserData[0][3],"LogoPath":UserData[0][4], "citate":UserData[0][5], "time":UserData[0][6], "token":UserData[0][7]}
+            return {"email":UserData[0][0], "UserId":UserData[0][1], "IsAdmin":UserData[0][2], "IsBanned":UserData[0][3],"LogoPath":UserData[0][4], "citate":UserData[0][5], "time":UserData[0][6]}
 
 
     
@@ -51,7 +51,7 @@ class user(TableMetaClass):
     def AllJson(self):
         super().all_()
 
-        return [ {"email":i[0], "UserId":i[1], "IsAdmin":i[2], "IsBanned":i[3],"LogoPath":i[4], "citate":i[5], "time":i[6], "token":i[7]} for i in self.DBworker(f"SELECT * FROM user")]
+        return [ {"email":i[0], "UserId":i[1], "IsAdmin":i[2], "IsBanned":i[3],"LogoPath":i[4], "citate":i[5], "time":i[6]} for i in self.DBworker(f"SELECT * FROM user")]
 
     def delete(self,user, password):
         super().delete()

@@ -50,29 +50,21 @@ class server:
         @SockIO.on("message")
         def my_event(message):
 
-            try:
-                UserToken = message["UserToken"]
-                ThreadId = message["ThreadId"]
-                Message = message["Message"]
-                
-                UserData = DBWorker.User().GetViaToken(UserToken)
+            system("cls")
+            print(message)
 
-                #cheking, do user banned or not
-                if UserData.IsBanned == "1":
-                    emit("message", {"error":"user is banned"})
-
-                else:
-                    message(get_current_time(), Message, UserData.UserId, ThreadId, generate_id())
-                    MessageData = DBWorker.Message().AllJson(ThreadId)
-                    emit("message", {"MessageData":MessageData, "UserData":DBWorker.User().JsonGet(UserToken)}, broadcast=True)
-
-
-
-                
-            except IndexError:
-                DBWorker.Message().create(ThreadId,"Anonim",Message,get_current_time())
-                emit("message", {"Message":Message, "ThreadId":ThreadId}, broadcast=True)
+            UserToken = message["UserToken"]
+            ThreadId = message["ThreadId"]
+            Message = message["Message"]
             
+            UserData = DBWorker.User().GetViaTokenJson(UserToken)
+            DBWorker.Message().create(ThreadId, UserData["UserId"], Message, get_current_time())
+
+            emit("message", {"UserData":UserData, "MessageData":{"text":Message, "TopicId":ThreadId}}, broadcast=True)
+
+            
+
+
 
 
 
@@ -81,7 +73,7 @@ class server:
 
         @SockIO.on("connect")
         def OnOpenEvent():
-            pass
+            print("WebSockets connection estabilished")
 
 
 

@@ -10,37 +10,56 @@
 
 var socket = io();
 
-socket.on('message', (msg) => {
+
+socket.on("open", () => {
+  console.log("WebSockets  connection estabilished")
+})
+
+socket.on('message', async (msg) => {
 
     console.log(msg)
 
-  if (msg.MessageData.TopicId === getQueryParam("id")) {
+  if (msg.MessageData.TopicId == getQueryParam("id")) {
     console.log(msg.MessageData)
-    document.getElementById("Msgs") += MsgSnippet(msgs.UserData, msg.MessageData.text);
+    document.getElementById("Msgs").innerHTML += await MsgSnippet(msg.UserData, msg.MessageData.text);
   }
 });
 
-function SendMessage() {
+function SendMessage(e) {
   var form = document.querySelector('form');
   var messageInput = document.querySelector('input[name="Message"]');
   var message = messageInput.value;
 
   if (message.trim() === '') {
+    e.preventDefault();
     alert('Enter a message before sending');
     return;
   }
   
+  if (UserDataGet(getCookie('token')) == '0') {
+
+    e.preventDefault();
+    alert('You are not registred');
+    return;
+
+  }
+
+  console.log("user is registred")
+
   var topicIdInput = getQueryParam("id");
   var authTokenInput = getCookie("token");
 
   socket.emit("message", {
-    "UserToken": authTokenInput,
-    "ThreadId": topicIdInput,
+    "UserToken": getCookie("token"),
+    "ThreadId": getQueryParam("id"),
     "Message": message
   });
 
   messageInput.value = '';
+  e.preventDefault();
 }
+
+
 </script>
 
 
@@ -73,7 +92,17 @@ function SendMessage() {
     }
   );
 
-});
+  var Form = $("form")
+  Form.submit(e => {SendMessage(e)})
+
+}
+
+
+
+
+
+);
+
 
 
   </script>
@@ -84,8 +113,7 @@ function SendMessage() {
 
 <p style="color:red;" id="error"></p>
 <a href= "/DeleteTopic" id="DeleteTopic">Delete Topic</a>
-<p id=""></p>
-<form method="POST" enctype="multipart/form-data" onsubmit = "return  UserDataGet(getCookie('token')) == '0' "> 
+<form method="POST" enctype="multipart/form-data">
   <label for="Message">Write your message</label>
   <input name="Message" type="text">
 
