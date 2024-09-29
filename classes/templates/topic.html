@@ -35,14 +35,15 @@ function SendMessage(e) {
     alert('Enter a message before sending');
     return;
   }
-  
-  if (UserDataGet(getCookie('token')) == '0') {
 
-    e.preventDefault();
-    alert('You are not registred');
-    return;
+  UserDataGet(getCookie("token"))
 
-  }
+  .then(data => {
+    if (data == "0") {
+      alert("You are not regisrted")
+      return;
+    }
+  })
 
   console.log("user is registred")
 
