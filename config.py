@@ -27,3 +27,7 @@ except:
     AdminCitate = "der mench is bose"
     AdminLogoPath = "admin.png"
     
+    SiteAdress = ""
+    SitePort = ""
+    MailLogin = ""
+    MailPassword = ""

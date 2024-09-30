@@ -22,7 +22,7 @@ from .tools import *
 
 class server:
 
-    def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum"):
+    def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum", MailWorker = ""):
         #settings of server's behavior
         self.host = host
         self.port = port
@@ -37,6 +37,7 @@ class server:
         self.AdminToken = generate_token(self.AdminPassword, self.AdminUser)
         self.AdminLogoPath = AdminLogoPath
         self.ForumName = ForumName
+        self.MailWorker = MailWorker
 
 
         SockIO = SocketIO(self.server)
@@ -140,7 +141,8 @@ class server:
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
                         u = DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate)
-                        resp = redirect('/')
+                        MailWorker(f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum}")
+                        resp = render("info.html", message = f"<p>Go to your email to activate your account</p>")
                         
                         resp.set_cookie("token", u.token)
                         return resp
@@ -354,5 +356,17 @@ class server:
             
 
             return {"NumOfTopic":NumOfTopic, "NumOfMessages":NumOfMessages, "NumsOfUsers":NumsOfUsers, "Admin":AdminName, "ForumName": ForumName}
+        
+        @self.server.route("/ActivateEmail")
+        def ActivateEmail():
+            num = request.args.get('num')
+
+            UserData = DBWorker.User().get(num=num)
+            UserData.IsActivated = 1
+            UserData.save()
+
+            return render("info.html", message="Account is activated")
+        
+
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)

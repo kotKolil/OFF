@@ -57,7 +57,9 @@ def InitDB(DBWorker:object):
                 LogoPath TEXT,
                 citate TEXT,
                 time TEXT,
-                token TEXT UNIQUE NOT NULL
+                token TEXT UNIQUE NOT NULL,
+                ActiveNum INTEGER UNIQUE NOT NULL,
+                IsActivated INTEGER
             );
         """)
 

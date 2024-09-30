@@ -2,7 +2,7 @@ from .tools import *
 from .storage import *
 from .TableMetaClass import *
 
-
+from random import *
 import os
 
 class user(TableMetaClass):
@@ -10,15 +10,14 @@ class user(TableMetaClass):
     def __init__(self, DBworker):
         self.DBworker = DBworker
 
-    def get(self, user, password):
+    def get(self, user="", password="", num=""):
 
         super().get()
 
         UserHash = generate_token(user, password)
         
-        return UserStorage(self.DBworker(f"SELECT * FROM user WHERE token = '{UserHash}'"))
+        return UserStorage(self.DBworker(f"SELECT * FROM user WHERE token = '{UserHash}' OR ActiveNum = '{num}' "))
     
-
     def JsonGet(self, user, password):
 
         UserHash = generate_token(user, password)
@@ -31,8 +30,9 @@ class user(TableMetaClass):
         else:
             return {"email":UserData[0][0], "UserId":UserData[0][1], "IsAdmin":UserData[0][2], "IsBanned":UserData[0][3],"LogoPath":UserData[0][4], "citate":UserData[0][5], "time":UserData[0][6]}
 
-
-    
+    def ActivateUser(self, num):
+        UserData = UserStorage(self.DBworker(f"SELECT * FROM user WHERE token = '{num}'"))
+        self.DBworker("INSERT INTO user(IsActivated) VALUES (1)")
     
 
 
@@ -68,7 +68,7 @@ class user(TableMetaClass):
 
 
         # try:
-        self.DBworker(f"""INSERT INTO user VALUES ('{email}', '{user}', {is_admin}, {is_banned} , '{logo_path}', '{citate}', '{get_current_time()}',  '{generate_token(user, password)}' ) """)
+        self.DBworker(f"""INSERT INTO user VALUES ('{email}', '{user}', {is_admin}, {is_banned} , '{logo_path}', '{citate}', '{get_current_time()}',  '{generate_token(user, password)}', '{randint(1, 10**6)}', 0 ) """)
         return self.get(user, password)
         # except:
         #     return 0
