@@ -48,7 +48,7 @@ def error_decorator(self,func):
 def InitDB(DBWorker:object):
         # structure of table user: email,  UserId, IsAdmin, IsBanned, LogoPath, citate, time, token
 
-        DBWorker("""
+        DBWorker(query = """
             CREATE TABLE IF NOT EXISTS user (
                 email TEXT NOT NULL UNIQUE,
                 UserId TEXT UNIQUE,
@@ -61,14 +61,14 @@ def InitDB(DBWorker:object):
                 ActiveNum INTEGER UNIQUE NOT NULL,
                 IsActivated INTEGER
             );
-        """)
+        """, param = ())
 
                 
 
         # structure of table topic time|theme|author|about|TopicId
 
 
-        DBWorker("""
+        DBWorker(query = """
             CREATE TABLE IF NOT EXISTS topic(
                 time TEXT,
                 theme TEXT, 
@@ -81,13 +81,13 @@ def InitDB(DBWorker:object):
                   
                   
                   
-                  """)
+                  """, param = ())
 
                 
         # creating table messages, which represents the message class
         # structure of table messages: TopicId, MessageId, author, text, time
 
-        DBWorker("""
+        DBWorker(query = """
             CREATE TABLE IF NOT EXISTS messages (
                 TopicId TEXT REFERENCES topic(TopicId),
                 MessageId TEXT UNIQUE PRIMARY KEY,
@@ -95,4 +95,4 @@ def InitDB(DBWorker:object):
                 text TEXT,
                 time TEXT
             );
-        """)
+        """, param = ())

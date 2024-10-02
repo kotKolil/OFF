@@ -10,24 +10,24 @@ class messages(TableMetaClass):
     def get(self, MessageId):
         super().get()
 
-        return MessagesStorage(self.DBworker(f"SELECT * FROM messages WHERE MessageId = '{MessageId}'"))
+        return MessagesStorage(query = self.DBworker("SELECT * FROM messages WHERE MessageId = ?", param = (MessageId)))
     
     def JsonGet(self, MessageId):
 
-        MessageId = self.DBworker(f"SELECT * FROM WHERE = '{MessageId}' ")
+        MessageId = self.DBworker(query = "SELECT * FROM WHERE = ?", param = (MessageId))
 
         return {"TopicId":MessageId[0], "MessageId":MessageId[1], "author":MessageId[2], "text":MessageId[3], "time":MessageId[4]}
 
     def all_(self, TopicId):
         super().get
 
-        return [MessagesStorage(i) for i in self.DBworker(f"SELECT * FROM messages TopicId = '{TopicId}'")]
+        return [MessagesStorage(i) for i in self.DBworker(query  = "SELECT * FROM messages TopicId = ?", param = (TopicId) )]
     
     def AllJson(self, TopicId):
-        messages = self.DBworker(f"SELECT * FROM messages WHERE TopicId = '{TopicId}'")
+        messages = self.DBworker(query = "SELECT * FROM messages WHERE TopicId = ?", param = (TopicId))
         result = []
         for MessageId in messages:
-            author_data = self.DBworker(f"SELECT * FROM user WHERE UserId = '{MessageId[2]}'")
+            author_data = self.DBworker(query = "SELECT * FROM user WHERE UserId = ?", param = (MessageId[2]))
             if author_data:
                 author_data = author_data[0]
                 result.append({
@@ -54,7 +54,7 @@ class messages(TableMetaClass):
     def delete(self, MessageId):
 
         super().get
-        self.DBworker(f"DELETE * from messages WHERE MessageId = '{MessageId}'")
+        self.DBworker(query = "DELETE * from messages WHERE MessageId = ?", param = (MessageId))
 
     def create(self, TopicId, author, text, time_of_publication):
         # TopicId, MessageId, author, text, time_of_publication
@@ -62,7 +62,7 @@ class messages(TableMetaClass):
         
         try:
             Token = generate_id()
-            self.DBworker(f"INSERT INTO messages VALUES ('{TopicId}', '{Token}', '{author}', '{text}', '{get_current_time()}')")    
+            self.DBworker(query = "INSERT INTO messages VALUES (?, ?, ?, ?, ?)", para = ( TopicId, generate_id(), author, text, time_of_publication ) ) 
             return {"TopicId": TopicId, "MessageId": Token, "author":author, "text":text, "time":get_current_time()}
         except:
             return 0

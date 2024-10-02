@@ -1,7 +1,6 @@
 from mailbox import Message
 import sqlite3
 import psycopg2 as psql
-from py_find_injection import find_injection
 
 from .user import user
 from .message import *
@@ -14,14 +13,12 @@ class SQLite3:
     def __init__(self, path):
         self.path = path
 
-    def work(self, query):
+    def work(self, query, param):
 
-        if find_injection(query):
-            raise TypeError("SQL Injection detected")
 
         con = sqlite3.connect(self.path)
         cursor = con.cursor()
-        cursor.execute(query)
+        cursor.execute(query, param)
         data = cursor.fetchall()
         con.commit()
 
@@ -39,14 +36,12 @@ class postgres():
         self.user = user
         self.password = password
 
-    def work(self, query):
+    def work(self, query, param):
 
-        if find_injection(query):
-            raise TypeError("SQL Injection detected")
 
         conn = psql.connect(dbname=self.name, user=self.user, password=self.password, host=self.host, port=self.port)
         cursor = conn.cursor()
-        cursor.execute(query)
+        cursor.execute(query,param)
         data = cursor.fetchall()
         cursor.close()
         conn.close()

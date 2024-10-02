@@ -37,8 +37,7 @@ class server:
         self.AdminToken = generate_token(self.AdminPassword, self.AdminUser)
         self.AdminLogoPath = AdminLogoPath
         self.ForumName = ForumName
-        self.MailWorker = MailWorker
-
+        # self.MailWorker = MailWorker
 
         SockIO = SocketIO(self.server)
 
