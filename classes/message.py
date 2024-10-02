@@ -24,10 +24,10 @@ class messages(TableMetaClass):
         return [MessagesStorage(i) for i in self.DBworker(query  = "SELECT * FROM messages TopicId = ?", param = (TopicId) )]
     
     def AllJson(self, TopicId):
-        messages = self.DBworker(query = "SELECT * FROM messages WHERE TopicId = ?", param = (TopicId))
+        messages = self.DBworker(query = "SELECT * FROM messages WHERE TopicId = ?", param = (TopicId,))
         result = []
         for MessageId in messages:
-            author_data = self.DBworker(query = "SELECT * FROM user WHERE UserId = ?", param = (MessageId[2]))
+            author_data = self.DBworker(query = "SELECT * FROM user WHERE UserId = ?", param = (MessageId[2],))
             if author_data:
                 author_data = author_data[0]
                 result.append({

@@ -13,7 +13,7 @@ class SQLite3:
     def __init__(self, path):
         self.path = path
 
-    def work(self, query, param):
+    def work(self, query, param=("",)):
 
 
         con = sqlite3.connect(self.path)
@@ -36,7 +36,7 @@ class postgres():
         self.user = user
         self.password = password
 
-    def work(self, query, param):
+    def work(self, query, param = ("",)):
 
 
         conn = psql.connect(dbname=self.name, user=self.user, password=self.password, host=self.host, port=self.port)

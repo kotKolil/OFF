@@ -35,8 +35,6 @@ class user(TableMetaClass):
             return None  # Or return an appropriate error message
 
     def GetViaTokenJson(self, token):
-        os.system("cls")
-        print(token)
         UserData = self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (token,))
         if len(UserData) == 0:
             return False
@@ -44,17 +42,14 @@ class user(TableMetaClass):
             return {"email":UserData[0][0], "UserId":UserData[0][1], "IsAdmin":UserData[0][2], "IsBanned":UserData[0][3],"LogoPath":UserData[0][4], "citate":UserData[0][5], "time":UserData[0][6]}
 
     def ActivateUser(self, num):
-        UserData = UserStorage(self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (num)))
+        UserData = UserStorage(self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (num,)))
         self.DBworker(query = "INSERT INTO user(IsActivated) VALUES (?)", param = (1))
     
 
 
     def GetViaToken(self, token):
 
-        try:
-            return UserStorage(self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (token)))
-        except:
-            return False
+        return UserStorage(self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (token,)), DBWorker=self.DBworker)
     
     def all_(self):
         super().all_()

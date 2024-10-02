@@ -199,10 +199,9 @@ class server:
 
                 tok = request.cookies.get('token')
                 data = DBWorker.User().GetViaToken(tok)
-
-                try:
+                if data:
                     return render_template("CreateTopic.html", logo_path = data.LogoPath, user=data.UserId)
-                except:
+                else:
                     return redirect("/auth/log")
             elif request.method == "POST":
 
