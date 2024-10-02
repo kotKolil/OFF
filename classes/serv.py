@@ -121,6 +121,8 @@ class server:
                 # return page of registration
                 tok = request.cookies.get('token')
                 data = DBWorker.User().GetViaTokenJson(tok)
+                os.system("cls")
+                print(tok)
                 if data:
                     return redirect("/")
                 else:
@@ -157,13 +159,15 @@ class server:
         def log():
             if request.method == "GET":
                 tok = request.cookies.get('token')
-                if DBWorker.User().GetViaTokenJson(tok):
-                    return redirect("/")
-                else:
-                    return render_template("log.html")
-            elif request.method == "POST":
-
                 try:
+                    if DBWorker.User().GetViaTokenJson(tok):
+                        return redirect("/")
+                except:
+                    if tok:
+                        return redirect("/")
+                    else:
+                        return render_template("log.html")
+            elif request.method == "POST":
 
                     login = request.form.get("login")
                     password = request.form.get("password")
@@ -171,11 +175,6 @@ class server:
                     resp = redirect("/")
                     resp.set_cookie("token", u.token)
                     return resp
-                
-                except:
-                    
-                    return render_template("log.html", Text = "Incorret User or Password")
-
 
             
 
@@ -318,14 +317,11 @@ class server:
         @self.server.route("/api/GetUserInfo")
         def GetUserInfo():
             if request.method == "GET":
-                try:
-                    data = request.args.get('token')
-                    print(data)
-                    user_data = DBWorker.User().GetViaTokenJson(data)  # Assuming this returns a dictionary
-                    return jsonify(user_data)
-                except:
-                    return "0"
-            return "0"  # Or you might want to return an error response here as well.
+                data = request.args.get('token')
+                print(data)
+                user_data = DBWorker.User().GetViaTokenJson(data)  # Assuming this returns a dictionary
+                return jsonify(user_data)
+
         
 
         @self.server.route("/DeleteTopic")

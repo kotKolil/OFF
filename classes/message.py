@@ -49,7 +49,7 @@ class messages(TableMetaClass):
 
     def AllJson_(self):
 
-        return [{"TopicId":MessageId[0], "MessageId":MessageId[1], "author":MessageId[2], "text":MessageId[3], "time":MessageId[4]} for MessageId in self.DBworker(f"SELECT * FROM messages") ]
+        return [{"TopicId":MessageId[0], "MessageId":MessageId[1], "author":MessageId[2], "text":MessageId[3], "time":MessageId[4]} for MessageId in self.DBworker(query = "SELECT * FROM messages", param = ()) ]
 
     def delete(self, MessageId):
 

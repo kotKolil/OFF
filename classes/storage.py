@@ -10,12 +10,13 @@ class UserStorage:
         self.LogoPath = Data[0][4]
         self.citate = Data[0][5]
         self.time = Data[0][6]
-        self.ActiveNum = Data[0][7]
-        self.IsActivated = Data[0][8]
+        self.token = Data[0][7]
+        self.ActiveNum = Data[0][8]
+        self.IsActivated = Data[0][9]
 
     def save(self):
-        self.DBWorker(f"""INSERT INTO user(email, UserId, IsAdmin, IsBanned, LogoPath, citate, time, ActiveNum, IsActivated) VALUES ('{self.email}', '{self.UserId}', '{self.IsAdmin}',
-                       '{self.IsBanned}', '{self.LogoPath}', '{self.citate}', '{self.time}', '{self.ActiveNum}', '{self.IsActivated}')""")
+        self.DBWorker(query = """INSERT INTO user(email, UserId, IsAdmin, IsBanned, LogoPath, citate, time, ActiveNum, IsActivated) VALUES (?, ?, ?, ?,  ?, ?, ?, ?, ?, ?)""", param = (self.email, self.UserId, self.IsAdmin,
+                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated))
         
 class TopicStorage:
 

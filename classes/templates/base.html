@@ -24,6 +24,7 @@
             }
             else {
                 var UserData = await UserDataGet(UserToken);
+                console.log(UserData)
                 $("#LogoImage").attr("src", `/media/${UserData.LogoPath}`);
                 $("#UserName").text(`${UserData.UserId}`);
             }

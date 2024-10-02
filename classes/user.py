@@ -16,15 +16,28 @@ class user(TableMetaClass):
 
         UserHash = generate_token(user, password)
         
-        return UserStorage(self.DBworker( query = "SELECT * FROM user WHERE token = ? OR ActiveNum = ? "), param =  (UserHash, num))
+        return UserStorage(self.DBworker( query = "SELECT * FROM user WHERE token = ? OR ActiveNum = ? ", param =  (UserHash, num)), DBWorker=self.DBworker)
     
     def JsonGet(self, user, password):
-
         UserHash = generate_token(user, password)
-        UserData = self.DBworker(query = "SELECT * FROM user WHERE token = ?", param =  (UserHash))
-        return {"email":UserData[0][0], "UserId":UserData[0][1], "IsAdmin":UserData[0][2], "IsBanned":UserData[0][3],"LogoPath":UserData[0][4], "citate":UserData[0][5], "time":UserData[0][6]}
+        UserData = self.DBworker(query="SELECT  FROM user WHERE token = ?", param=(UserHash,))
+        if UserData:  # Check if the query returned any results
+            return {
+                "email": UserData[0][0],
+                "UserId": UserData[0][1],
+                "IsAdmin": UserData[0][2],
+                "IsBanned": UserData[0][3],
+                "LogoPath": UserData[0][4],
+                "citate": UserData[0][5],
+                "time": UserData[0][6]
+            }
+        else:
+            return None  # Or return an appropriate error message
+
     def GetViaTokenJson(self, token):
-        UserData = self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (token))
+        os.system("cls")
+        print(token)
+        UserData = self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (token,))
         if len(UserData) == 0:
             return False
         else:
@@ -46,12 +59,12 @@ class user(TableMetaClass):
     def all_(self):
         super().all_()
 
-        return [UserStorage(i) for i in self.DBworker("SELECT * FROM user")]
+        return [UserStorage(i) for i in self.DBworker(query = "SELECT * FROM user", param = ())]
     
     def AllJson(self):
         super().all_()
 
-        return [ {"email":i[0], "UserId":i[1], "IsAdmin":i[2], "IsBanned":i[3],"LogoPath":i[4], "citate":i[5], "time":i[6]} for i in self.DBworker(f"SELECT * FROM user")]
+        return [ {"email":i[0], "UserId":i[1], "IsAdmin":i[2], "IsBanned":i[3],"LogoPath":i[4], "citate":i[5], "time":i[6]} for i in self.DBworker(query = "SELECT * FROM user", param = ())]
 
     def delete(self,user, password):
         super().delete()
