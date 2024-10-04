@@ -159,14 +159,8 @@ class server:
         def log():
             if request.method == "GET":
                 tok = request.cookies.get('token')
-                try:
-                    if DBWorker.User().GetViaTokenJson(tok):
+                if DBWorker.User().GetViaTokenJson(tok).token == tok:
                         return redirect("/")
-                except:
-                    if tok:
-                        return redirect("/")
-                    else:
-                        return render_template("log.html")
             elif request.method == "POST":
 
                     login = request.form.get("login")

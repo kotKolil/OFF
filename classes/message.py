@@ -1,25 +1,18 @@
 from .tools import *
-from .TableMetaClass import *
 from .storage import *
+from wrap import *
 
-class messages(TableMetaClass):
+class messages():
 
     def __init__(self, DBworker):
-        super().__init__(DBworker)
+        self.DBworker = DBworker
 
-    def get(self, MessageId):
-        super().get()
-
+    @MessageFormatWrapper
+    def get(self, MessageId, format = "obj"):
         return MessagesStorage(query = self.DBworker("SELECT * FROM messages WHERE MessageId = ?", param = (MessageId)))
     
-    def JsonGet(self, MessageId):
-
-        MessageId = self.DBworker(query = "SELECT * FROM WHERE = ?", param = (MessageId))
-
-        return {"TopicId":MessageId[0], "MessageId":MessageId[1], "author":MessageId[2], "text":MessageId[3], "time":MessageId[4]}
 
     def all_(self, TopicId):
-        super().get
 
         return [MessagesStorage(i) for i in self.DBworker(query  = "SELECT * FROM messages TopicId = ?", param = (TopicId) )]
     
@@ -53,12 +46,10 @@ class messages(TableMetaClass):
 
     def delete(self, MessageId):
 
-        super().get
         self.DBworker(query = "DELETE * from messages WHERE MessageId = ?", param = (MessageId))
 
     def create(self, TopicId, author, text, time_of_publication):
         # TopicId, MessageId, author, text, time_of_publication
-        super().create
         
         try:
             Token = generate_id()

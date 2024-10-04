@@ -6,7 +6,6 @@ import time
 
 from .settings import *
 
-
 sample= '1h9K8L9h5d5v5Z4q7'
 
 
@@ -96,3 +95,6 @@ def InitDB(DBWorker:object):
                 time TEXT
             );
         """, param = ())
+
+
+    
