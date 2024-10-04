@@ -3,40 +3,126 @@ from .storage import *
 def UserFormatWrapper(InputFunc):
     def wrapper(*args):
         TypeOfData = args[2]
-        UserData = InputFunc(args)
-        if TypeOfData == "obj":
-            return UserStorage(UserData[0], UserData[1])
-        elif TypeOfData == "json":
-            return {
-                "email":UserData[0][0],
-                "UserId":UserData[0][1],
-                "IsAdmin":UserData[0][2],
-                "IsBanned":UserData[0][3],
-                "LogoPath":UserData[0][4],
-                "citate":UserData[0][5],
-                "time":UserData[0][6],
-                "token":UserData[0][7],
-                "ActiveNum":UserData[0][8],
-                "IsActivated":UserData[0][9]
-            }
-        else:
-            raise TypeError("Uknwon format of output data")
+        FuncData = InputFunc(args)
+        try:
+            #checking is obj iterable
+            #if iterable, continue formating as iterable obj
+            iter(FuncData)
+
+            if TypeOfData == "obj":
+                return [ UserStorage(i[0], FuncData[1])  for i in FuncData[0]  ]
+            elif TypeOfData == "json":
+                return [
+                            {
+                            "email":i[0],
+                            "UserId":i[1],
+                            "IsAdmin":i[2],
+                            "IsBanned":i[3],
+                            "LogoPath":i[4],
+                            "citate":i[5],
+                            "time":i[6],
+                            "token":i[7],
+                            "ActiveNum":i[8],
+                            "IsActivated":i[9],
+                        }
+                            for i in FuncData[0]
+                ]
+
+            else:
+                raise TypeError("Uknwon format of output data")
+            
+        except TypeError:
+            #if not iterable, we except error
+            
+            if TypeOfData == "obj":
+                return UserStorage(InputFunc[0], InputFunc[1])
+            elif TypeOfData == "json":
+                return                             {
+                            "email":FuncData[0][0],
+                            "UserId":FuncData[0][1],
+                            "IsAdmin":FuncData[0][2],
+                            "IsBanned":FuncData[0][3],
+                            "LogoPath":FuncData[0][4],
+                            "citate":FuncData[0][5],
+                            "time":FuncData[0][6],
+                            "token":FuncData[0][7],
+                            "ActiveNum":FuncData[0][8],
+                            "IsActivated":FuncData[0][9]
+                        }
 
     return wrapper
 
 def MessageFormatWrapper(InputFunc):
     def wrapper(*args):
-        TypeOfData = args[2]
-        MsgData = InputFunc(args)
-        if TypeOfData == "obj":
-            return MessagesStorage(MsgData[0], MsgData[1])
-        elif TypeOfData == "json":
-            return {
-                "TopicId":MsgData[0][0],
-                "MesageId":MsgData[0][1],
-                "author":MsgData[0][2],
-                "text":MsgData[0][3],
-                "time":MsgData[0][4]
-            }
-        else:
-            raise TypeError("Uknwon format of output data")
+        TypeOfData = args[1]
+        FuncData = InputFunc(args)
+        try:
+            iter(FuncData)
+            if TypeOfData == "obj":
+                return [ MessagesStorage(i[0], FuncData[1]) for i in FuncData[0] ]
+            elif TypeOfData == "json":
+                return [
+                        {
+                        "TopicId":i[0],
+                        "MesageId":i[1],
+                        "author":i[2],
+                        "text":i[3],
+                        "time":i[4]
+                    }
+                for i in FuncData[0]
+            ]
+            else:
+                raise TypeError("Uknwon format of output data")
+        except TypeError:
+            if TypeOfData == "obj":
+                return MessagesStorage(FuncData[0], FuncData[1])
+            elif TypeOfData == "json":
+                return {
+                    "TopicId":FuncData[0][0],
+                    "MesageId":FuncData[0][1],
+                    "author":FuncData[0][2],
+                    "text":FuncData[0][3],
+                    "time":FuncData[0][4]
+                }
+            
+    return wrapper
+
+def TopicFormatWrapper(InputFunc):
+    def wrapper(*args):
+        TypeOfData = args[1]
+        FuncData = InputFunc(*args)
+        
+        try:
+            iter(FuncData[0])
+            
+            if TypeOfData == "obj":
+                return [
+                    MessagesStorage(i, FuncData[1]) 
+                    for i in FuncData[0]
+                ]
+            elif TypeOfData == "json":
+                return [
+                    {
+                        # TopicId, MessageId, author, text, time_of_publication
+                        "TopicId": i[0],
+                        "MessageId": i[1],
+                        "author": i[2],
+                        "text": i[3],
+                        "time_of_publication": i[4]
+                    }
+                    for i in FuncData[0]
+                ]
+        
+        except TypeError:
+            if TypeOfData == "obj":
+                return MessagesStorage(FuncData[0], FuncData[1])
+            elif TypeOfData == "json":
+                return {
+                    "TopicId":FuncData[0][0],
+                    "MessageId":FuncData[0][1],
+                    "author":FuncData[0][2],
+                    "text":FuncData[0][3],
+                    "time_of_publication":FuncData[0][4]
+                }
+
+    return wrapper
