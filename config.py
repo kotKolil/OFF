@@ -31,3 +31,6 @@ except:
     SitePort = ""
     MailLogin = ""
     MailPassword = ""
+
+    AppSecretKey = ""
+    JwtSecretKey = ""

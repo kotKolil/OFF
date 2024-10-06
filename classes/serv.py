@@ -14,6 +14,8 @@ from flask_sock import *
 from time import *
 from flask_socketio import *
 import sqlite3
+from flask import Flask, jsonify, request
+from flask_jwt_extended import *
 
 # local classes
 from .loggers import *
@@ -22,13 +24,17 @@ from .tools import *
 
 class server:
 
-    def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum", MailWorker = ""):
+    def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", 
+                 AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum", MailWorker = "", AppSecretKey = "", JwtSecretKey = ""):
         #settings of server's behavior
         self.host = host
         self.port = port
         self.IsDebug = IsDebug
         self.server = Flask(__name__)
+        self.jwt = JWTManager(self.server)
         self.server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+        self.server.config['SECRET_KEY'] = AppSecretKey
+        self.server.config['JWT_SECRET_KEY'] = JwtSecretKey
         self.ClassLogger = ClassLoger
         self.AdminName = AdminName
         self.AdminUser = AdminUser
@@ -50,44 +56,24 @@ class server:
         @SockIO.on("message")
         def my_event(message):
 
-            system("cls")
-            print(message)
-
-            UserToken = message["UserToken"]
+            JWTData = decode_token(message["JWToken"])
+            UserId = JWTData["identity"]
             ThreadId = message["ThreadId"]
             Message = message["Message"]
-            
-            UserData = DBWorker.User().GetViaTokenJson(UserToken)
-            DBWorker.Message().create(ThreadId, UserData["UserId"], Message, get_current_time())
+            DBWorker.Message().create(ThreadId, UserId  , Message, get_current_time())
+            UserData = DBWorker.User().get(user = UserId, format="json")
 
             emit("message", {"UserData":UserData, "MessageData":{"text":Message, "TopicId":ThreadId}}, broadcast=True)
-
-            
-
-
-
-
-
-
-
 
         @SockIO.on("connect")
         def OnOpenEvent():
             print("WebSockets connection estabilished")
-
-
+            emit("message", {"info":"WebSockets connection estabilished"})
 
         #views, wich handle errors
         @self.server.errorhandler(404)
         def Handler404(e):
-
-            tok = request.cookies.get('token')
-            
-            data = DBWorker.User().GetViaToken(tok)
-            try:
-                return render("index.html",  TopicHtml="<H1>404. Page not found")      
-            except:
-                return render("index.html", logo_path="default.png")
+            return render("info_html", message="HTTP 404<p>Page Not Found")
             
 
 
@@ -120,24 +106,23 @@ class server:
             if request.method == "GET":
                 # return page of registration
                 tok = request.cookies.get('token')
-                data = DBWorker.User().GetViaTokenJson(tok)
-                os.system("cls")
-                print(tok)
-                if data:
+                JWTData = decode_token(tok)
+                if JWTData:
                     return redirect("/")
                 else:
                     return render_template("reg.html")
             elif request.method == "POST":
+
                 # getting data from POST request
                 login = request.form.get("login")
                 email = request.form.get("email")
                 password = request.form.get("password")
                 citate = request.form.get("citate")
                 file = request.files.get('logo')
+
                 if file.filename == '': 
                     return redirect(request.url)
                 if file and allowed_file(file.filename):
-                    #open( os.path.join( os.getcwd(),"classes\media", file.filename ) , "w" ).close() 
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
@@ -145,7 +130,9 @@ class server:
                         MailWorker(f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum}")
                         resp = render("info.html", message = f"<p>Go to your email to activate your account</p>")
                         
-                        resp.set_cookie("token", u.token)
+                        JWToken = create_access_token(identity=u.UserId)
+
+                        resp.set_cookie("token", JWToken)
                         return resp
                     except sqlite3.IntegrityError:
                         return render_template("reg.html", message="Username already used")
@@ -159,15 +146,17 @@ class server:
         def log():
             if request.method == "GET":
                 tok = request.cookies.get('token')
-                if DBWorker.User().GetViaTokenJson(tok).token == tok:
-                        return redirect("/")
+                JWTData = decode_token(tok)
+                if JWTData:
+                    return redirect("/")
             elif request.method == "POST":
 
                     login = request.form.get("login")
                     password = request.form.get("password")
                     u = DBWorker.User().get(login, password)
                     resp = redirect("/")
-                    resp.set_cookie("token", u.token)
+                    JWToken = create_access_token(identity=u.UserId)
+                    resp.set_cookie("token", JWToken)
                     return resp
 
             
@@ -179,172 +168,68 @@ class server:
             resp.set_cookie("token", "Null")
             return resp
         
-
-        #topic view
-        @self.server.route("/topic", methods=["GET", "POST"])
-        def Topic():
-            if request.method == "GET":
-                return render_template("topic.html")
-
-        #topic create
-        @self.server.route("/topic/create", methods = ["POST", "GET", "PATCH"])
-        def TopicCreate():
-            if request.method == "GET":
-
-                tok = request.cookies.get('token')
-                data = DBWorker.User().GetViaToken(tok)
-                if data:
-                    return render_template("CreateTopic.html", logo_path = data.LogoPath, user=data.UserId)
-                else:
-                    return redirect("/auth/log")
-            elif request.method == "POST":
-
-
-                tok = request.cookies.get('token')
-                data = DBWorker.User().GetViaToken(tok)
-                
-                #creating new thread
-                theme = request.form.get("name")
-                name = request.form.get("theme")
-                about = request.form.get("about")
-
-                
-
-                a = DBWorker.Topic().create(theme, data.UserId, get_current_time())
-
-                return redirect("/auth/log")
-                
-                
-            else:
-                return ["400"]
-
-
-        @self.server.route("/message", methods=["POST"])
-        def PostMessage():
+        @self.server.route("api/user/ChangeLogo")
+        def ChangeLogo():
             if request.method == "POST":
-                #LogoPath,Username, Message, Phrase
-                tok = request.cookies.get('token')
-                Text = request.form.get("Message")
-                TopicId = request.form.get("TopicId")
-                AuthToken = request.form.get("AuthToken")
-
-                UserData = DBWorker.User().GetViaToken(tok)
-
-                DBWorker.Message().create(TopicId, UserData.UserId, Text, get_current_time())
-
-                return {"MessageSnippet":""}
-
-        #this API is giving tokens for log in system
-        @self.server.route("/api/auth")
-        def ApiAuth(request):
-            if request.method == "GET":
-                data = request.get_json(force=False, silent=False, cache=True)
-                if len(data) == 0:  
-                    return jsonify(["400", "bad request"], status=400)
-                
-                pswd = data["pswd"]
-                login = data["login"]
-                data = DBWorker.User().get(login, pswd)
-                return data[0][8]
-
-        #this API is registrating users
-        @self.server.route("/api/reg")
-        def RegAPI(request):
-            if request.method == "POST":
-                data = request.get_json(force=False, silent=False, cache=True)
-                citate = data["citate"]
-                login = data["login"]
-                email = data["email"]
-                password = data["password"]
-                citate = data["citate"]
-                file = data['logo']
+                UserId = get_jwt_identity(request.json()["token"])
+                file = request.files.get('logo')
                 if file and allowed_file(file.filename):
-                    open( os.path.join(os.getcwd(), "classes\media", file.filename) , "w" ).close()
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
-                    u = DBWorker.User().create(password=password, user_id=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate,
-                                time_of_join= get_current_time(), email = email)
-                    return jsonify([u.token, "201"], status=201)
-                
+                    DBWorker.User().get(user = UserId).LogoPath = file.filename
+                    return os.path.join(os.getcwd(), "classes\media", file.filename), 201
+                return "Bad Request", 400
+
+        @self.server.route("/api/user")
+        def user():
+            if request.method == "GET":
+                JWToken = request.args.get("JWToken")
+                if decode_token(JWToken):
+                    UserId = get_jwt_identity(JWToken)
+                    return DBWorker.User().get(user = UserId, format = "json")
                 else:
-                    return jsonify(["400", "bad request"], status=400)
+                    return 401
+            elif request.method == "CREATE":
+                RequestData = request.get_json()
+                
+                if RequestData:
+                    
+                    email = RequestData["email"]
+                    UserId = RequestData["UserId"]
+                    password  = RequestData["password"]
+                    citate = RequestData["citate"]
+
+                    try:
+                        DBWorker.User().create(password, email, UserId, 0, 0, "", citate)
+                        MailWorker(f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum} to activate you account")
+                        message = f"<p>Go to your email to activate your account</p>"
+                        return message, 201
+                    except:
+                        return "bad user or password", 400
+                else:
+                    return 400, "Bad Request"
+                
+            elif request.method == "DELETE":
+                WToken = request.args.get("JWToken")
+                if decode_token(JWToken):
+                    try:
+                        DBWorker.User().delete(user = get_jwt_identity(JWToken))
+                        return 200
+                    except:
+                        return 400
+                else:
+                    return 401
+    
+        
+
+        @self.server.route("/api/user/CheckToken", methods = ["POST"])
+        def CheckToken():
+            JWToken = request.get_json()["JWToken"]
+            if decode_token(JWToken):
+                return 200
             else:
-                return jsonify(["400", "bad request"], status=400)
+                return 400
             
-
-        #this API for work with topic
-        @self.server.route("/api/topic")
-        def ThreadAPI():
-            if request.method == "GET":
-                TopicId = request.args.get("TopicId", type= str)
-
-                Messages = DBWorker.Message().AllJson(TopicId)
-
-                TopicData = DBWorker.Topic().get(TopicId)
-
-                return jsonify({"theme":TopicData.theme, "author":TopicData.author, "about":TopicData.about, "Msgs":Messages})
-            elif request.method == "POST":
-                data = request.get_json(force=False, silent=False, cache=True)
-                tok = data['token']
-                UsrLogin = DBWorker.user.GetViaToken(tok)
-
-                #creating new thread
-                theme = data["name"]
-                name = data["theme"]
-                about = data["about"]
-
-
-                try:
-                    a = DBWorker.Topic().create(theme, UsrLogin.UserId, about)
-                    return 201
-                except Exception as e:
-                    return [str(e), 400]
-
-                
-        @self.server.route("/api/AllTopic")
-        def AllTopic():
-                Messages = DBWorker.Topic().AllJson()
-
-                return Messages
-
-        @self.server.route("/api/GetUserInfo")
-        def GetUserInfo():
-            if request.method == "GET":
-                data = request.args.get('token')
-                print(data)
-                user_data = DBWorker.User().GetViaTokenJson(data)  # Assuming this returns a dictionary
-                return jsonify(user_data)
-
-        
-
-        @self.server.route("/DeleteTopic")
-        def DeleteTopic():
-            try:
-                UserToken = request.cookies.get('token')
-                Id = request.args.get('id')
-                UserData = DBWorker.User().GetUserOnToken(UserToken)
-                TopicData = DBWorker.Topic().GetViaToken(Id)
-
-                if UserData.UserId == TopicData.author or UserData.IsAdmin:
-                    DBWorker.topic.delete()
-                    return render_template("info.html", message="Your deleted a thread")
-                else:
-                    return render_template("info.html", message="Your deleted a thread")
-            except:
-                return render_template("info.html", message="You dont have permession to delete thread")
-
-
-        @self.server.route("/api/ForumInfo")
-        def ForumInfo():
-
-            NumOfTopic = len(DBWorker.Topic().AllJson())
-            NumOfMessages = len(DBWorker.Message().AllJson_())
-            NumsOfUsers = len(DBWorker.User().AllJson())
-
-            
-
-            return {"NumOfTopic":NumOfTopic, "NumOfMessages":NumOfMessages, "NumsOfUsers":NumsOfUsers, "Admin":AdminName, "ForumName": ForumName}
-        
         @self.server.route("/ActivateEmail")
         def ActivateEmail():
             num = request.args.get('num')
@@ -354,7 +239,77 @@ class server:
             UserData.save()
 
             return render("info.html", message="Account is activated")
+
+        @self.server.route("/user/all")
+        def UserAll():
+            return DBWorker.User().all(format="json")
+        
+        
+        @self.server.route("/api/topic")
+        def ApiTopic():
+            if request.method == "GET":
+                TopciId = request.args.get("TopicId")
+                return DBWorker.Topic().get(TopciId = TopciId, format = 'json')
+            elif request.method == "POST":
+                RequestData = request.get_json()
+                UserId = get_jwt_identity(RequestData["token"])
+
+                if RequestData and UserId:
+                    theme = RequestData["theme"]
+                    about = RequestData["about"]
+
+                    TopicCreated = DBWorker.Topic().create(theme, UserId, about)
+
+                    return DBWorker.Topic().get(TopciId = TopicCreated.TopicId, format = "json")
+
+                else:
+                    return 400
+                
+            elif request.method == "DELETE":
+                RequestData = request.get_json()
+
+                TopicId = RequestData["TopicId"]
+                UserId = get_jwt_identity(RequestData["token"])
+
+                UserData = DBWorker.User().get(user = UserId)
+                TopicData = DBWorker.Topic().get(TopicId = TopicId)
+                if TopicData.auhor == UserId or UserData.IsAdmin:
+                    DBWorker.Message().delete(TopciId = TopicId)
+                    return 200
+                else:
+                    return "Denied", 403
+            
+        @self.server.route("/topic/all")
+        def AllTopic():
+            return DBWorker.Topic().all(format = "json")
         
 
+        @self.server.route("/api/messages")
+        def ApiMessage():
+            if request.method == "GET":
+                MessageId = request.args.get("MessageId")
+                return DBWorker.Topic().get(MessageId = MessageId, format = 'json')
+            elif request.method == "POST":
+                RequestData = request.get_json()
+                UserId = get_jwt_identity(RequestData["token"])
+                if RequestData and UserId:
+                    TopicId = RequestData["TopicId"]
+                    text = RequestData["text"]
+                    DBWorker.Message().create(TopicId, UserId, text)
+                    return 201
+            elif request.method == "DELETE":
+                RequestData = request.get_json()
+
+                TopicId = RequestData["MessageId"]
+                UserId = get_jwt_identity(RequestData["token"])
+
+                UserData = DBWorker.User().get(user = UserId)
+                TopicData = DBWorker.Message().get(MessageId = TopicId)
+                if TopicData.auhor == UserId or UserData.IsAdmin:
+                    DBWorker.Message().get(MessageId = TopicId)
+                    return 200
+                else:
+                    return "Denied", 403
+            
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)

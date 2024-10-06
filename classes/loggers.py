@@ -15,8 +15,8 @@ class txt_log():
 
     def log_message(self, text):
         try:
-            with open(self.__p4th + self.__filename, "r") as file:
-                file.write(f"[{get_current_time}] text \n")
+            with open(self.path + self.filename, "r") as file:
+                file.write(f"[{get_current_time}] {text} \n")
                 file.close()
 
             return 1

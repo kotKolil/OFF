@@ -10,8 +10,10 @@ class user():
         self.DBworker = DBworker
 
     @UserFormatWrapper
-    def get(self, user="", password="", format = "obj", token = ""):
-        if user != "" and password != "":
+    def get(self, user="", password="", format = "obj", token = ""):    
+        if user != "" and password == "":
+            return [ self.DBworker(query = "SELECT * FROM user WHERE token = ?", param = (user) ) , self.DBworker]
+        elif user != "" and password != "":
             UserHash = generate_token(user, password)
             return [self.DBworker(query = "SELECT * FROM user WHERE token = ? OR ActiveNum = ? ", param =  (UserHash)), self.DBworker ]
         
@@ -23,7 +25,9 @@ class user():
         return [UserStorage([i], self.DBworker) for i in self.DBworker("SELECT * FROM user")]
 
     def delete(self,user, password, token):
-        if user != "" and password != "":
+        if user != "" and password == "":
+            self.DBworker(query = "DELETE * FROM user WHERE UserId = ?", param = (user) )
+        elif user != "" and password != "":
             self.DBworker(query = "DELETE * FROM user WHERE token = ?", param = (generate_token(user, password)) )
             return 1
         elif token != "":

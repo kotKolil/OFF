@@ -15,8 +15,8 @@ class UserStorage:
         self.IsActivated = Data[0][9]
 
     def save(self):
-        self.DBWorker(query = """INSERT INTO user(email, UserId, IsAdmin, IsBanned, LogoPath, citate, time, ActiveNum, IsActivated) VALUES (?, ?, ?, ?,  ?, ?, ?, ?, ?, ?)""", param = (self.email, self.UserId, self.IsAdmin,
-                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated))
+        self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ? WHERE UserId = ?""", param = (self.email, self.UserId, self.IsAdmin,
+                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.UserId))
         
 class TopicStorage:
 
@@ -30,8 +30,8 @@ class TopicStorage:
         self.TopicId = Data[0][4]
     
     def save(self):
-        self.DBWorker(f"""INSERT INTO topic(time, theme, author, about, TopicId) VALUES ('{self.time}', '{self.theme}', 
-                      '{self.author}', '{self.about}', '{self.TopicId}')""")
+        self.DBWorker(query = "UPDATE topic SET time = ?, theme = ?, author = ?, about = ?, TopicId = ? WHERE TopicId = ? "), param = (self.time,  self.theme, 
+                      self.author,  self.about, self.TopicId, self.TopicId )
         
 class MessagesStorage:
 
@@ -45,5 +45,5 @@ class MessagesStorage:
         self.time = Data[0][4]
 
     def save(self):
-        self.DBWorker(f"""INSERT INTO messages(TopicId, MessageId, author, text, time) VALUES ('{self.TopicId}', '{self.MessageId}',
-                      '{self.author}', '{self.text}', '{self.time}' )""")
+        self.DBWorker(query = "UPDATE messages SET TopicId = ?, MessageId = ?, author = ?, text = ?, time = ?", param =  (self.TopicId, self.MessageId, self.author,
+                                                                                                                           self.text, self.time) )
