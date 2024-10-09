@@ -18,7 +18,7 @@
         $(document).ready ( async () => {
             //loading info about user via js and api
             var UserToken = getCookie("token")
-            if (UserToken === "" || UserToken === "Null") {
+            if (await IsLogged(UserToken)) {
                 $("#LogoImage").attr("src", "/media/default.png");
                 $("#UserName").text("Anonim")
             }
@@ -29,10 +29,18 @@
                 $("#UserName").text(`${UserData.UserId}`);
             }
 
-            var ForumData = await fetch("/api/ForumInfo")
-            ForumData = await ForumData.json()
+            var NumOfMessages = ( await fetch("/api/messages/all") ).json().parse().length
+            var NumOfTopic = ( await fetch("/api/topic/all") ).json().parse().length
+            var NumsOfUsers = ( await fetch("/api/user/all") ).json().parse().length
+            NumsOfUsers = ( await fetch("/api/user/all") ).json().parse()
+            var Admin = ""
+            for (var i = 0; i ++; i < NumsOfUsers.length) {
+                if (NumsOfUsers[i].IsAdmin == 1) {
+                    Admin = NumsOfUsers[i].UserId
+                }
+            }
 
-            $("#ForumState").text(`There are ${ForumData.NumOfMessages} messages in ${ForumData.NumOfTopic} topics from ${ForumData.NumsOfUsers} users. Admin is ${ForumData.Admin}`)
+            $("#ForumState").text(`There are ${NumOfMessages} messages in ${NumOfTopic} topics from ${NumsOfUsers} users. Admin is ${Admin}`)
             $(".brand").text(ForumData.ForumName)
 
     }

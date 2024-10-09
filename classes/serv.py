@@ -96,8 +96,12 @@ class server:
         #index page
         @self.server.route('/')
         def index():
-            return render("index.html")      
+            return render("index.html")     
 
+        #topic page
+        @self.server.route('/topic')
+        def index():
+            return render("topic.html")
 
         #auth methods
         # structure of table user: password, user_id, is_admin, is_banned, logo_path, citate, time_of_join, token
@@ -226,9 +230,9 @@ class server:
         def CheckToken():
             JWToken = request.get_json()["JWToken"]
             if decode_token(JWToken):
-                return 200
+                return [1]
             else:
-                return 400
+                return [0]
             
         @self.server.route("/ActivateEmail")
         def ActivateEmail():
@@ -240,12 +244,12 @@ class server:
 
             return render("info.html", message="Account is activated")
 
-        @self.server.route("/user/all")
+        @self.server.route("/api/user/all")
         def UserAll():
             return DBWorker.User().all(format="json")
         
         
-        @self.server.route("/api/topic")
+        @self.server.route("api/topic")
         def ApiTopic():
             if request.method == "GET":
                 TopciId = request.args.get("TopicId")
@@ -279,7 +283,7 @@ class server:
                 else:
                     return "Denied", 403
             
-        @self.server.route("/topic/all")
+        @self.server.route("/api/topic/all")
         def AllTopic():
             return DBWorker.Topic().all(format = "json")
         
@@ -310,6 +314,10 @@ class server:
                     return 200
                 else:
                     return "Denied", 403
+                
+        @self.server.route("/api/messages/all")
+        def TopicAll():
+            return DBWorker.Messagee().all(format="json")
             
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)

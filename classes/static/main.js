@@ -21,7 +21,7 @@ function getQueryParam(name) {
 }
 
 var UserDataGet = async (token) => {
-    const userRequest = await fetch(`/api/GetUserInfo?token=${token}`);
+    const userRequest = await fetch(`/api/user?JWToken=${token}`);
   
     if (await userRequest.ok) {
       const userData = await userRequest.json();
@@ -34,3 +34,32 @@ var UserDataGet = async (token) => {
       return "0";
     }
   };
+
+
+const IsLogged = async (token) => {
+  try {
+    const response = await fetch(`/api/user/CheckToken`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "JWToken": token
+      })
+    });
+
+    const JsonData = await response.json();
+
+    if (JsonData[0] === 1) {
+      return true;
+    } else if (JsonData[0] === 0) { 
+      return false;
+    }
+
+    return null;
+
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

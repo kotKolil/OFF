@@ -67,8 +67,6 @@ function SendMessage(e) {
 <script>
   //setting the "Delete Topic" link
   $(document).ready( async () => {
-      $("#DeleteTopic").attr("href", "/DeleteTopic?id=" + getQueryParam("id"));
-
 
   //setting info about topic
   fetch(`/api/topic?TopicId=${getQueryParam("id")}`)
@@ -78,48 +76,40 @@ function SendMessage(e) {
   })
   .then(function (data) {
 
-    console.log(data)
-
     //Inserting topic information using jQuery
     $("#TopicInfo").text(`${data.theme} | ${data.author} | ${data.about }`);
-
-    //Inserting messages
-    var HTMLcontent = ""
-    data.Msgs.forEach( async (element) => {
-      $("#Msgs").append( await MsgSnippet(element.author, element.text));
-    });
-
 
     }
   );
 
   var Form = $("form")
   Form.submit(e => {SendMessage(e)})
-
 }
 
+fetch(`/api/messages/all`)
 
-
+.then(
+  function (response) {
+    HTMLcontent = ""
+    response.array.forEach(element => {
+      if (element.TopicId == getQueryParam("id")) {
+        HTMLcontent = HTMLcontent + MsgSnippet(element.author, element.text)
+      }
+    });
+  }
+  $("$Msgs").innerHTML = HTMLcontent
+)
 
 
 );
-
-
-
   </script>
 
-
-
-
-
 <p style="color:red;" id="error"></p>
-<a href= "/DeleteTopic" id="DeleteTopic">Delete Topic</a>
 <form method="POST" enctype="multipart/form-data">
+
   <label for="Message">Write your message</label>
   <input name="Message" type="text">
-
   <input name="TopicId" type="hidden" value="">
-
   <input name="AuthToken" type="hidden" value="">
 
 </form>
