@@ -3,7 +3,7 @@ import psycopg2
 
 from .tools import *
 from .storage import *
-from wrap import *
+from .wrap import *
 
 class messages():
 

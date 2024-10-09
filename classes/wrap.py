@@ -1,9 +1,9 @@
 from .storage import *
 
 def UserFormatWrapper(InputFunc):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         TypeOfData = args[2]
-        FuncData = InputFunc(args)
+        FuncData = InputFunc(*args, **args)
         try:
             #checking is obj iterable
             #if iterable, continue formating as iterable obj
@@ -53,9 +53,9 @@ def UserFormatWrapper(InputFunc):
     return wrapper
 
 def MessageFormatWrapper(InputFunc):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         TypeOfData = args[1]
-        FuncData = InputFunc(args)
+        FuncData = InputFunc(*args, **args)
         try:
             iter(FuncData)
             if TypeOfData == "obj":
@@ -88,9 +88,9 @@ def MessageFormatWrapper(InputFunc):
     return wrapper
 
 def TopicFormatWrapper(InputFunc):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         TypeOfData = args[1]
-        FuncData = InputFunc(*args)
+        FuncData = InputFunc(*args, **args)
         
         try:
             iter(FuncData[0])

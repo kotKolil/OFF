@@ -73,7 +73,7 @@ class server:
         #views, wich handle errors
         @self.server.errorhandler(404)
         def Handler404(e):
-            return render("info_html", message="HTTP 404<p>Page Not Found")
+            return render("info.html", message="HTTP 404<p>Page Not Found")
             
 
 
@@ -100,7 +100,7 @@ class server:
 
         #topic page
         @self.server.route('/topic')
-        def index():
+        def topic():
             return render("topic.html")
 
         #auth methods
@@ -172,7 +172,7 @@ class server:
             resp.set_cookie("token", "Null")
             return resp
         
-        @self.server.route("api/user/ChangeLogo")
+        @self.server.route("/api/user/ChangeLogo")
         def ChangeLogo():
             if request.method == "POST":
                 UserId = get_jwt_identity(request.json()["token"])
@@ -249,7 +249,7 @@ class server:
             return DBWorker.User().all(format="json")
         
         
-        @self.server.route("api/topic")
+        @self.server.route("/api/topic")
         def ApiTopic():
             if request.method == "GET":
                 TopciId = request.args.get("TopicId")
@@ -317,7 +317,7 @@ class server:
                 
         @self.server.route("/api/messages/all")
         def TopicAll():
-            return DBWorker.Messagee().all(format="json")
+            return DBWorker.Message().all(format="json")
             
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)

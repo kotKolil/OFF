@@ -10,8 +10,6 @@ class UserStorage:
         self.LogoPath = Data[0][4]
         self.citate = Data[0][5]
         self.time = Data[0][6]
-        self.token = Data[0][7]
-        self.ActiveNum = Data[0][8]
         self.IsActivated = Data[0][9]
 
     def save(self):
@@ -30,8 +28,8 @@ class TopicStorage:
         self.TopicId = Data[0][4]
     
     def save(self):
-        self.DBWorker(query = "UPDATE topic SET time = ?, theme = ?, author = ?, about = ?, TopicId = ? WHERE TopicId = ? "), param = (self.time,  self.theme, 
-                      self.author,  self.about, self.TopicId, self.TopicId )
+        self.DBWorker(query = "UPDATE topic SET time = ?, theme = ?, author = ?, about = ?, TopicId = ? WHERE TopicId = ? ", param = (self.time,  self.theme, 
+                      self.author,  self.about, self.TopicId, self.TopicId ))
         
 class MessagesStorage:
 
