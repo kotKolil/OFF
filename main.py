@@ -17,4 +17,4 @@ db.DBInit()
 # MailObject = MailClient(SiteAdress, SitePort, MailLogin, MailPassword)
 A = server(IsDebug=IsDebug, ClassLoger=a_logger, DBWorker=db , AdminUser =  AdminUser,
             AdminName =  AdminName, AdminPassword =  AdminPassword, AdminCitate = AdminCitate,
-            AdminLogoPath = AdminLogoPath, ForumName = ForumName)
+            AdminLogoPath = AdminLogoPath, ForumName = ForumName, AppSecretKey=AppSecretKey, JwtSecretKey = JwtSecretKey)

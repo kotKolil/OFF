@@ -32,5 +32,5 @@ except:
     MailLogin = ""
     MailPassword = ""
 
-    AppSecretKey = ""
-    JwtSecretKey = ""
+    AppSecretKey = "230597"
+    JwtSecretKey = "230597"

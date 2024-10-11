@@ -149,19 +149,27 @@ class server:
         @self.server.route("/auth/log", methods=["GET", "POST"])
         def log():
             if request.method == "GET":
-                tok = request.cookies.get('token')
-                JWTData = decode_token(tok)
-                if JWTData:
-                    return redirect("/")
+                if request.cookies.get('token') != "Null":
+                    tok = request.cookies.get('token').encode('ascii')
+                    JWTData = decode_token(tok)
+                    if JWTData:
+                        return redirect("/")
+                    else:
+                        return render("log.html")
+                else:
+                    return render("log.html")
             elif request.method == "POST":
 
                     login = request.form.get("login")
                     password = request.form.get("password")
-                    u = DBWorker.User().get(login, password)
-                    resp = redirect("/")
-                    JWToken = create_access_token(identity=u.UserId)
-                    resp.set_cookie("token", JWToken)
-                    return resp
+                    u = DBWorker.User().get(login, password, format = "obj")
+                    if u == 0:
+                        return render("log.html")
+                    else:
+                        resp = redirect("/")
+                        JWToken = create_access_token(identity=u.UserId)
+                        resp.set_cookie("token", JWToken)
+                        return resp
 
             
 

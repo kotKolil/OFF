@@ -1,13 +1,14 @@
 from .storage import *
 
+import os
+
 def UserFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
-        TypeOfData = args[2]
-        FuncData = InputFunc(*args, **args)
-        try:
-            #checking is obj iterable
-            #if iterable, continue formating as iterable obj
-            iter(FuncData)
+        TypeOfData = kwargs["format"]
+        FuncData = InputFunc(*args, **kwargs)
+        if len(FuncData[0]) == 0:
+            return 0
+        elif len(FuncData[0]) > 1:
 
             if TypeOfData == "obj":
                 return [ UserStorage(i[0], FuncData[1])  for i in FuncData[0]  ]
@@ -31,11 +32,11 @@ def UserFormatWrapper(InputFunc):
             else:
                 raise TypeError("Uknwon format of output data")
             
-        except TypeError:
-            #if not iterable, we except error
-            
+        else:
+            #if not iterable
+
             if TypeOfData == "obj":
-                return UserStorage(InputFunc[0], InputFunc[1])
+                return UserStorage(FuncData[0], FuncData[1])
             elif TypeOfData == "json":
                 return                             {
                             "email":FuncData[0][0],
