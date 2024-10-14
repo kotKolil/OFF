@@ -14,7 +14,10 @@ a_logger = txt_log(path=LogPath,filename=LogFilename)
 db = DB(DBType="sqlite3",path="main.db")
 db.DBInit()
 
+MailWorker = MailClient(SiteAdress=MailSite, SitePort=MailPort, MailLogin = MailLogin, MailPassword = MailPassword, ForumName=ForumName)
+
 # MailObject = MailClient(SiteAdress, SitePort, MailLogin, MailPassword)
 A = server(IsDebug=IsDebug, ClassLoger=a_logger, DBWorker=db , AdminUser =  AdminUser,
             AdminName =  AdminName, AdminPassword =  AdminPassword, AdminCitate = AdminCitate,
-            AdminLogoPath = AdminLogoPath, ForumName = ForumName, AppSecretKey=AppSecretKey, JwtSecretKey = JwtSecretKey)
+            AdminLogoPath = AdminLogoPath, ForumName = ForumName, AppSecretKey=AppSecretKey, JwtSecretKey = JwtSecretKey,
+            )

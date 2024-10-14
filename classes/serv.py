@@ -25,7 +25,7 @@ from .tools import *
 class server:
 
     def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", 
-                 AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum", MailWorker = "", AppSecretKey = "", JwtSecretKey = ""):
+                 AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum", MailWorker:object = "", AppSecretKey = "", JwtSecretKey = ""):
         #settings of server's behavior
         self.host = host
         self.port = port
@@ -43,7 +43,6 @@ class server:
         self.AdminToken = generate_token(self.AdminPassword, self.AdminUser)
         self.AdminLogoPath = AdminLogoPath
         self.ForumName = ForumName
-        # self.MailWorker = MailWorker
 
         SockIO = SocketIO(self.server)
 
@@ -108,13 +107,10 @@ class server:
         @self.server.route('/auth/reg', methods=["GET", "POST"])
         def reg():
             if request.method == "GET":
-                # return page of registration
-                tok = request.cookies.get('token')
-                JWTData = decode_token(tok)
-                if JWTData:
-                    return redirect("/")
+                if not request.cookies.get("token") or request.cookies.get("token") == "Null":
+                    return render("reg.html")
                 else:
-                    return render_template("reg.html")
+                    return redirect("/")
             elif request.method == "POST":
 
                 # getting data from POST request
@@ -130,8 +126,8 @@ class server:
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
-                        u = DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate)
-                        MailWorker(f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum}")
+                        u = DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate, format = "obj")
+                        MailWorker(email, f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum}", "Account Activating")
                         resp = render("info.html", message = f"<p>Go to your email to activate your account</p>")
                         
                         JWToken = create_access_token(identity=u.UserId)

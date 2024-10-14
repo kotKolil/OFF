@@ -6,9 +6,7 @@ def UserFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
-        if len(FuncData[0]) == 0:
-            return 0
-        elif len(FuncData[0]) > 1:
+        if len(FuncData[0]) > 1:
 
             if TypeOfData == "obj":
                 return [ UserStorage(i[0], FuncData[1])  for i in FuncData[0]  ]
@@ -32,14 +30,11 @@ def UserFormatWrapper(InputFunc):
             else:
                 raise TypeError("Uknwon format of output data")
             
-        else:
+        elif len(FuncData[0]) == 1:
             #if not iterable
-
             if TypeOfData == "obj":
                 return UserStorage(FuncData[0], FuncData[1])
             elif TypeOfData == "json":
-                os.system("cls")
-                print(FuncData[0])
                 return                             {
                             "email":FuncData[0][0][0],
                             "UserId":FuncData[0][0][1],
@@ -52,6 +47,9 @@ def UserFormatWrapper(InputFunc):
                             "ActiveNum":FuncData[0][0][8],
                             "IsActivated":FuncData[0][0][9]
                         }
+            
+        else:
+            return 0
 
     return wrapper
 

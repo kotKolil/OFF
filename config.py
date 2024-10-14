@@ -13,7 +13,7 @@ except:
     LogFilename = "a.log"
 
     DBport = 8000
-    DBpassword = ""
+    DBpassword = "" 
     DBuser = ""
     DBname = "main.db"
     DBhost = "127.0.0.1"
@@ -27,10 +27,10 @@ except:
     AdminCitate = "der mench is bose"
     AdminLogoPath = "admin.png"
     
-    SiteAdress = ""
-    SitePort = ""
-    MailLogin = ""
-    MailPassword = ""
+    MailSite = "smtp.yandex.ru"
+    MailPort = "587"
+    MailLogin = "uran54321@yandex.ru"
+    MailPassword = "vqlmgjnmitzspnvg"
 
     AppSecretKey = "230597"
     JwtSecretKey = "230597"

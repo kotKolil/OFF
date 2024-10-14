@@ -38,6 +38,7 @@ class user():
             return 1
     
     @UserFormatWrapper
-    def create(self, password, email, user, is_admin, is_banned, logo_path, citate):
-        self.DBworker(query = """INSERT INTO user VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? ) """, param = [ user, is_admin, logo_path, citate, get_current_time(), generate_token(user, password), randint(0,10**6), 0 ])
-        return self.get(user= user, password = password)
+    def create(self, password = "", email = "", user = "", is_admin = "", is_banned = "", logo_path = "", 
+               citate = "", format = "obj"):
+        self.DBworker(query = """INSERT INTO user VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) """, param = [ email,  user, is_admin, is_banned,  logo_path, citate, get_current_time(), generate_token(user, password), randint(0,10**6), 0 ])
+        return self.get(user= user, password = password, format="json")

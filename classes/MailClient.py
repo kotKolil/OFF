@@ -1,12 +1,28 @@
-import smtplib
+import smtplib as smtp
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 class MailClient(object):
-    def __init__(self, SiteAdress, SitePort, MailLogin, MailPassword):
-        self.Maillogin = MailLogin
+    def __init__(self, SiteAdress, SitePort, MailLogin, MailPassword, ForumName):
 
-        self.MailWorker = smtplib.SMTP('smtp.{SiteAdress}', SitePort)
-        self.MailWorker.login(MailLogin,MailPassword)
+        self.ForumName = ForumName
+        self.MailLogin = MailLogin
+        self.server = smtp.SMTP(SiteAdress, SitePort)
+        self.server.starttls()
+        self.server.login(MailLogin, MailPassword)
 
-    def SendMessage(self, TargetMail, text):
-        self.MailWorker.sendmail(self.Maillogin, TargetMail, text)
+    def SendMessage(self, TargetMail, text, Theme):
+        # Create a multipart message
+        msg = MIMEMultipart()
+        
+        # Set the sender's name and email
+        msg['From'] = f"{self.ForumName} <{self.MailLogin}>"
+        msg['To'] = TargetMail
+        msg['Subject'] = Theme        
+        # Attach the message body
+        msg.attach(MIMEText(text, 'plain'))
+        
+        # Send the message
+        self.server.sendmail(self.MailLogin, TargetMail, msg.as_string())
         return 1
+
