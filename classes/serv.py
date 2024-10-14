@@ -149,15 +149,10 @@ class server:
         @self.server.route("/auth/log", methods=["GET", "POST"])
         def log():
             if request.method == "GET":
-                if request.cookies.get('token') != "Null":
-                    tok = request.cookies.get('token').encode('ascii')
-                    JWTData = decode_token(tok)
-                    if JWTData:
-                        return redirect("/")
-                    else:
-                        return render("log.html")
-                else:
+                if request.cookies.get('token') == "Null":
                     return render("log.html")
+                else:
+                    return redirect("/")
             elif request.method == "POST":
 
                     login = request.form.get("login")
@@ -166,6 +161,7 @@ class server:
                     if u == 0:
                         return render("log.html")
                     else:
+                        # return render("info.html", message = f"You are logged in.")
                         resp = redirect("/")
                         JWToken = create_access_token(identity=u.UserId)
                         resp.set_cookie("token", JWToken)
@@ -192,12 +188,13 @@ class server:
                     return os.path.join(os.getcwd(), "classes\media", file.filename), 201
                 return "Bad Request", 400
 
+        
         @self.server.route("/api/user")
         def user():
             if request.method == "GET":
                 JWToken = request.args.get("JWToken")
                 if decode_token(JWToken):
-                    UserId = get_jwt_identity(JWToken)
+                    UserId = decode_token(JWToken)["sub"]
                     return DBWorker.User().get(user = UserId, format = "json")
                 else:
                     return 401

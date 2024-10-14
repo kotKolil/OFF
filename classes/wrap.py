@@ -38,17 +38,19 @@ def UserFormatWrapper(InputFunc):
             if TypeOfData == "obj":
                 return UserStorage(FuncData[0], FuncData[1])
             elif TypeOfData == "json":
+                os.system("cls")
+                print(FuncData[0])
                 return                             {
-                            "email":FuncData[0][0],
-                            "UserId":FuncData[0][1],
-                            "IsAdmin":FuncData[0][2],
-                            "IsBanned":FuncData[0][3],
-                            "LogoPath":FuncData[0][4],
-                            "citate":FuncData[0][5],
-                            "time":FuncData[0][6],
-                            "token":FuncData[0][7],
-                            "ActiveNum":FuncData[0][8],
-                            "IsActivated":FuncData[0][9]
+                            "email":FuncData[0][0][0],
+                            "UserId":FuncData[0][0][1],
+                            "IsAdmin":FuncData[0][0][2],
+                            "IsBanned":FuncData[0][0][3],
+                            "LogoPath":FuncData[0][0][4],
+                            "citate":FuncData[0][0][5],
+                            "time":FuncData[0][0][6],
+                            "token":FuncData[0][0][7],
+                            "ActiveNum":FuncData[0][0][8],
+                            "IsActivated":FuncData[0][0][9]
                         }
 
     return wrapper

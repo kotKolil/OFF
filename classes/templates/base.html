@@ -19,14 +19,17 @@
             //loading info about user via js and api
             var UserToken = getCookie("token")
             if (await IsLogged(UserToken)) {
-                $("#LogoImage").attr("src", "/media/default.png");
-                $("#UserName").text("Anonim")
-            }
-            else {
+
                 var UserData = await UserDataGet(UserToken);
                 console.log(UserData)
                 $("#LogoImage").attr("src", `/media/${UserData.LogoPath}`);
                 $("#UserName").text(`${UserData.UserId}`);
+
+
+            }
+            else {
+                $("#LogoImage").attr("src", "/media/default.png");
+                $("#UserName").text("Anonim")
             }
 
             var NumOfMessages = ( await fetch("/api/messages/all") ).json().parse().length

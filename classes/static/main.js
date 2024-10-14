@@ -50,9 +50,9 @@ const IsLogged = async (token) => {
 
     const JsonData = await response.json();
 
-    if (JsonData[0] === 1) {
+    if (JsonData[0] == 1) {
       return true;
-    } else if (JsonData[0] === 0) { 
+    } else if (JsonData[0] == 0) { 
       return false;
     }
 
