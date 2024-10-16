@@ -46,11 +46,6 @@ class server:
 
         SockIO = SocketIO(self.server)
 
-        try:
-            DBWorker.User().create(self.AdminPassword,"",self.AdminUser,1,0,self.AdminLogoPath,AdminCitate)
-            ClassLoger.log_message("Admin user created")
-        except Exception as e:
-            ClassLoger.log_message(f"Admin user created; There are error ocurred:{e}")
 
         @SockIO.on("message")
         def my_event(message):
@@ -61,6 +56,10 @@ class server:
             Message = message["Message"]
             DBWorker.Message().create(ThreadId, UserId  , Message, get_current_time())
             UserData = DBWorker.User().get(user = UserId, format="json")
+
+            if UserData.IsActivated == 0:
+
+                emit('message', {"IsActivated":0})
 
             emit("message", {"UserData":UserData, "MessageData":{"text":Message, "TopicId":ThreadId}}, broadcast=True)
 
@@ -127,8 +126,10 @@ class server:
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
                         u = DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate, format = "obj")
-                        MailWorker(email, f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum}", "Account Activating")
-                        resp = render("info.html", message = f"<p>Go to your email to activate your account</p>")
+                        MailWorker.SendMessage(email, f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum}", "Account Activating")
+                        resp = make_response("go to your email to activate email", 200)
+
+                        resp.mimetype = "text/plain"
                         
                         JWToken = create_access_token(identity=u.UserId)
 
@@ -145,7 +146,7 @@ class server:
         @self.server.route("/auth/log", methods=["GET", "POST"])
         def log():
             if request.method == "GET":
-                if request.cookies.get('token') == "Null":
+                if request.cookies.get('token') == "Null"  or request.cookies.get('token') == None:
                     return render("log.html")
                 else:
                     return redirect("/")
@@ -239,9 +240,17 @@ class server:
         def ActivateEmail():
             num = request.args.get('num')
 
-            UserData = DBWorker.User().get(num=num)
-            UserData.IsActivated = 1
+            UserData = DBWorker.User().get(num=num, format = "obj")
+            
+
+            if UserData.IsActivated == 1:
+                return render("info.html", message="account is activated now")
+
+            UserData.IsActivated == 1
+
             UserData.save()
+
+            MailWorker.SendMessage(UserData.email, "Congrutulasions! Account is activated!", "account status")
 
             return render("info.html", message="Account is activated")
 

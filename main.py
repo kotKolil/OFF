@@ -20,4 +20,4 @@ MailWorker = MailClient(SiteAdress=MailSite, SitePort=MailPort, MailLogin = Mail
 A = server(IsDebug=IsDebug, ClassLoger=a_logger, DBWorker=db , AdminUser =  AdminUser,
             AdminName =  AdminName, AdminPassword =  AdminPassword, AdminCitate = AdminCitate,
             AdminLogoPath = AdminLogoPath, ForumName = ForumName, AppSecretKey=AppSecretKey, JwtSecretKey = JwtSecretKey,
-            )
+            MailWorker=MailWorker)

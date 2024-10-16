@@ -11,6 +11,7 @@ class UserStorage:
         self.citate = Data[0][5]
         self.time = Data[0][6]
         self.IsActivated = Data[0][9]
+        self.ActiveNum = Data[0][-2]
 
     def save(self):
         self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ? WHERE UserId = ?""", param = (self.email, self.UserId, self.IsAdmin,
