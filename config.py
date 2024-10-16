@@ -29,8 +29,8 @@ except:
     
     MailSite = "smtp.yandex.ru"
     MailPort = "587"
-    MailLogin = "uran54321@yandex.ru"
-    MailPassword = "vqlmgjnmitzspnvg"
+    MailLogin = ""
+    MailPassword = ""
 
     AppSecretKey = "230597"
     JwtSecretKey = "230597"
