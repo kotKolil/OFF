@@ -1,3 +1,5 @@
+import os
+
 class UserStorage:
 
     def __init__(self, Data, DBWorker):
@@ -14,13 +16,16 @@ class UserStorage:
         self.ActiveNum = Data[0][-2]
 
     def save(self):
-        self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ? WHERE UserId = ?""", param = (self.email, self.UserId, self.IsAdmin,
-                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.UserId))
+        self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ? WHERE UserId = ?""", param = [self.email, self.UserId, self.IsAdmin,
+                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.UserId])
         
 class TopicStorage:
 
     def __init__(self, Data, DBWorker):
         self.DBWorker = DBWorker
+
+        os.system("cls")
+        print(Data)
 
         self.time = Data[0][0]
         self.theme = Data[0][1]
@@ -29,8 +34,8 @@ class TopicStorage:
         self.TopicId = Data[0][4]
     
     def save(self):
-        self.DBWorker(query = "UPDATE topic SET time = ?, theme = ?, author = ?, about = ?, TopicId = ? WHERE TopicId = ? ", param = (self.time,  self.theme, 
-                      self.author,  self.about, self.TopicId, self.TopicId ))
+        self.DBWorker(query = "UPDATE topic SET time = ?, theme = ?, author = ?, about = ?, TopicId = ? WHERE TopicId = ? ", param = [self.time,  self.theme, 
+                      self.author,  self.about, self.TopicId])
         
 class MessagesStorage:
 

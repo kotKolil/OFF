@@ -46,6 +46,15 @@ class server:
 
         SockIO = SocketIO(self.server)
 
+        #creating Admin Acount
+        try:
+            AdminAkk = DBWorker.User().create(AdminPassword, "", AdminUser, 1,0,"admin.png",AdminCitate, format = "obj")
+            AdminAkk.IsActivated = 1
+            AdminAkk.save()
+
+        except sqlite3.IntegrityError:
+            print("[debug]:Admin User Already Exists")
+
 
         @SockIO.on("message")
         def my_event(message):
@@ -101,12 +110,65 @@ class server:
         def topic():
             return render("topic.html")
 
+        @self.server.route("/topic/create", methods=['GET', 'POST'])
+        def TopicCreate():
+            if request.method == "GET":
+                if decode_token(request.cookies.get("token").encode()):
+                    return render("CreateTopic.html")
+                else:
+                    redirect("/auth/log")
+            elif request.method == "POST":
+                Name = request.form.get("name")
+                Theme = request.form.get("theme")
+                About = request.form.get("about")
+
+                if decode_token(request.cookies.get("token")):
+
+                    JWTData = decode_token(request.cookies.get("token").encode())
+                    UserId = JWTData["sub"]
+
+                    UserData = DBWorker.User().get(user = UserId, format = "obj")
+
+                    if not  UserData.IsActivated:
+
+                        return render("info.html", message = "you are not activated you account. Please, go to your e-mail and activate")
+                    
+                    if UserData.IsBanned:
+                    
+                        return render("info.html", message = "you are banned on this forum. Please, contact with moderators")
+                
+                    if UserData.IsAdmin == 1:
+                        
+                        NewTopic = DBWorker.Topic().create(Theme,  AdminName , About, format = "obj")
+                        return redirect(f"http://{self.host}:{self.port}/topic/?id={NewTopic.TopicId}")
+
+                    else:
+                        
+                        try:
+                            NewTopic = DBWorker.User().create(Theme, UserData.UserId, About)
+
+                            return redirect(f"http://{self.host}:{self.port}/topic/?id={NewTopic.TopicId}")
+                        
+                        except Exception as e:
+                            return [0, str(e)]
+
+                else:
+                    
+                    return render("info.html", message="you are not logged in. Please, log in or reg")
+
+                # NewTopic = DBWorker.Topic().create(Theme, )
+        
+
         #auth methods
         # structure of table user: password, user_id, is_admin, is_banned, logo_path, citate, time_of_join, token
         @self.server.route('/auth/reg', methods=["GET", "POST"])
         def reg():
             if request.method == "GET":
-                if not request.cookies.get("token") or request.cookies.get("token") == "Null":
+                if request.cookies.get("JWToken"):
+                    IsLogged = decode_token(request.cookies.get("token"))
+                else:
+                    IsLogged = False
+                if not IsLogged:
                     return render("reg.html")
                 else:
                     return redirect("/")
@@ -146,7 +208,11 @@ class server:
         @self.server.route("/auth/log", methods=["GET", "POST"])
         def log():
             if request.method == "GET":
-                if request.cookies.get('token') == "Null"  or request.cookies.get('token') == None:
+                if request.cookies.get("JWToken"):
+                    IsToken = decode_token(request.cookies.get("JWToken"))
+                else:
+                    IsToken = False
+                if not IsToken:
                     return render("log.html")
                 else:
                     return redirect("/")

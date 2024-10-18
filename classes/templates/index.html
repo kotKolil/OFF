@@ -10,12 +10,13 @@
 
 $("document").ready( async () => 
         {
-            fetch("/topic/all")
+            fetch("/api/topic/all")
             .then( async  (response) => {
                     return response.json()
                 }
             )
             .then ( async (data) => {
+                console.warn(data)
                 data.forEach( (element) => {
                     $("#TopicList").append(TopicSnippet(element.theme, element.about, element.author, element.TopicId))
                 });

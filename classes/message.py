@@ -17,9 +17,9 @@ class messages():
     @MessageFormatWrapper
     def all(self, TopicId = "", format = "obj"):
         if TopicId == "":
-            return self.DBworker(query = "SELECT * FROM messages")
+            return self.DBworker(query = "SELECT * FROM messages", param = [])
         else:
-            return self.DBworker( query  = "SELECT * FROM messages TopicId = ?", param = (TopicId) )
+            return self.DBworker( query  = "SELECT * FROM messages TopicId = ?", param = [TopicId] )
 
 
     def delete(self, MessageId):
