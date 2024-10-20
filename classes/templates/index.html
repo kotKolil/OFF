@@ -16,7 +16,6 @@ $("document").ready( async () =>
                 }
             )
             .then ( async (data) => {
-                console.warn(data)
                 data.forEach( (element) => {
                     $("#TopicList").append(TopicSnippet(element.theme, element.about, element.author, element.TopicId))
                 });

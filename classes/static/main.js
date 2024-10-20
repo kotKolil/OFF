@@ -36,7 +36,7 @@ var UserDataGet = async (token) => {
   };
 
 
-const IsLogged = async (token) => {
+var IsLogged = async (token) => {
   try {
     const response = await fetch(`/api/user/CheckToken`, {
       method: 'POST',

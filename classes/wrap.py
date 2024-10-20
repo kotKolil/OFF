@@ -20,7 +20,6 @@ def UserFormatWrapper(InputFunc):
                             "LogoPath":i[4],
                             "citate":i[5],
                             "time":i[6],
-                            "token":i[7],
                             "ActiveNum":i[8],
                             "IsActivated":i[9],
                         }
@@ -43,7 +42,6 @@ def UserFormatWrapper(InputFunc):
                             "LogoPath":FuncData[0][0][4],
                             "citate":FuncData[0][0][5],
                             "time":FuncData[0][0][6],
-                            "token":FuncData[0][0][7],
                             "ActiveNum":FuncData[0][0][8],
                             "IsActivated":FuncData[0][0][9]
                         }

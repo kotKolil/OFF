@@ -28,7 +28,7 @@ class user():
     
     @UserFormatWrapper
     def all(self, format = "obj"):
-        return [UserStorage([i], self.DBworker) for i in self.DBworker("SELECT * FROM user")]
+        return [ self.DBworker("SELECT * FROM user", []), self.DBworker ]
 
     def delete(self,user, password, token):
         if user != "" and password == "":

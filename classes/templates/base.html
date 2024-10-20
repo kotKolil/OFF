@@ -13,44 +13,50 @@
 </head>
 
     <body>
+
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script>
-        $(document).ready ( async () => {
-
-            //loading info about user via js and api
-            var UserToken = getCookie("token")
+        $(document).ready(async () => {
+            // Loading info about user via JS and API
+            var UserToken = getCookie("token");
             if (await IsLogged(UserToken)) {
-
                 var UserData = await UserDataGet(UserToken);
-                console.log(UserData)
                 $("#LogoImage").attr("src", `/media/${UserData.LogoPath}`);
                 $("#UserName").text(`${UserData.UserId}`);
-
-
-            }
-            else {
+            } else {
                 $("#LogoImage").attr("src", "/media/default.png");
-                $("#UserName").text("Anonim")
+                $("#UserName").text("Anonim");
             }
-
-            var NumOfMessages = ( await fetch("/api/messages/all") ).json().parse().length
-            var NumOfTopic = ( await fetch("/api/topic/all") ).json().parse().length
-            var NumsOfUsers = ( await fetch("/api/user/all") ).json().parse().length
-            NumsOfUsers = ( await fetch("/api/user/all") ).json().parse()
-            var Admin = ""
-            for (var i = 0; i ++; i < NumsOfUsers.length) {
-                if (NumsOfUsers[i].IsAdmin == 1) {
-                    Admin = NumsOfUsers[i].UserId
+        
+            // Fetching data
+            var NumOfMessages = await (await fetch("/api/messages/all")).json();
+            var ForumName = await (await fetch("/api/GetForumName")).json();
+            var NumOfTopics = await (await fetch("/api/topic/all")).json();
+            var UsersData = await (await fetch("/api/user/all")).json();
+        
+            // Getting the number of messages, topics, and users
+            NumOfMessages = NumOfMessages.length;
+            var NumOfTopicsCount = NumOfTopics.length;
+            var NumOfUsers = UsersData.length;
+        
+            // Finding admin user
+            var Admin = "";
+            for (var i = 0; i < NumOfUsers; i++) {
+                if (UsersData[i].IsAdmin == 1) {
+                    Admin = UsersData[i].UserId;
+                    break; // Exit loop after finding the first admin
                 }
             }
-
-            $("#ForumState").text(`There are ${NumOfMessages} messages in ${NumOfTopic} topics from ${NumsOfUsers} users. Admin is ${Admin}`)
-            $(".brand").text(ForumData.ForumName)
-
-    }
-
-)
+        
+            $("#ForumState").text(`There are ${NumOfMessages} messages in ${NumOfTopicsCount} topics from ${NumOfUsers} users. Admin is ${Admin}`);
+            $(".brand").text(ForumName.ForumName);
+        });
         </script>
+        
+
+
+
         <header>
             <!--NavBar Section-->
             <div class="navbar">

@@ -394,6 +394,10 @@ class server:
         @self.server.route("/api/messages/all")
         def TopicAll():
             return DBWorker.Message().all(format="json")
+        
+        @self.server.route("/api/GetForumName")
+        def ForumNameGet():
+            return {"ForumName": self.ForumName}
             
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)
