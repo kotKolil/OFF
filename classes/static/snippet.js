@@ -1,7 +1,7 @@
-var MsgSnippet = async (Author, Text) => {
+var MsgSnippet = async (Author, element) => {
     //Author, Text
 
-    var TheDick =  `
+    var MisatoForever =  `
         <div class="comments-container">
             <div class="body">
                 <div class="authors">
@@ -11,7 +11,7 @@ var MsgSnippet = async (Author, Text) => {
                       </span>
                 </div>
                 <div class="content">
-                        ${Text}
+                        ${element.text}
                     <hr>
                     ${Author.citate}
                 </div>
@@ -19,7 +19,7 @@ var MsgSnippet = async (Author, Text) => {
         </div>
 
 `
-    return await TheDick
+    return await MisatoForever
 }
 
 var TopicSnippet = (title, description, author, TopicId) => {

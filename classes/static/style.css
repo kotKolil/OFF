@@ -195,13 +195,14 @@ header {
 
 @font-face {
     font-family: aquire;
-    src: url(aquire.otf);
+    src: url(CaptureIt.ttf);
 }
 
 .brand {
     font-size: 60px;
     display: inline-block;
     font-family: aquire;
+    color: #008000  
 }
 
 

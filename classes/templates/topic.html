@@ -4,124 +4,63 @@
 {% block bo_dy %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-<script src = "/static/main.js"> </script>
-<script src = "/static/snippet.js"> </script>
+<script src="/static/main.js"></script>
+<script src="/static/snippet.js"></script>
 <script>
-
 var socket = io();
 
-
 socket.on("open", () => {
-  console.log("WebSockets  connection estabilished")
-})
-
-socket.on('message', async (msg) => {
-
-    console.log(msg)
-
-  if (msg.MessageData.TopicId == getQueryParam("id")) {
-    console.log(msg.MessageData)
-    document.getElementById("Msgs").innerHTML += await MsgSnippet(msg.UserData, msg.MessageData.text);
-  }
+  console.log("WebSockets connection established");
 });
 
-function SendMessage(e) {
-  var form = document.querySelector('form');
-  var messageInput = document.querySelector('input[name="Message"]');
-  var message = messageInput.value;
 
-  if (message.trim() === '') {
-    e.preventDefault();
-    alert('Enter a message before sending');
-    return;
-  }
+$(document).ready(() => {
+  
+  fetch(`/api/messages?TopicId=${getQueryParam("id")}`)
+    .then((response) => {
+      return response.json();
+    })
+    .then((jsonData) => {
+      jsonData.forEach(element => {
+        
+        fetch(`/api/user/?UserId=${element.author}`)
+          .then((response) => {
+            return response.json();
+          })
+          .then((userData) => {c
+            console.log(userData)
+            console.log(element)
+            $("#Msgs").append(MsgSnippet(userData, element));
+          })
+          .catch((error) => {
+            console.error('Error fetching user data:', error);
+          });
+      });
+    })
+    .catch((error) => {
+      console.error('Error fetching messages:', error);
+    });
 
-  UserDataGet(getCookie("token"))
-
-  .then(data => {
-    if (data == "0") {
-      alert("You are not regisrted")
-      return;
-    }
-  })
-
-  console.log("user is registred")
-
-  var topicIdInput = getQueryParam("id");
-  var authTokenInput = getCookie("token");
-
-  socket.emit("message", {
-    "UserToken": getCookie("token"),
-    "ThreadId": getQueryParam("id"),
-    "Message": message
-  });
-
-  messageInput.value = '';
-  e.preventDefault();
-}
-
+});
 
 </script>
 
-
-<script>
-  //setting the "Delete Topic" link
-  $(document).ready( async () => {
-
-  //setting info about topic
-  fetch(`/api/topic?TopicId=${getQueryParam("id")}`)
-
-  .then(function (response) {
-    return response.json();
-  })
-  .then(function (data) {
-
-    //Inserting topic information using jQuery
-    $("#TopicInfo").text(`${data.theme} | ${data.author} | ${data.about }`);
-
-    }
-  );
-
-  var Form = $("form")
-  Form.submit(e => {SendMessage(e)})
-}
-
-fetch(`/api/messages/all`)
-
-.then(
-  function (response) {
-    HTMLcontent = ""
-    response.array.forEach(element => {
-      if (element.TopicId == getQueryParam("id")) {
-        HTMLcontent = HTMLcontent + MsgSnippet(element.author, element.text)
-      }
-    });
-  }
-  $("$Msgs").innerHTML = HTMLcontent
-)
-
-
-);
-  </script>
-
 <p style="color:red;" id="error"></p>
 <form method="POST" enctype="multipart/form-data">
-
   <label for="Message">Write your message</label>
   <input name="Message" type="text">
   <input name="TopicId" type="hidden" value="">
   <input name="AuthToken" type="hidden" value="">
-
+  <input type="submit" value="Send Message">
 </form>
 
 <div class="navigate">
   <span id="TopicInfo"></span>
 </div>
 
-<div id = "Msgs">
-
-</div>
+<div id="Msgs"></div>
 
 <hr>
+
 
 {% endblock bo_dy %}

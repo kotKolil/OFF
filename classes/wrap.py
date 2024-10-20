@@ -51,12 +51,14 @@ def UserFormatWrapper(InputFunc):
 
     return wrapper
 
+
+
 def MessageFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
         try:
-            if len(FuncData[0]) > 1:
+            if len(FuncData[0][0]) > 1:
                 if TypeOfData == "obj":
                     return [ MessagesStorage(i[0], FuncData[1]) for i in FuncData[0] ]
                 elif TypeOfData == "json":
@@ -74,7 +76,7 @@ def MessageFormatWrapper(InputFunc):
                     raise TypeError("Uknwon format of output data")
             else:
                 if TypeOfData == "obj":
-                    return MessagesStorage(FuncData[0], FuncData[1])
+                    return MessagesStorage(FuncData[0][0], FuncData[1])
                 elif TypeOfData == "json":
                     return {
                         "TopicId":FuncData[0][0],

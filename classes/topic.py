@@ -12,7 +12,7 @@ class topic:
 
     @TopicFormatWrapper
     def get(self, TopicId, format="obj"):
-        return [ self.DBWorker(query="SELECT * FROM topic WHERE TopicId = ?", param=(TopicId,)), self.DBWorker ]
+        return [ self.DBWorker(query="SELECT * FROM topic WHERE TopicId = ?", param=[TopicId] ), self.DBWorker ]
 
     @TopicFormatWrapper
     def all(self, format = "obj"):

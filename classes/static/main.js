@@ -59,7 +59,6 @@ var IsLogged = async (token) => {
     return null;
 
   } catch (error) {
-    console.error(error);
-    return null;
+    return false  
   }
 };

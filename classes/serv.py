@@ -145,9 +145,8 @@ class server:
                     else:
                         
                         try:
-                            NewTopic = DBWorker.User().create(Theme, UserData.UserId, About)
-
-                            return redirect(f"http://{self.host}:{self.port}/topic/?id={NewTopic.TopicId}")
+                            NewTopic = DBWorker.Topic().create(Theme, UserData.UserId, About, format="obj")
+                            return redirect("/")
                         
                         except Exception as e:
                             return [0, str(e)]
@@ -256,11 +255,16 @@ class server:
         def user():
             if request.method == "GET":
                 JWToken = request.args.get("JWToken")
-                if decode_token(JWToken):
-                    UserId = decode_token(JWToken)["sub"]
-                    return DBWorker.User().get(user = UserId, format = "json")
+                if JWToken:
+                    if decode_token(JWToken):
+                        UserId = decode_token(JWToken)["sub"]
+                        return DBWorker.User().get(user = UserId, format = "json")
+                    else:
+                        return 401
                 else:
-                    return 401
+                    UserId = request.args.get("UserId")
+                    return DBWorker.User().get(user = UserId, format = "json")
+
             elif request.method == "CREATE":
                 RequestData = request.get_json()
                 
@@ -367,8 +371,8 @@ class server:
         @self.server.route("/api/messages")
         def ApiMessage():
             if request.method == "GET":
-                MessageId = request.args.get("MessageId")
-                return DBWorker.Topic().get(MessageId = MessageId, format = 'json')
+                TopicId = request.args.get("TopicId")
+                return DBWorker.Message().get(TopicId = TopicId, format = 'json')
             elif request.method == "POST":
                 RequestData = request.get_json()
                 UserId = get_jwt_identity(RequestData["token"])
@@ -394,7 +398,7 @@ class server:
         @self.server.route("/api/messages/all")
         def TopicAll():
             return DBWorker.Message().all(format="json")
-        
+    
         @self.server.route("/api/GetForumName")
         def ForumNameGet():
             return {"ForumName": self.ForumName}
