@@ -7,50 +7,76 @@
 <script src="/static/main.js"></script>
 <script src="/static/snippet.js"></script>
 <script>
-var socket = io();
+
+const socket = io();
 
 socket.on("open", () => {
   console.log("WebSockets connection established");
 });
 
 
-$(document).ready(() => {
-  
-  fetch(`/api/messages?TopicId=${getQueryParam("id")}`)
-    .then((response) => {
-      return response.json();
-    })
-    .then((jsonData) => {
-      jsonData.forEach(element => {
-        
-        fetch(`/api/user/?UserId=${element.author}`)
-          .then((response) => {
-            return response.json();
-          })
-          .then((userData) => {c
-            console.log(userData)
-            console.log(element)
-            $("#Msgs").append(MsgSnippet(userData, element));
-          })
-          .catch((error) => {
-            console.error('Error fetching user data:', error);
-          });
-      });
-    })
-    .catch((error) => {
-      console.error('Error fetching messages:', error);
-    });
 
-});
+$(document).ready(
+  
+  
+  () => {
+
+    //loading message in topic via message and user API
+    fetch(`/api/messages?TopicId=${getQueryParam("id")}`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((jsonData) => {
+        jsonData.forEach(element => {
+          fetch(`/api/user?UserId=${element.author}`)
+            .then((r) => {
+              return r.json();
+              })
+                .then((userData) => {
+                  return MsgSnippet(userData, element)
+                })
+                  .then( (msg) => {
+                    $("#Msgs").append(msg)
+                  })
+              })
+          })
+      .catch((error) => {
+        console.error('Error fetching messages:', error);
+      })
+
+
+    //sending message
+    $("#MsgForm").submit( (e) =>  {
+        e.preventDefault()
+        if (IsLogged(getCookie('token')) && $("#MsgForm").find('input[name="Message"]').val() != "") {
+          var TopicId = getQueryParam('id')
+          var AuthToken = getCookie('token')
+          var message = $("#MsgForm").find('input[name="Message"]').val();
+          socket.emit("message", JSON.stringify( {
+              "JWToken":AuthToken,
+              "TopicId":TopicId,
+              "message":message
+              }
+            )
+          )
+          $("#MsgForm").find('input[name="Message"]').val("")
+        }
+        else  {
+          alert("please, log in or type your message")
+        }
+      })
+
+
+  });
+
+
 
 </script>
 
 <p style="color:red;" id="error"></p>
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" id="MsgForm">
   <label for="Message">Write your message</label>
   <input name="Message" type="text">
-  <input name="TopicId" type="hidden" value="">
-  <input name="AuthToken" type="hidden" value="">
   <input type="submit" value="Send Message">
 </form>
 

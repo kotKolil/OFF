@@ -30,12 +30,12 @@ class messages():
         self.DBWorker(query = "DELETE * from messages WHERE MessageId = ? ", param = [MessageId])
 
     @MessageFormatWrapper
-    def create(self, TopicId, author, text):
+    def create(self, TopicId, author, text, format = "obj"):
         # TopicId, MessageId, author, text, time_of_publication
         
         try:
             Token = generate_id()
-            self.DBWorker(query = "INSERT INTO messages VALUES (?, ?, ?, ?, ?)", para = [ TopicId, generate_id(), author, text, get_current_time ] ) 
+            self.DBWorker(query = "INSERT INTO messages VALUES (?, ?, ?, ?, ?)", param = [ TopicId, generate_id(), author, text, get_current_time() ] ) 
             return self.get(Token)
         except sqlite3.IntegrityError or psycopg2.errors.UniqueViolation:
             return 0

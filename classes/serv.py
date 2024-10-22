@@ -9,14 +9,13 @@ from pathlib import *
 import os
 from pathlib import *
 from os import *
-from flask import jsonify
 from flask_sock import *
 from time import *
 from flask_socketio import *
 import sqlite3
 from flask import Flask, jsonify, request
 from flask_jwt_extended import *
-
+from flask_jwt_extended import exceptions
 # local classes
 from .loggers import *
 from .tools import *
@@ -59,18 +58,17 @@ class server:
         @SockIO.on("message")
         def my_event(message):
 
+            decoder = json.JSONDecoder()
+            message = decoder.decode(message)
+
             JWTData = decode_token(message["JWToken"])
-            UserId = JWTData["identity"]
-            ThreadId = message["ThreadId"]
-            Message = message["Message"]
-            DBWorker.Message().create(ThreadId, UserId  , Message, get_current_time())
-            UserData = DBWorker.User().get(user = UserId, format="json")
+            UserId = JWTData["sub"]
+            TopicId = message["TopicId"]
+            message = message["message"]
 
-            if UserData.IsActivated == 0:
+            result = DBWorker.Message().create(TopicId = TopicId, author = UserId  ,  text = message, format="json")
 
-                emit('message', {"IsActivated":0})
-
-            emit("message", {"UserData":UserData, "MessageData":{"text":Message, "TopicId":ThreadId}}, broadcast=True)
+            emit('message', result, broadcast=True)
 
         @SockIO.on("connect")
         def OnOpenEvent():
@@ -237,6 +235,8 @@ class server:
             resp.set_cookie("token", "Null")
             return resp
         
+        
+        
         @self.server.route("/api/user/ChangeLogo")
         def ChangeLogo():
             if request.method == "POST":
@@ -250,20 +250,36 @@ class server:
                 return "Bad Request", 400
 
         
-        @self.server.route("/api/user")
-        def user():
+
+    
+        
+
+        @self.server.route("/api/user/CheckToken", methods = ["POST"])
+        def CheckToken():
+            JWToken = request.get_json()["JWToken"]
+            if decode_token(JWToken):
+                return [1]
+            else:
+                return [0]
+            
+
+
+        @self.server.route("/api/user", methods=["GET", "POST", "DELETE"])
+        def MisatoKForever():
             if request.method == "GET":
                 JWToken = request.args.get("JWToken")
-                if JWToken:
+                UserId = request.args.get("UserId")
+                if JWToken != None:
                     if decode_token(JWToken):
                         UserId = decode_token(JWToken)["sub"]
                         return DBWorker.User().get(user = UserId, format = "json")
                     else:
                         return 401
-                else:
-                    UserId = request.args.get("UserId")
+                elif UserId != None:
                     return DBWorker.User().get(user = UserId, format = "json")
-
+                else:
+                    return "400"
+                
             elif request.method == "CREATE":
                 RequestData = request.get_json()
                 
@@ -294,17 +310,7 @@ class server:
                         return 400
                 else:
                     return 401
-    
-        
 
-        @self.server.route("/api/user/CheckToken", methods = ["POST"])
-        def CheckToken():
-            JWToken = request.get_json()["JWToken"]
-            if decode_token(JWToken):
-                return [1]
-            else:
-                return [0]
-            
         @self.server.route("/ActivateEmail")
         def ActivateEmail():
             num = request.args.get('num')
@@ -326,7 +332,7 @@ class server:
         @self.server.route("/api/user/all")
         def UserAll():
             return DBWorker.User().all(format="json")
-        
+
         
         @self.server.route("/api/topic")
         def ApiTopic():
