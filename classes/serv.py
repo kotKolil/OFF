@@ -219,11 +219,10 @@ class server:
 
                     login = request.form.get("login")
                     password = request.form.get("password")
-                    u = DBWorker.User().get(login, password, format = "obj")
+                    u = DBWorker.User().get(token = generate_token(login, password), format = "obj")
                     if u == 0:
-                        return render("log.html")
+                        return render("log.html", Text="Incorrect user or password")
                     else:
-                        # return render("info.html", message = f"You are logged in.")
                         resp = redirect("/")
                         JWToken = create_access_token(identity=u.UserId)
                         resp.set_cookie("token", JWToken)
