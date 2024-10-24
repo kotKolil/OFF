@@ -6,7 +6,7 @@ def UserFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
-        if len(FuncData[0]) >= 1:
+        if len(FuncData[0]) > 1:
 
             if TypeOfData == "obj":
                 return [ UserStorage(i[0], FuncData[1])  for i in FuncData[0]  ]
