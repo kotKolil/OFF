@@ -16,15 +16,9 @@ class messages():
 
         if TopicId != "" and MessageId == "":
 
-
-            print("Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-
             return [self.DBWorker("SELECT * FROM messages WHERE TopicId = ? ", param = [TopicId] ), self.DBWorker ]
         
         elif TopicId == "" and MessageId != "":
-
-            system("cls")
-            print("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
 
             return [self.DBWorker("SELECT * FROM messages WHERE MessageId = ? ", param = [MessageId] ), self.DBWorker ]
     
@@ -33,7 +27,7 @@ class messages():
     
     @MessageFormatWrapper
     def all(self, format = "obj"):
-            return self.DBWorker(query = "SELECT * FROM messages", param = [])
+            return [self.DBWorker(query = "SELECT * FROM messages", param = []), self.DBWorker]
 
 
     def delete(self, MessageId):

@@ -151,7 +151,7 @@ class server:
                     if UserData.IsAdmin == 1:
                         
                         NewTopic = DBWorker.Topic().create(Theme,  UserData.UserId , About, format = "obj")
-                        return redirect(f"http://{self.host}:{self.port}/topic/?id={NewTopic.TopicId}")
+                        return redirect(f"http://{self.host}:{self.port}/topic?id={NewTopic.TopicId}")
 
                     else:
                         
