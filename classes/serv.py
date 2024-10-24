@@ -58,6 +58,7 @@ class server:
         @SockIO.on("message")
         def my_event(message):
 
+            # try:
             decoder = json.JSONDecoder()
             message = decoder.decode(message)
 
@@ -66,9 +67,21 @@ class server:
             TopicId = message["TopicId"]
             message = message["message"]
 
-            result = DBWorker.Message().create(TopicId = TopicId, author = UserId  ,  text = message, format="json")
+            UserData = DBWorker.User().get(user = UserId, format = "obj")
 
-            emit('message', result, broadcast=True)
+            result = ""
+            
+            if UserData.IsBanned != 1 and UserData.IsActivated == 1:
+                result = DBWorker.Message().create(TopicId = TopicId, author = UserId  ,  text = message, format="json")
+
+                emit('NewMessage', result, broadcast=True)
+
+            else:
+                emit('NewMessage', 401, broadcast = False )
+
+                
+            # except Exception  as e:
+            #     return emit('message', e, broadcast=False)
 
         @SockIO.on("connect")
         def OnOpenEvent():
@@ -137,7 +150,7 @@ class server:
                 
                     if UserData.IsAdmin == 1:
                         
-                        NewTopic = DBWorker.Topic().create(Theme,  AdminName , About, format = "obj")
+                        NewTopic = DBWorker.Topic().create(Theme,  UserData.UserId , About, format = "obj")
                         return redirect(f"http://{self.host}:{self.port}/topic/?id={NewTopic.TopicId}")
 
                     else:

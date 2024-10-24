@@ -56,7 +56,6 @@ def UserFormatWrapper(InputFunc):
 def MessageFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
-        print(kwargs)
         FuncData = InputFunc(*args, **kwargs)
         try:
             if len(FuncData[0][0]) > 1:

@@ -3,23 +3,46 @@
 
 {% block bo_dy %}
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous">
+</script>
 <script src="/static/main.js"></script>
 <script src="/static/snippet.js"></script>
 <script>
-
-const socket = io();
-
-socket.on("open", () => {
-  console.log("WebSockets connection established");
-});
-
-
 
 $(document).ready(
   
   
   () => {
+
+    //defining socket var
+    const socket = io();
+
+    //handling start of connection
+    socket.on("connect", () => {
+        console.log("WebSockets connection established");
+    });
+
+    //handling incoming messages
+    socket.on("NewMessage", (data) => {
+
+      if ( data[0].TopicId == getQueryParam("id") ) {
+      
+        fetch(`/api/user?UserId=${data[0].author}`)
+          .then((r) => {
+                  return r.json();
+                })
+                  .then((userData) => {
+                    console.log(userData)
+                    return MsgSnippet(userData, data[0])
+                  })
+                    .then( (msg) => {
+                      $("#Msgs").append(msg)
+                    })
+
+      }
+
+
+    });   
 
     //loading message in topic via message and user API
     fetch(`/api/messages?TopicId=${getQueryParam("id")}`)
