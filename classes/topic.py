@@ -21,7 +21,6 @@ class topic:
     def delete(self, TopicId):
         self.DBworker(query = "DELETE * from topic WHERE TopicId = ?", param = (TopicId,))
 
-    @TopicFormatWrapper
     def create(self, theme, author, about, format = "obj"):
         # time_of_creation|theme|author|about|sb_id
         
@@ -29,6 +28,6 @@ class topic:
 
         try:
             self.DBWorker(query = "INSERT INTO topic VALUES (?, ?, ?, ?, ?)", param = [get_current_time(), theme, author, about, Id])
-            return [ self.DBWorker(query="SELECT * FROM topic WHERE TopicId = ?", param=[Id]), self.DBWorker ]
+            return self.get(TopicId=Id, format = "obj")
         except sqlite3.IntegrityError or psycopg2.errors.UniqueViolation:
             return 0

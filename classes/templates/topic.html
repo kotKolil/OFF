@@ -25,15 +25,15 @@ $(document).ready(
     //handling incoming messages
     socket.on("NewMessage", (data) => {
 
-      if ( data[0].TopicId == getQueryParam("id") ) {
+      if ( data.TopicId == getQueryParam("id") ) {
       
-        fetch(`/api/user?UserId=${data[0].author}`)
+        fetch(`/api/user?UserId=${data.author}`)
           .then((r) => {
                   return r.json();
                 })
                   .then((userData) => {
                     console.log(userData)
-                    return MsgSnippet(userData, data[0])
+                    return MsgSnippet(userData, data)
                   })
                     .then( (msg) => {
                       $("#Msgs").append(msg)

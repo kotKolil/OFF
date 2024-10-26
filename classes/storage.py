@@ -25,7 +25,6 @@ class TopicStorage:
         self.DBWorker = DBWorker
 
         os.system("cls")
-        print(Data)
 
         self.time = Data[0][0]
         self.theme = Data[0][1]

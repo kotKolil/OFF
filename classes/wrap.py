@@ -57,38 +57,35 @@ def MessageFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
-        print(FuncData)
-        try:
-            if len(FuncData[0]) >= 1:
-                if TypeOfData == "obj":
-                    return [ MessagesStorage(i[0], FuncData[1]) for i in FuncData[0] ]
-                elif TypeOfData == "json":
-                    return [
-                            {
-                            "TopicId":i[0],
-                            "MesageId":i[1],
-                            "author":i[2],
-                            "text":i[3],
-                            "time":i[4]
-                        }
-                    for i in FuncData[0]
-                ]
-                else:
-                    raise TypeError("Uknwon format of output data")
-            else:
-                if TypeOfData == "obj":
-                    return MessagesStorage(FuncData[0][0], FuncData[1])
-                elif TypeOfData == "json":
-                    return {
-                        "TopicId":FuncData[0][0],
-                        "MesageId":FuncData[0][1],
-                        "author":FuncData[0][2],
-                        "text":FuncData[0][3],
-                        "time":FuncData[0][4]
+
+        if len(FuncData[0]) > 1:
+            if TypeOfData == "obj":
+                return [ MessagesStorage(i[0], FuncData[1]) for i in FuncData[0] ]
+            elif TypeOfData == "json":
+                return [
+                        {
+                        "TopicId":i[0],
+                        "MesageId":i[1],
+                        "author":i[2],
+                        "text":i[3],
+                        "time":i[4]
                     }
-    
-        except IndexError:
-            return []
+                for i in FuncData[0]
+            ]
+            else:
+                raise TypeError("Uknwon format of output data")
+        else:
+            if TypeOfData == "obj":
+                return MessagesStorage(FuncData[0][0], FuncData[1])
+            elif TypeOfData == "json":
+                return {
+                    "TopicId":FuncData[0][0][0],
+                    "MesageId":FuncData[0][0][1],
+                    "author":FuncData[0][0][2],
+                    "text":FuncData[0][0][3],
+                    "time":FuncData[0][0][4]
+                }
+
             
     return wrapper
 
@@ -97,11 +94,12 @@ def TopicFormatWrapper(InputFunc):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
 
+
         try:
         
             if len(FuncData[0]) == 0:
                 return []
-            elif len(FuncData[0]) >= 1 :
+            elif len(FuncData[0]) > 1 :
                     if TypeOfData == "obj":
                         return [
                             TopicStorage(i, FuncData[1]) 

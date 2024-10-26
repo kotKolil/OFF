@@ -72,7 +72,10 @@ class server:
             result = ""
             
             if UserData.IsBanned != 1 and UserData.IsActivated == 1:
+
                 result = DBWorker.Message().create(TopicId = TopicId, author = UserId  ,  text = message, format="json")
+
+                print(result)
 
                 emit('NewMessage', result, broadcast=True)
 
@@ -156,6 +159,7 @@ class server:
                     else:
                         
                         try:
+
                             NewTopic = DBWorker.Topic().create(Theme, UserData.UserId, About, format="obj")
                             return redirect("/")
                         

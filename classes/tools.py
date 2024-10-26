@@ -33,7 +33,6 @@ def generate_id():
     return Result
 
 def error_decorator(self,func):
-    print("error_decorator")
     def wrapper(*args, **kwargs):
         try:
             resultat = func(*args, **kwargs)
