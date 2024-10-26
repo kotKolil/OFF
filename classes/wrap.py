@@ -34,7 +34,7 @@ def UserFormatWrapper(InputFunc):
             if TypeOfData == "obj":
                 return UserStorage(FuncData[0], FuncData[1])
             elif TypeOfData == "json":
-                return                             {
+                return {
                             "email":FuncData[0][0][0],
                             "UserId":FuncData[0][0][1],
                             "IsAdmin":FuncData[0][0][2],
@@ -58,33 +58,40 @@ def MessageFormatWrapper(InputFunc):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
 
-        if len(FuncData[0]) > 1:
-            if TypeOfData == "obj":
-                return [ MessagesStorage(i[0], FuncData[1]) for i in FuncData[0] ]
-            elif TypeOfData == "json":
-                return [
-                        {
-                        "TopicId":i[0],
-                        "MesageId":i[1],
-                        "author":i[2],
-                        "text":i[3],
-                        "time":i[4]
-                    }
-                for i in FuncData[0]
-            ]
+        try:
+
+            if len(FuncData[0]) > 1:
+                if TypeOfData == "obj":
+                    return [ MessagesStorage(i[0], FuncData[1]) for i in FuncData[0] ]
+                elif TypeOfData == "json":
+                    return [
+                            {
+                            "TopicId":i[0],
+                            "MesageId":i[1],
+                            "author":i[2],
+                            "text":i[3],
+                            "time":i[4]
+                        }
+                    for i in FuncData[0]
+                ]
+                else:
+                    raise TypeError("Uknwon format of output data")
             else:
-                raise TypeError("Uknwon format of output data")
-        else:
-            if TypeOfData == "obj":
-                return MessagesStorage(FuncData[0][0], FuncData[1])
-            elif TypeOfData == "json":
-                return {
-                    "TopicId":FuncData[0][0][0],
-                    "MesageId":FuncData[0][0][1],
-                    "author":FuncData[0][0][2],
-                    "text":FuncData[0][0][3],
-                    "time":FuncData[0][0][4]
-                }
+                if TypeOfData == "obj":
+                    return MessagesStorage(FuncData[0][0], FuncData[1])
+                elif TypeOfData == "json":
+                    return {
+                        "TopicId":FuncData[0][0][0],
+                        "MesageId":FuncData[0][0][1],
+                        "author":FuncData[0][0][2],
+                        "text":FuncData[0][0][3],
+                        "time":FuncData[0][0][4]
+                    }
+
+
+        except:
+
+            return []
 
             
     return wrapper
