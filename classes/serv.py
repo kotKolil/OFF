@@ -73,9 +73,10 @@ class server:
             
             if UserData.IsBanned != 1 and UserData.IsActivated == 1:
 
-                result = DBWorker.Message().create(TopicId = TopicId, author = UserId  ,  text = message, format="json")
+                result = DBWorker.Message().create(TopicId = TopicId, author = UserId ,  text = message, format="json")
 
-                print(result)
+                UserData.NumOfPosts += 1
+                UserData.save()
 
                 emit('NewMessage', result, broadcast=True)
 
@@ -348,14 +349,16 @@ class server:
 
         @self.server.route("/api/user/all")
         def UserAll():
-            return DBWorker.User().all(format="json")
+            if type(DBWorker.User().all(format="json")) != list:
+                return [DBWorker.User().all(format="json")]
 
+            return DBWorker.User().all(format="json")
         
         @self.server.route("/api/topic")
         def ApiTopic():
             if request.method == "GET":
                 TopciId = request.args.get("TopicId")
-                return DBWorker.Topic().get(TopciId = TopciId, format = 'json')
+                return DBWorker.Topic().get(TopicId = TopciId, format = 'json')
             elif request.method == "POST":
                 RequestData = request.get_json()
                 UserId = get_jwt_identity(RequestData["token"])
@@ -387,6 +390,8 @@ class server:
             
         @self.server.route("/api/topic/all")
         def AllTopic():
+            if type(DBWorker.Topic().all(format = "json")) != list:
+                return [DBWorker.Topic().all(format = "json")]
             return DBWorker.Topic().all(format = "json")
         
 
@@ -424,6 +429,12 @@ class server:
         @self.server.route("/api/GetForumName")
         def ForumNameGet():
             return {"ForumName": self.ForumName}
+
+
+        @self.server.route("/UserPage")
+        def PageUser():
+            return render_template("user_page.html")
+
             
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)

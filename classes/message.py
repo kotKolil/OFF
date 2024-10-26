@@ -27,7 +27,7 @@ class messages():
     
     @MessageFormatWrapper
     def all(self, format = "obj"):
-            return [self.DBWorker(query = "SELECT * FROM messages", param = []), self.DBWorker]
+            return [self.DBWorker(query = "SELECT * FROM messages ORDER BY DATETIME(time)", param = []), self.DBWorker]
 
 
     def delete(self, MessageId):

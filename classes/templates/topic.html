@@ -10,9 +10,27 @@
 <script>
 
 $(document).ready(
-  
-  
-  () => {
+
+
+  async () => {
+
+
+    //checking topic
+
+    TopicData = await ( await fetch(`/api/topic?TopicId=${getQueryParam("id")}`) ).json()
+
+
+    if ( TopicData.length == 0) {
+
+      document.location.href = "/topic/create"
+
+    }
+
+    var TopicInfoVar = $("#TopicInfo")
+
+    var TopicHTML = $(`<p> ${TopicData.time}|${TopicData.theme}|${TopicData.author}|${TopicData.about} </p>`)
+
+    TopicInfoVar.append(TopicHTML)
 
     //defining socket var
     const socket = io();
@@ -22,11 +40,13 @@ $(document).ready(
         console.log("WebSockets connection established");
     });
 
+
+
     //handling incoming messages
     socket.on("NewMessage", (data) => {
 
       if ( data.TopicId == getQueryParam("id") ) {
-      
+
         fetch(`/api/user?UserId=${data.author}`)
           .then((r) => {
                   return r.json();
@@ -42,7 +62,7 @@ $(document).ready(
       }
 
 
-    });   
+    });
 
     //loading message in topic via message and user API
     fetch(`/api/messages?TopicId=${getQueryParam("id")}`)

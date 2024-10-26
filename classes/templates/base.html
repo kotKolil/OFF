@@ -41,26 +41,18 @@
             var NumOfTopicsCount = NumOfTopics.length;
             var NumOfUsers = UsersData.length;
 
-            if ( typeof(NumOfUsers) == "undefined") {
-
-                NumOfUsers = 1
-                Admin = UsersData.UserId
 
 
-            }
 
-            else {
-
-                // Finding admin user
-                var Admin = "";
-                for (var i = 0; i < NumOfUsers; i++) {
-                    if (UsersData[i].IsAdmin == 1) {
-                        Admin = UsersData[i].UserId;
-                        break; // Exit loop after finding the first admin
-                    }
+            // Finding admin user
+            var Admin = "";
+            for (var i = 0; i < NumOfUsers; i++) {
+                if (UsersData[i].IsAdmin == 1) {
+                    Admin = UsersData[i].UserId;
+                    break; // Exit loop after finding the first admin
                 }
-
             }
+
         
             $("#ForumState").text(`There are ${NumOfMessages} messages in ${NumOfTopicsCount} topics from ${NumOfUsers} users. Admin is ${Admin}`);
             $(".brand").text(ForumName.ForumName);

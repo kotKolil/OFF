@@ -1,5 +1,5 @@
 from random import *
-import datetime
+from datetime import *
 import hashlib
 import os
 import time
@@ -20,8 +20,7 @@ def generate_token(s1:str="vasya228", s2:str="12345"):
     return token
 
 def get_current_time():
-    t = time.localtime()
-    return time.strftime("%D.%H:%M:%S", t)
+    return datetime.now()
 
 
 def generate_id():
@@ -57,7 +56,8 @@ def InitDB(DBWorker:object):
                 time TEXT,
                 token TEXT UNIQUE NOT NULL,
                 ActiveNum INTEGER UNIQUE NOT NULL,
-                IsActivated INTEGER
+                IsActivated INTEGER,
+                NumOfPosts INTEGER
             );
         """, param = ())
 

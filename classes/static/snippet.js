@@ -9,6 +9,7 @@ var MsgSnippet = (Author, element) => {
                      <span class="circle-image">
                           <img  src="/media/${Author.LogoPath}" width = "90" height = "90"   />
                       </span>
+                      <p>Posts: ${Author.NumOfPosts}</p>
                 </div>
                 <div class="content">
                         ${element.text}
