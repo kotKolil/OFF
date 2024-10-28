@@ -292,12 +292,12 @@ class server:
                         UserId = decode_token(JWToken)["sub"]
                         return DBWorker.User().get(user = UserId, format = "json")
                     else:
-                        return 401
+                        return "400"
                 elif UserId != None:
                     return DBWorker.User().get(user = UserId, format = "json")
                 else:
                     return "400"
-                
+
             elif request.method == "CREATE":
                 RequestData = request.get_json()
                 
@@ -309,7 +309,7 @@ class server:
                     citate = RequestData["citate"]
 
                     try:
-                        DBWorker.User().create(password, email, UserId, 0, 0, "", citate)
+                        u = DBWorker.User().create(password, email, UserId, 0, 0, "", citate)
                         MailWorker(f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum} to activate you account")
                         message = f"<p>Go to your email to activate your account</p>"
                         return message, 201
@@ -319,7 +319,7 @@ class server:
                     return 400, "Bad Request"
                 
             elif request.method == "DELETE":
-                WToken = request.args.get("JWToken")
+                JWToken = request.args.get("JWToken")
                 if decode_token(JWToken):
                     try:
                         DBWorker.User().delete(user = get_jwt_identity(JWToken))

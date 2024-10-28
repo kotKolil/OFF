@@ -9,22 +9,28 @@
 <script src="/static/snippet.js"></script>
 <script>
 
-$(document).ready(
-
-
-  async () => {
-
-    //loading user data
-
-    var UserData = await ( await fetch( `/api/user?UserId=${ getQueryParam("id") }` ) ).json()
-    $("#UserData").append($(`<img src="/media/${UserData.LogoPath}" >`))
-    $("#UserData").append($(`<p>${UserData.UserId}</p>`))
-
-
-  }
-
+$.ajax(
+    {
+        url:`/api/user?UserId=${getQueryParam("id")}`,
+        success: (data) => {
+            var UserInfoElem = $("#UserData")
+            var AkkImg = `<img src="/media/${data.LogoPath}" id="UserProfilePic">`
+            $('body').append(AkkImg)
+            if (data.IsAdmin == "1") {
+                UserInfoElem.append(`<p id='UserNameProfileAdmin'>${data.UserId}</p>`)
+            } else { // Fixed: Use 'else' instead of 'else ('
+                UserInfoElem.append(`<p id='UserNameProfile'>${data.UserId}</p>`)
+            }
+            UserInfoElem.append(`<p>Quote: ${data.citate}</p>`)
+            UserInfoElem.append(`<p>Email: ${data.email} </p>`)
+            UserInfoElem.append(`<p>Number of posts on forum: ${data.NumOfPosts} </p>`)
+            UserInfoElem.append(`<p>Is banned: ${data.IsBanned} </p>`)
+            UserInfoElem.append(`<p>Is admin: ${data.IsAdmin} </p>`)
+            UserInfoElem.append(`<p>Time of registration ${data.time}</p>`)
+        },
+        dataType:'json'
+    }
 );
-
 
 
 </script>
@@ -34,8 +40,6 @@ $(document).ready(
 <hr>
 
 <div id="UserData">
-
-
 
 </div>
 

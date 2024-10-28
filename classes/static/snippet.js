@@ -5,7 +5,7 @@ var MsgSnippet = (Author, element) => {
         <div class="comments-container">
             <div class="body">
                 <div class="authors">
-                    <div class="username"><a href="">${Author.UserId}</a></div>
+                    <div class="username"><a href="/UserPage?id=${Author.UserId}">${Author.UserId}</a></div>
                      <span class="circle-image">
                           <img  src="/media/${Author.LogoPath}" width = "90" height = "90"   />
                       </span>

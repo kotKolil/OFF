@@ -12,7 +12,7 @@ RUN pip install "cython<3.0.0"
 
 RUN pip install -r r.txt --no-cache-dir
 
-#setting enviroment variables for DB
+#setting environment variables for DB
 
 ENV port = "5432"
 ENV password = "1234"

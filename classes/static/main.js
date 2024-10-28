@@ -62,3 +62,4 @@ var IsLogged = async (token) => {
     return false  
   }
 };
+

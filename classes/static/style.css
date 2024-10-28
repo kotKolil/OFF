@@ -570,6 +570,22 @@ footer {
 }
 
 #UserData {
-    width: 90vw;
+    float:left;
+    padding: 15px;
+    width: 70vw;
     height:50vh;
+    font-size: 20px;
+    overflow-x: active;
+}
+
+#UserProfilePic {
+    width: 20vw;
+    height: 20vw;
+}
+
+
+#UserNameProfileAdmin {
+    color:red;
+    font-size: 20px;
+    padding-left: 5vw;
 }
