@@ -69,7 +69,7 @@ def MessageFormatWrapper(InputFunc):
                     return [
                             {
                             "TopicId":i[0],
-                            "MesageId":i[1],
+                            "MessageId":i[1],
                             "author":i[2],
                             "text":i[3],
                             "time":i[4]
@@ -84,7 +84,7 @@ def MessageFormatWrapper(InputFunc):
                 elif TypeOfData == "json":
                     return {
                         "TopicId":FuncData[0][0][0],
-                        "MesageId":FuncData[0][0][1],
+                        "MessageId":FuncData[0][0][1],
                         "author":FuncData[0][0][2],
                         "text":FuncData[0][0][3],
                         "time":FuncData[0][0][4]

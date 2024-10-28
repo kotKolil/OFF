@@ -32,7 +32,7 @@ class messages():
 
     def delete(self, MessageId):
 
-        self.DBWorker(query = "DELETE * from messages WHERE MessageId = ? ", param = [MessageId])
+        self.DBWorker(query = "DELETE from messages WHERE MessageId = ? ", param = [MessageId])
 
     def create(self, TopicId, author, text, format = "obj"):
         # TopicId, MessageId, author, text, time_of_publication

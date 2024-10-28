@@ -354,7 +354,7 @@ class server:
 
             return DBWorker.User().all(format="json")
         
-        @self.server.route("/api/topic")
+        @self.server.route("/api/topic", methods=["GET", "POST", "DELETE"])
         def ApiTopic():
             if request.method == "GET":
                 TopciId = request.args.get("TopicId")
@@ -378,15 +378,16 @@ class server:
                 RequestData = request.get_json()
 
                 TopicId = RequestData["TopicId"]
-                UserId = get_jwt_identity(RequestData["token"])
+                UserId = decode_token(RequestData["token"])["sub"]
 
-                UserData = DBWorker.User().get(user = UserId)
-                TopicData = DBWorker.Topic().get(TopicId = TopicId)
-                if TopicData.auhor == UserId or UserData.IsAdmin:
-                    DBWorker.Message().delete(TopciId = TopicId)
-                    return 200
+                UserData = DBWorker.User().get(user = UserId, format = "obj")
+                TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
+                print(TopicData.author)
+                if TopicData.author == UserId or UserData.IsAdmin == "1":
+                    # DBWorker.Topic().delete(TopicId = TopicId)
+                    return "200", 200
                 else:
-                    return "Denied", 403
+                    return "403", 403
             
         @self.server.route("/api/topic/all")
         def AllTopic():
@@ -395,14 +396,15 @@ class server:
             return DBWorker.Topic().all(format = "json")
         
 
-        @self.server.route("/api/messages")
+        @self.server.route("/api/messages", methods = ["GET", "POST", "DELETE"])
         def ApiMessage():
             if request.method == "GET":
                 TopicId = request.args.get("TopicId")
-                return DBWorker.Message().get(TopicId = TopicId, format = 'json')
+                if type(DBWorker.Message().get(TopicId = TopicId, format = 'json')) != list:
+                    return [DBWorker.Message().get(TopicId = TopicId, format = 'json')]
             elif request.method == "POST":
                 RequestData = request.get_json()
-                UserId = get_jwt_identity(RequestData["token"])
+                UserId = decode_token(RequestData["token"])["sub"]
                 if RequestData and UserId:
                     TopicId = RequestData["TopicId"]
                     text = RequestData["text"]
@@ -411,16 +413,16 @@ class server:
             elif request.method == "DELETE":
                 RequestData = request.get_json()
 
-                TopicId = RequestData["MessageId"]
-                UserId = get_jwt_identity(RequestData["token"])
+                MessageId = RequestData["MessageId"]
+                UserId = decode_token(RequestData["token"])["sub"]
 
                 UserData = DBWorker.User().get(user = UserId)
-                TopicData = DBWorker.Message().get(MessageId = TopicId)
-                if TopicData.auhor == UserId or UserData.IsAdmin:
-                    DBWorker.Message().get(MessageId = TopicId)
-                    return 200
+                TopicData = DBWorker.Message().get(MessageId = MessageId)
+                if TopicData.author == UserId or UserData.IsAdmin == "1":
+                    DBWorker.Message().delete(MessageId = MessageId)
+                    return "200", 200
                 else:
-                    return "Denied", 403
+                    return "403", 403
                 
         @self.server.route("/api/messages/all")
         def TopicAll():
@@ -435,6 +437,9 @@ class server:
         def PageUser():
             return render_template("user_page.html")
 
-            
+        @self.server.route("/moderate/users")
+        def UsersModerate():
+            return render("user_moderation.html")
+
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)

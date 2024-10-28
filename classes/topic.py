@@ -19,7 +19,7 @@ class topic:
         return [self.DBWorker(query = "SELECT * FROM topic", param = ()), self.DBWorker ]
 
     def delete(self, TopicId):
-        self.DBworker(query = "DELETE * from topic WHERE TopicId = ?", param = (TopicId,))
+        self.DBWorker(query = "DELETE from topic WHERE TopicId = ?", param = (TopicId,))
 
     def create(self, theme, author, about, format = "obj"):
         # time_of_creation|theme|author|about|sb_id

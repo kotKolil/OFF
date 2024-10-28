@@ -115,14 +115,13 @@ $(document).ready(
 
 
 </script>
-
 <p style="color:red;" id="error"></p>
 <form method="POST" enctype="multipart/form-data" id="MsgForm">
   <label for="Message">Write your message</label>
   <input name="Message" type="text">
   <input type="submit" value="Send Message">
 </form>
-
+<button onclick="DeleteTopic( getCookie('token'), getQueryParam('id') )">delete topic</button>
 <div class="navigate">
   <span id="TopicInfo"></span>
 </div>
