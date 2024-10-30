@@ -255,10 +255,10 @@ class server:
         
         
         
-        @self.server.route("/api/user/ChangeLogo")
+        @self.server.route("/api/user/ChangeLogo", methods = ["POST"])
         def ChangeLogo():
             if request.method == "POST":
-                UserId = get_jwt_identity(request.json()["token"])
+                UserId = decode_token(request.json()["token"])["sub"]
                 file = request.files.get('logo')
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
@@ -282,7 +282,7 @@ class server:
             
 
 
-        @self.server.route("/api/user", methods=["GET", "POST", "DELETE"])
+        @self.server.route("/api/user", methods=["GET", "POST", "CREATE" ,"DELETE"])
         def MisatoKForever():
             if request.method == "GET":
                 JWToken = request.args.get("JWToken")
@@ -425,7 +425,7 @@ class server:
                     return "403", 403
                 
         @self.server.route("/api/messages/all")
-        def TopicAll():
+        def MessageAll():
             return DBWorker.Message().all(format="json")
     
         @self.server.route("/api/GetForumName")
