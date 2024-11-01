@@ -74,7 +74,7 @@ async function DeleteTopic(UserToken, TopicId) {
     });
 
     if (r.status == 403 || r.status == 422) {
-        alert("you dont have permissions to delete this topic")
+            alert("you dont have permissions to delete this topic")
     }
 
 

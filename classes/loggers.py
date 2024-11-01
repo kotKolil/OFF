@@ -1,47 +1,93 @@
-from abc import *
 import logging
 import json
-import datetime
-from .tools import *
+
+from tools import *
 
 
+class ConsoleLog(object):
 
-class txt_log():
-    
-    def __init__(self, filename,path):
+    @staticmethod
+    def log(text, level="info"):
+
+        color_codes = {
+            "info": "\033[92m",
+            "warning": "\033[93m",
+            "error": "\033[91m",
+        }
+
+        reset_code = "\033[0m"
+
+        if level in color_codes:
+            print(f"{color_codes[level]} {get_current_time()} [{level}]:{text}{reset_code}")
+        else:
+            print(text)
+
+
+class TxtLog(object):
+
+    def __init__(self, filename, path):
         self.filename = filename
         self.path = path
-        
 
-    def log_message(self, text):
-        try:
-            with open(self.path + self.filename, "r") as file:
-                file.write(f"[{get_current_time}] {text} \n")
-                file.close()
-
+    def log(self, text, level):
+        with open(os.path.join(os.getcwd(), self.filename), 'a') as file:
+            file.write(f"{str(get_current_time())} [{level}]:{text} \n")
+            file.close()
             return 1
-        except Exception as e:
-            return [str(e), 0]
-        
-class json_log():
 
-    def __init__(self,filename, path):
+
+class JsonLog(object):
+
+    def __init__(self, filename, path):
         self.filename = filename
         self.path = path
-        
 
         """initializing logger object"""
         self.logger = logging.getLogger('js_logger')
         self.logger.setLevel(logging.DEBUG)
 
-        file_handler = logging.FileHandler(f'{self.__filename}.json')
+        file_handler = logging.FileHandler(f'{self.filename}.json')
         file_handler.setFormatter(logging.Formatter('%(message)s'))
         self.logger.addHandler(file_handler)
-        
-    def log_message(text, self):
+
+    def log(self, text, level):
         data = {
-        'message':text,
-        "time":get_current_time(),
-        }       
-        self.logger.error(json.dumps(data))
-        
+            "level": level,
+            'message': text,
+            "time": str(get_current_time()),
+        }
+        match level:
+            case "info":
+                self.logger.error(json.dumps(data))
+            case "warning":
+                self.logger.warning(json.dumps(data))
+            case "error":
+                self.logger.error(json.dumps(data))
+            case _:
+                raise TypeError("Unknown type of debug level")
+
+
+class Logger(object):
+
+    def __init__(self, logger_type="console", name_of_file=""):
+
+        self.NameOfFile = name_of_file
+
+        match logger_type:
+            case "console":
+                self.LoggerClass = ConsoleLog()
+            case "txt":
+                self.LoggerClass = TxtLog(filename=self.NameOfFile, path=os.getcwd())
+            case "json":
+                self.LoggerClass = JsonLog(filename=self.NameOfFile, path=os.getcwd())
+            case _:
+                raise TypeError("Unknown type of logger")
+
+    def info(self, text):
+        self.LoggerClass.log(text, level="info")
+
+    def warning(self, text):
+        self.LoggerClass.log(text, level="warning")
+
+    def error(self, text):
+        self.LoggerClass.log(text, level="error")

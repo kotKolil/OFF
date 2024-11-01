@@ -8,6 +8,57 @@ from .topic import *
 from .user import user
 from .tools import *
 
+
+def InitDB(DBWorker: object):
+    # structure of table user: email,  UserId, IsAdmin, IsBanned, LogoPath, citate, time, token
+
+    DBWorker(query="""
+        CREATE TABLE IF NOT EXISTS user (
+            email TEXT NOT NULL UNIQUE,
+            UserId TEXT UNIQUE,
+            IsAdmin BOOLEAN,
+            IsBanned BOOLEAN,
+            LogoPath TEXT,
+            citate TEXT,
+            time TEXT,
+            token TEXT UNIQUE NOT NULL,
+            ActiveNum INTEGER UNIQUE NOT NULL,
+            IsActivated INTEGER,
+            NumOfPosts INTEGER
+        );
+    """, param=())
+
+    # structure of table topic time|theme|author|about|TopicId
+
+    DBWorker(query="""
+        CREATE TABLE IF NOT EXISTS topic(
+            time TEXT,
+            theme TEXT, 
+            author TEXT REFERENCES user(UserId),
+            about TEXT,
+            TopicId TEXT NOT NULL UNIQUE
+
+
+        );
+
+
+
+              """, param=())
+
+    # creating table messages, which represents the message class
+    # structure of table messages: TopicId, MessageId, author, text, time
+
+    DBWorker(query="""
+        CREATE TABLE IF NOT EXISTS messages (
+            TopicId TEXT REFERENCES topic(TopicId),
+            MessageId TEXT UNIQUE PRIMARY KEY,
+            author TEXT REFERENCES user(UserId),
+            text TEXT,
+            time TEXT
+        );
+    """, param=())
+
+
 class SQLite3:
 
     def __init__(self, path):

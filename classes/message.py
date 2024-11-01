@@ -12,7 +12,7 @@ class messages():
         self.DBWorker = DBWorker
 
     @MessageFormatWrapper
-    def get(self, TopicId = "", MessageId = ""  ,format = "obj"):
+    def get(self, TopicId    = "", MessageId = ""  ,format = "obj"):
 
         if TopicId != "" and MessageId == "":
 

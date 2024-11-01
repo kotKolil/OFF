@@ -4,7 +4,7 @@ import hashlib
 import os
 import time
 
-from .settings import *
+from settings import *
 
 sample= '1h9K8L9h5d5v5Z4q7'
 
@@ -20,7 +20,7 @@ def generate_token(s1:str="vasya228", s2:str="12345"):
     return token
 
 def get_current_time():
-    return datetime.now()
+    return str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
 def generate_id():
@@ -31,69 +31,7 @@ def generate_id():
 
     return Result
 
-def error_decorator(self,func):
-    def wrapper(*args, **kwargs):
-        try:
-            resultat = func(*args, **kwargs)
-            return resultat
-        except Exception as e:
-            self.class_logger.log_message(str(e))
-            return str(e)
-    return wrapper
 
-
-def InitDB(DBWorker:object):
-        # structure of table user: email,  UserId, IsAdmin, IsBanned, LogoPath, citate, time, token
-
-        DBWorker(query = """
-            CREATE TABLE IF NOT EXISTS user (
-                email TEXT NOT NULL UNIQUE,
-                UserId TEXT UNIQUE,
-                IsAdmin BOOLEAN,
-                IsBanned BOOLEAN,
-                LogoPath TEXT,
-                citate TEXT,
-                time TEXT,
-                token TEXT UNIQUE NOT NULL,
-                ActiveNum INTEGER UNIQUE NOT NULL,
-                IsActivated INTEGER,
-                NumOfPosts INTEGER
-            );
-        """, param = ())
-
-                
-
-        # structure of table topic time|theme|author|about|TopicId
-
-
-        DBWorker(query = """
-            CREATE TABLE IF NOT EXISTS topic(
-                time TEXT,
-                theme TEXT, 
-                author TEXT REFERENCES user(UserId),
-                about TEXT,
-                TopicId TEXT NOT NULL UNIQUE
-
-
-            );
-                  
-                  
-                  
-                  """, param = ())
-
-                
-        # creating table messages, which represents the message class
-        # structure of table messages: TopicId, MessageId, author, text, time
-
-        DBWorker(query = """
-            CREATE TABLE IF NOT EXISTS messages (
-                TopicId TEXT REFERENCES topic(TopicId),
-                MessageId TEXT UNIQUE PRIMARY KEY,
-                author TEXT REFERENCES user(UserId),
-                text TEXT,
-                time TEXT
-            );
-        """, param = ())
 
 
     
