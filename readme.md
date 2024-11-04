@@ -108,4 +108,4 @@ to run app with Docker, follow this instruction:
 2. Run in shell command ``sudo docker build OFF ..``
 3. Run in shell command ``sudo docker run OFF``
 
-If you hative some troubles with app,  read documention in documentation.md or on address , or create issue
+If you hative some troubles with app,  read documention in documentation.md or on address https://kotkolil.github.io/OFF/documentation.html , or create issue on GitHub 
