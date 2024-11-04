@@ -105,15 +105,17 @@ class postgres():
 
 class DB:
 
-    def __init__(self, DBType="sqlite3", path="", host="", port="", name="", user="", password=""):
+    def __init__(self, DBType="sqlite3",host="", port="", name="", user="", password=""):
 
         match DBType:
+            case "":
+                self.db = SQLite3("main.db")
             case "sqlite3":
-                self.db = SQLite3(path)
+                self.db = SQLite3(name)
             case "postgres":
                 self.db = postgres(host, port, name, user, password)
             case _:
-                raise TypeError("Unkwon type of DB")
+                raise TypeError("Unknown type of DB")
             
 
     def DBInit(self):

@@ -1,36 +1,36 @@
-import os
-from pathlib import *
+#settings for logger
+logger_type = "console"
+name_of_file = ""
 
-try:
-    #here we getting variables of venv
-    #if they exists, yes?
-    2 / 0
-    
-except:
-    #anyway, we are definig here variables
+#settings for BD
+DBtype = ""
+DBport = 5432
+DBpassword = ""
+DBuser = ""
+DBname = "main.db"
+DBhost = "127.0.0.1"
 
-    LogPath = Path.cwd()
-    LogFilename = "a.log"
+#settings for Forum
+ForumName = "Awesome Forum"
+IsDebug = True
 
-    DBport = 8000
-    DBpassword = "" 
-    DBuser = ""
-    DBname = "main.db"
-    DBhost = "127.0.0.1"
+#configuring Admin User
+AdminUser = "admin"
+AdminPassword = "1234567890"
+AdminName = "anonim"
+AdminCitate = ""
+AdminLogoPath = "admin.png"
 
-    ForumName = "Awesome Forum"
-    IsDebug = True
+#configuring mail worker
+MailSite = ""
+MailPort = ""
+MailLogin = ""
+MailPassword = ""
 
-    AdminUser = "tomfox"
-    AdminPassword = "14037176"
-    AdminName = "Abu"
-    AdminCitate = "der mench is bose"
-    AdminLogoPath = "admin.png"
-    
-    MailSite = "smtp.yandex.ru"
-    MailPort = "587"
-    MailLogin = "uran54321@yandex.ru"
-    MailPassword = "vqlmgjnmitzspnvg"
+#configuring flask app
+AppSecretKey = ""
+JwtSecretKey = ""
 
-    AppSecretKey = "230597"
-    JwtSecretKey = "230597"
+#configurating app
+APPport = 8000
+APPhost = "0.0.0.0"
