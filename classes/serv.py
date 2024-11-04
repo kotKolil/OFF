@@ -54,6 +54,37 @@ class server:
         except sqlite3.IntegrityError:
             print("[debug]:Admin User Already Exists")
 
+        @SockIO.on("TopicDelete")
+        def topic_delete(message):
+
+            decoder = json.JSONDecoder()
+            message = decoder.decode(message)
+
+            UserToken = decode_token(message["JWToken"])["sub"]
+            TopicId = message["TopicId"]
+
+            UserData = DBWorker.User().get(token = UserToken, format="obj")
+            TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
+
+            if UserData.UserId == TopicData.author or UserData.IsAdmin == "1":
+                DBWorker.Topic().delete(TopicId = TopicId)
+                emit("TopicDelete", args = {"TopicId":TopicId}, broadcast=True)
+
+        @SockIO.on("MessageDelete")
+        def message_delete(message):
+
+            decoder = json.JSONDecoder()
+            message = decoder.decode(message)
+
+            UserToken = decode_token(message["JWToken"])["sub"]
+            MessageId = message["MessageId"]
+
+            UserData = DBWorker.User().get(token = UserToken, format="obj")
+            MessageData = DBWorker.Message().get(MessageId = MessageId, format = "obj")
+
+            if UserData.UserId == MessageData.author or UserData.IsAdmin == "1":
+                emit("TopicDelete", args={"TopicId": MessageData.TopicId, "MessageId":MessageId},
+                     broadcast=True)
 
         @SockIO.on("message")
         def my_event(message):
@@ -384,7 +415,7 @@ class server:
                 TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
                 print(TopicData.author)
                 if TopicData.author == UserId or UserData.IsAdmin == "1":
-                    # DBWorker.Topic().delete(TopicId = TopicId)
+                    DBWorker.Topic().delete(TopicId = TopicId)
                     return "200", 200
                 else:
                     return "403", 403
@@ -413,13 +444,16 @@ class server:
             elif request.method == "DELETE":
                 RequestData = request.get_json()
 
+                # emit('NewMessage', result, broadcast=True)
+
                 MessageId = RequestData["MessageId"]
                 UserId = decode_token(RequestData["token"])["sub"]
 
                 UserData = DBWorker.User().get(user = UserId)
-                TopicData = DBWorker.Message().get(MessageId = MessageId)
-                if TopicData.author == UserId or UserData.IsAdmin == "1":
+                MsgData = DBWorker.Message().get(MessageId = MessageId)
+                if MsgData.author == UserId or UserData.IsAdmin == "1":
                     DBWorker.Message().delete(MessageId = MessageId)
+                    emit("MsgDel", result = {"TopicId":MsgData.TopicId, "MessageId":MsgData.MessageId}, broadcast=True)
                     return "200", 200
                 else:
                     return "403", 403

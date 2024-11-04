@@ -62,36 +62,3 @@ var IsLogged = async (token) => {
     return false  
   }
 };
-
-async function DeleteTopic(UserToken, TopicId) {
-
-    const r = await fetch("/api/topic", {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ "TopicId": TopicId, "token": UserToken })
-    });
-
-    if (r.status == 403 || r.status == 422) {
-            alert("you dont have permissions to delete this topic")
-    }
-
-
-}
-
-async function DeleteMessage(MsgId, token) {
-
-    const r = await fetch("/api/message", {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ "MessageId": MsgId, "token": token })
-    });
-
-    if (r.status == 403 || r.status == 422) {
-        alert("you dont have permissions to delete this topic")
-    }
-
-}

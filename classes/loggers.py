@@ -1,7 +1,7 @@
 import logging
 import json
 
-from tools import *
+from .tools import *
 
 
 class ConsoleLog(object):
@@ -74,6 +74,8 @@ class Logger(object):
         self.NameOfFile = name_of_file
 
         match logger_type:
+            case "":
+                self.LoggerClass = ConsoleLog()
             case "console":
                 self.LoggerClass = ConsoleLog()
             case "txt":
