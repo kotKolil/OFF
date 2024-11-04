@@ -19,8 +19,6 @@ This forum uses a class system to make the project safe and easy to maintain. Al
 5. open terminal or shell
 6. in terminal, go to root directory of OFF project
 7. in terminal run this command to install libraries for app:
-
-
 ``pip install -r r.txt``
 8. in terminal run this command  to run the app:
 
