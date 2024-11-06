@@ -97,6 +97,82 @@ to run app with Docker, follow this instruction:
 2. Run in shell command ``sudo docker build OFF ..``
 3. Run in shell command ``sudo docker run OFF``
 
+# How to use forum
+
+## How log in system
+
+To log in system, you need to do this things:
+
+1.  Go to /auth/log or click on "log in" in bottom
+
+2. Enter you login and password
+
+3. Click on button "log in" under input fields
+
+4. If all data correct, you will be replaced to main page
+
+5. If you entered wrong data, will spawn text "Incorrect user or password". You must return to step number 2 and enter right data
+
+   
+
+## How register in system
+
+To register in system, you need to do this things:
+
+1. Go to /auth/reg or click on "log in" in bottom "reg in"
+
+2. Enter you data in form
+
+3. Click on "reg in"
+
+4. go to email, that your enter in form
+
+5. You must be recieve  a letter with link, that will activate your account. Go to it
+
+   Congrulations! You are registred on forum
+
+   
+
+## How create topic on forum
+
+To create topic on forum, you need to do this things:
+
+1. You must be logged in system. Check, do you authorised on forum
+
+2. Click to create topic on main page of Forum or go to /topic/create
+
+3. If you get error "Token has expired", please log in system
+
+4. Fill form
+
+5. Click to button
+
+   
+
+Congrulations! You are created topic on forum
+
+## How send message on forum
+
+To send message on forum, you need to do this things:
+
+1. You must be logged in system. Check, do you authorised on forum
+
+2. Go to topic, in that you want send message
+
+3. Type your message in form on top
+
+4. Click on button  near
+
+5. If message not send, you are not logged in. Please, log in 
+
+   Congrulations! You are created topic on forum
+
+## How delete message or topic
+
+to delete topic or message, you can use buttons near message form in topic or button in messsage
+
+​	If you not logged in or not moderator, you can not delete messsage or topic
+
 # Classes
 
 ## server

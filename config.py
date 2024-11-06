@@ -24,7 +24,7 @@ AdminLogoPath = "admin.png"
 #configuring mail worker
 MailSite = "smtp.yandex.ru"
 MailPort = "587"
-MailLogin = "uran54321@yandex.ru"
+MailLogin = "uran54321"
 MailPassword = "vqlmgjnmitzspnvg"
 
 #configuring flask app
