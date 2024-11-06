@@ -2,7 +2,7 @@ var MsgSnippet = (Author, element) => {
     //Author, Text
 
     var MisatoForever =  `
-        <div class="comments-container" id = "#${element.MessageId}">
+        <div class="comments-container" id = "${element.MessageId}">
             <div class="body">
                 <div class="authors">
                     <div class="username"><a href="/UserPage?id=${Author.UserId}">${Author.UserId}</a></div>
@@ -10,7 +10,8 @@ var MsgSnippet = (Author, element) => {
                           <img  src="/media/${Author.LogoPath}" width = "90" height = "90"   />
                       </span>
                       <p>Posts: ${Author.NumOfPosts}</p>
-                      <button onclick="DeleteMessage( '${element.MessageId}', getCookie('token') )">delete message</button>
+                      <button onclick="DeleteMessage('${element.MessageId}')">delete message</button>
+                      <button onclick="ReplyToMsg('#${element.MessageId}')">reply to message</button>
                 </div>
                 <div class="content">
                         ${element.text}

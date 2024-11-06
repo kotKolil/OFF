@@ -30,9 +30,12 @@ class messages():
             return [self.DBWorker(query = "SELECT * FROM messages ORDER BY DATETIME(time)", param = []), self.DBWorker]
 
 
-    def delete(self, MessageId):
+    def delete(self, MessageId = "", TopicId = ""):
 
-        self.DBWorker(query = "DELETE from messages WHERE MessageId = ? ", param = [MessageId])
+        if MessageId != "":
+            self.DBWorker(query="DELETE from messages WHERE MessageId = ? ", param=[MessageId])
+        elif TopicId != "":
+            self.DBWorker(query="DELETE from messages WHERE TopicId = ? ", param=[TopicId])
 
     def create(self, TopicId, author, text, format = "obj"):
         # TopicId, MessageId, author, text, time_of_publication

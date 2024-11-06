@@ -63,28 +63,38 @@ class server:
             UserToken = decode_token(message["JWToken"])["sub"]
             TopicId = message["TopicId"]
 
-            UserData = DBWorker.User().get(token = UserToken, format="obj")
+            UserData = DBWorker.User().get(user = UserToken, format="obj")
             TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
 
             if UserData.UserId == TopicData.author or UserData.IsAdmin == "1":
                 DBWorker.Topic().delete(TopicId = TopicId)
-                emit("TopicDelete", args = {"TopicId":TopicId}, broadcast=True)
+                DBWorker.Message().delete(TopicId = TopicId)
+                emit("TopicDelete", {"TopicId":TopicData.TopicId}, broadcast=True)
+
 
         @SockIO.on("MessageDelete")
-        def message_delete(message):
+        def topic_delete(message):
+
+            print("КАК ХУЙ ДРОЧЕННЫЙ В ЖОПУ")
 
             decoder = json.JSONDecoder()
             message = decoder.decode(message)
 
+            print(message)
+
             UserToken = decode_token(message["JWToken"])["sub"]
             MessageId = message["MessageId"]
 
-            UserData = DBWorker.User().get(token = UserToken, format="obj")
-            MessageData = DBWorker.Message().get(MessageId = MessageId, format = "obj")
+            UserData = DBWorker.User().get(user = UserToken, format="obj")
+            MsgData = DBWorker.Message().get(MessageId = MessageId, format = "obj")
 
-            if UserData.UserId == MessageData.author or UserData.IsAdmin == "1":
-                emit("TopicDelete", args={"TopicId": MessageData.TopicId, "MessageId":MessageId},
-                     broadcast=True)
+            print(UserData.__dict__)
+            print(MsgData.__dict__)
+
+            if UserData.UserId == MsgData.author or UserData.IsAdmin == "1":
+                print("Я ЕБУ СОБАК!")
+                DBWorker.Message().delete(MessageId = MessageId)
+                emit("MsgDel", {"MessageId":MessageId}, broadcast=True)
 
         @SockIO.on("message")
         def my_event(message):
@@ -109,7 +119,7 @@ class server:
                 UserData.NumOfPosts += 1
                 UserData.save()
 
-                emit('NewMessage', result, broadcast=True)
+                emit('NewMessage',  result, broadcast=True)
 
             else:
                 emit('NewMessage', 401, broadcast = False )
@@ -433,6 +443,7 @@ class server:
                 TopicId = request.args.get("TopicId")
                 if type(DBWorker.Message().get(TopicId = TopicId, format = 'json')) != list:
                     return [DBWorker.Message().get(TopicId = TopicId, format = 'json')]
+                return DBWorker.Message().get(TopicId=TopicId, format='json')
             elif request.method == "POST":
                 RequestData = request.get_json()
                 UserId = decode_token(RequestData["token"])["sub"]

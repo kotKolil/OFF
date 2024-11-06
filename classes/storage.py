@@ -42,11 +42,11 @@ class MessagesStorage:
     def __init__(self, Data, DBWorker):
         self.DBWorker = DBWorker
 
-        self.TopicId = Data[0][0]
-        self.MessageId = Data[0][1]
-        self.author = Data[0][2]
-        self.text = Data[0][3]
-        self.time = Data[0][4]
+        self.TopicId = Data[0]
+        self.MessageId = Data[1]
+        self.author = Data[2]
+        self.text = Data[3]
+        self.time = Data[4]
 
     def save(self):
         self.DBWorker(query = "UPDATE messages SET TopicId = ?, MessageId = ?, author = ?, text = ?, time = ?", param =  (self.TopicId, self.MessageId, self.author,
