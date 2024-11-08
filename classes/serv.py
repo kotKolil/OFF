@@ -136,7 +136,7 @@ class server:
         #views, wich handle errors
         @self.server.errorhandler(404)
         def Handler404(e):
-            return render("info.html", message="HTTP 404<p>Page Not Found")
+            return render("info.html", message="HTTP 404<p>Page Not Found", code = 404)
             
 
 
@@ -320,10 +320,29 @@ class server:
                 return [1]
             else:
                 return [0]
-            
+
+        @self.server.route("/api/user/generate_token", methods = ["POST"])
+        def GenerateToken():
+            if request.method == "POST":
+                user = request.get_json()["user"]
+                pswd = request.get_json()["password"]
+
+                UserHash = generate_token(user, pswd)
+
+                UserData = DBWorker.User().get(token = UserHash, format = "obj")
+
+                if UserData.UserId != "":
+                    JWToken = create_access_token(identity=UserData.UserId)
+                    return JWToken, 201
+                else:
+                    return "incorrect user or password", 400
+            else:
+                return "400", 400
 
 
-        @self.server.route("/api/user", methods=["GET", "POST", "CREATE" ,"DELETE"])
+
+
+        @self.server.route("/api/user", methods=["GET", "POST", "CREATE" ,"DELETE", "PATCH"])
         def MisatoKForever():
             if request.method == "GET":
                 JWToken = request.args.get("JWToken")
@@ -370,6 +389,86 @@ class server:
                 else:
                     return 401
 
+
+
+        @self.server.route("/api/user/change/user", method = ["PATCH"])
+        def UserChange():
+
+            Data = request.get_json()
+
+            UserIdFromToken = decode_token(["token"])["sub"]
+            password = Data['password']
+            NewUserId = Data['NewUserId']
+            citate = Data["citate"]
+
+            UserData = DBWorker.User.get(user = UserIdFromToken)
+
+
+            if UserData.UserId != "":
+
+                #if citate is not set, we are changing password and user id
+                if citate == "":
+
+                    #creating new hash from user and password
+                    NewHashToken = generate_token(NewUserId, password)
+                    UserData.token = NewHashToken
+                    UserData.UserId = NewUserId
+                    UserData.save()
+
+                    #change all topics, create by user
+                    AllUserTopic = DBWorker.User.all(format = "obj")
+                    for topic in AllUserTopic:
+                        if topic.author == UserIdFromToken:
+                            topic.author = NewUserId
+                            topic.save()
+
+                    #change all messages, create by user
+                    AllUserMsg = DBWorker.User.all(format = "obj")
+                    for msg in AllUserMsg:
+                        if msg.author == UserIdFromToken:
+                            msg.author = NewUserId
+                            msg.save()
+
+                    return "201", 201
+
+                else:
+                    UserData.citate = citate
+                    UserData.save()
+
+            else:
+                return "403", 403
+
+        @self.server.route("/api/user/change/admin", method=["PATCH"])
+        def AdminUserChange():
+
+            try:
+
+                data = request.get_json()
+
+                AdminUserId = decode_token(['AdminToken'])["sub"]
+                UserId = data['UserId']
+                is_banned = data["IsBanned"]
+                is_admin = data["IsAdmin"]
+
+                AdminUserData = DBWorker.User().get(user = AdminUserId)
+                SimpleUserData = DBWorker.User().get(user = UserId)
+                if AdminUserData.IsAsdmin == "1":
+
+                    if SimpleUserData.UserId != "":
+                        SimpleUserData.is_banned = is_banned
+                        SimpleUserData.is_admin = is_admin
+                        SimpleUserData.save()
+                    else:
+                        return "404", 404
+
+                else:
+                    return "403", 403
+
+            except IndexError or KeyError:
+
+                return "400", 400
+
+
         @self.server.route("/ActivateEmail")
         def ActivateEmail():
             num = request.args.get('num')
@@ -395,7 +494,7 @@ class server:
 
             return DBWorker.User().all(format="json")
         
-        @self.server.route("/api/topic", methods=["GET", "POST", "DELETE"])
+        @self.server.route("/api/topic", methods=["GET", "POST", "DELETE", "PATCH"])
         def ApiTopic():
             if request.method == "GET":
                 TopciId = request.args.get("TopicId")
@@ -423,13 +522,35 @@ class server:
 
                 UserData = DBWorker.User().get(user = UserId, format = "obj")
                 TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
-                print(TopicData.author)
                 if TopicData.author == UserId or UserData.IsAdmin == "1":
                     DBWorker.Topic().delete(TopicId = TopicId)
                     return "200", 200
                 else:
                     return "403", 403
-            
+
+            elif request.method == "PATCH":
+
+                # try:
+
+                RequestData = request.get_json()
+
+                UserId = decode_token(RequestData["UserToken"])["sub"]
+                TopicId = RequestData["TopicId"]
+
+                Topic = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
+                User = DBWorker.User().get(user = UserId, format = "obj" )
+                if Topic.author == UserId or User.IsAdmin == "1":
+                    Topic.theme = RequestData["TopicTheme"]
+                    Topic.about = RequestData["TopicAbout"]
+                    Topic.save()
+
+                    return "201", 201
+
+                # except:
+                #
+                #     return "400", 400
+
+
         @self.server.route("/api/topic/all")
         def AllTopic():
             if type(DBWorker.Topic().all(format = "json")) != list:
@@ -437,7 +558,7 @@ class server:
             return DBWorker.Topic().all(format = "json")
         
 
-        @self.server.route("/api/messages", methods = ["GET", "POST", "DELETE"])
+        @self.server.route("/api/messages", methods = ["GET", "POST", "DELETE", "PATCH"])
         def ApiMessage():
             if request.method == "GET":
                 TopicId = request.args.get("TopicId")
@@ -468,7 +589,26 @@ class server:
                     return "200", 200
                 else:
                     return "403", 403
-                
+
+            elif request.method == "PATCH":
+
+                RequestData = request.get_json()
+
+                text = RequestData['text']
+                MsgId = RequestData["MsgId"]
+                UserId = decode_token(RequestData["UserToken"])["sub"]
+
+                MsgData = DBWorker.Message().get(MessageId = MsgId)
+
+                if UserId == MsgData.author or UserId == AdminUser:
+
+                    MsgData.text = text
+                    MsgData.save()
+
+                    return "201", 201
+
+                return "403", 403
+
         @self.server.route("/api/messages/all")
         def MessageAll():
             return DBWorker.Message().all(format="json")
@@ -485,6 +625,10 @@ class server:
         @self.server.route("/moderate/users")
         def UsersModerate():
             return render("user_moderation.html")
+
+        @self.server.route("/FAQ")
+        def FuYo():
+            return render("faq.html")
 
 
         SockIO.run(self.server, host=host,port=port, debug=IsDebug)

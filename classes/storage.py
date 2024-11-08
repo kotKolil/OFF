@@ -5,6 +5,8 @@ class UserStorage:
     def __init__(self, Data, DBWorker):
         self.DBWorker = DBWorker
 
+
+
         self.email = Data[0][0]
         self.UserId = Data[0][1]
         self.IsAdmin = Data[0][2]
@@ -25,17 +27,15 @@ class TopicStorage:
     def __init__(self, Data, DBWorker):
         self.DBWorker = DBWorker
 
-        os.system("cls")
-
         self.time = Data[0][0]
         self.theme = Data[0][1]
         self.author = Data[0][2]
         self.about = Data[0][3]
         self.TopicId = Data[0][4]
-    
+
     def save(self):
-        self.DBWorker(query = "UPDATE topic SET time = ?, theme = ?, author = ?, about = ?, TopicId = ? WHERE TopicId = ? ", param = [self.time,  self.theme, 
-                      self.author,  self.about, self.TopicId])
+        self.DBWorker(query = "UPDATE topic SET theme = ?, about = ? WHERE TopicId = ? ",
+                      param = [self.theme,self.about, self.TopicId])
         
 class MessagesStorage:
 

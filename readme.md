@@ -2,10 +2,13 @@
 
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)  ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)   ![Static Badge](https://img.shields.io/badge/by_kotkolil-%D0%BF%D0%B8%D1%88%D0%B3%D0%BA%D1%89%D0%B0%D1%82%D0%BC%D0%B7%D1%8F?link=https%3A%2F%2Fgithub.com%2FkotKolil%2FkotKolil)
 
+Contents
+
+[TOC]
 
 
 
-### Description
+# Description
 
 OFF -  is free, open-source , web-forum engine on python 3.* on backend and JS on client-side,  with flexible settings, updating topic in real-time and system of moderation. It's easy in installing, using and moderating. This forum engine uses JWT-tokens to secure user data.
 This forum uses a class system to make the project safe and easy to maintain. All parts of the application (logger, database, business logic) are implemented as classes.
@@ -57,7 +60,7 @@ congratulations, you have launched the application
 
    congratulations, you have launched the application
 
-#### variable in config.py types
+## variable in config.py types
 
 in config.py 3 types of variable: integer, string and boolean
 
@@ -113,3 +116,79 @@ to run app with Docker, follow this instruction:
 3. Run in shell command ``sudo docker run OFF``
 
 If you hative some troubles with app,  read documention in documentation.md or on address https://kotkolil.github.io/OFF/, or create issue on GitHub 
+
+# How to use forum
+
+## How log in system
+
+To log in system, you need to do this things:
+
+1. Go to /auth/log or click on "log in" in bottom
+
+2. Enter you login and password
+
+3. Click on button "log in" under input fields
+
+4. If all data correct, you will be replaced to main page
+
+5. If you entered wrong data, will spawn text "Incorrect user or password". You must return to step number 2 and enter right data
+
+   
+
+## How register in system
+
+To register in system, you need to do this things:
+
+1. Go to /auth/reg or click on "log in" in bottom "reg in"
+
+2. Enter you data in form
+
+3. Click on "reg in"
+
+4. go to email, that your enter in form
+
+5. You must be recieve  a letter with link, that will activate your account. Go to it
+
+   Congrulations! You are registred on forum
+
+   
+
+## How create topic on forum
+
+To create topic on forum, you need to do this things:
+
+1. You must be logged in system. Check, do you authorised on forum
+
+2. Click to create topic on main page of Forum or go to /topic/create
+
+3. If you get error "Token has expired", please log in system
+
+4. Fill form
+
+5. Click to button
+
+   
+
+Congrulations! You are created topic on forum
+
+## How send message on forum
+
+To send message on forum, you need to do this things:
+
+1. You must be logged in system. Check, do you authorised on forum
+
+2. Go to topic, in that you want send message
+
+3. Type your message in form on top
+
+4. Click on button  near
+
+5. If message not send, you are not logged in. Please, log in 
+
+   Congrulations! You are created topic on forum
+
+## How delete message or topic
+
+to delete topic or message, you can use buttons near message form in topic or button in messsage
+
+​	If you not logged in or not moderator, you can not delete messsage or topic
