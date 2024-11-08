@@ -398,8 +398,6 @@ class server:
             Data = request.get_json()
 
             UserIdFromToken = decode_token(Data["token"])["sub"]
-            password = Data['NewPassword']
-            NewUserId = Data['NewUserId']
             citate = Data["citate"]
 
             UserData = DBWorker.User().get(user = UserIdFromToken, format = "obj")
@@ -409,6 +407,9 @@ class server:
 
                 #if citate is not set, we are changing password and user id
                 if citate == "":
+
+                    password = Data['NewPassword']
+                    NewUserId = Data['NewUserId']
 
                     #creating new hash from user and password
                     NewHashToken = generate_token(NewUserId, password)
