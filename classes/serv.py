@@ -67,7 +67,7 @@ class server:
             UserData = DBWorker.User().get(user = UserToken, format="obj")
             TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
 
-            if UserData.UserId == TopicData.author or UserData.IsAdmin == "1":
+            if UserData.UserId == TopicData.author or UserData.IsAdmin == 1:
                 DBWorker.Topic().delete(TopicId = TopicId)
                 DBWorker.Message().delete(TopicId = TopicId)
                 emit("TopicDelete", {"TopicId":TopicData.TopicId}, broadcast=True)
@@ -76,12 +76,10 @@ class server:
         @SockIO.on("MessageDelete")
         def topic_delete(message):
 
-            print("КАК ХУЙ ДРОЧЕННЫЙ В ЖОПУ")
 
             decoder = json.JSONDecoder()
             message = decoder.decode(message)
 
-            print(message)
 
             UserToken = decode_token(message["JWToken"])["sub"]
             MessageId = message["MessageId"]
@@ -92,8 +90,7 @@ class server:
             print(UserData.__dict__)
             print(MsgData.__dict__)
 
-            if UserData.UserId == MsgData.author or UserData.IsAdmin == "1":
-                print("Я ЕБУ СОБАК!")
+            if UserData.UserId == MsgData.author or UserData.IsAdmin == 1:
                 DBWorker.Message().delete(MessageId = MessageId)
                 emit("MsgDel", {"MessageId":MessageId}, broadcast=True)
 
@@ -137,7 +134,7 @@ class server:
         #views, wich handle errors
         @self.server.errorhandler(404)
         def Handler404(e):
-            return render("info.html", message="HTTP 404<p>Page Not Found", code = 404)
+            return render("info.html", message="HTTP 404.Page Not Found", code = 404)
             
 
 
@@ -464,7 +461,7 @@ class server:
 
                 AdminUserData = DBWorker.User().get(user = AdminUserId)
                 SimpleUserData = DBWorker.User().get(user = UserId)
-                if AdminUserData.IsAsdmin == "1":
+                if AdminUserData.IsAsdmin == 1:
 
                     if SimpleUserData.UserId != "":
                         SimpleUserData.is_banned = is_banned
@@ -534,7 +531,7 @@ class server:
 
                 UserData = DBWorker.User().get(user = UserId, format = "obj")
                 TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
-                if TopicData.author == UserId or UserData.IsAdmin == "1":
+                if TopicData.author == UserId or UserData.IsAdmin == 1:
                     DBWorker.Topic().delete(TopicId = TopicId)
                     return "200", 200
                 else:
@@ -551,7 +548,7 @@ class server:
 
                 Topic = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
                 User = DBWorker.User().get(user = UserId, format = "obj" )
-                if Topic.author == UserId or User.IsAdmin == "1":
+                if Topic.author == UserId or User.IsAdmin == 1:
                     Topic.theme = RequestData["TopicTheme"]
                     Topic.about = RequestData["TopicAbout"]
                     Topic.save()
@@ -595,7 +592,7 @@ class server:
 
                 UserData = DBWorker.User().get(user = UserId)
                 MsgData = DBWorker.Message().get(MessageId = MessageId)
-                if MsgData.author == UserId or UserData.IsAdmin == "1":
+                if MsgData.author == UserId or UserData.IsAdmin == 1:
                     DBWorker.Message().delete(MessageId = MessageId)
                     emit("MsgDel", result = {"TopicId":MsgData.TopicId, "MessageId":MsgData.MessageId}, broadcast=True)
                     return "200", 200
@@ -636,7 +633,15 @@ class server:
 
         @self.server.route("/moderate/users")
         def UsersModerate():
-            return render("user_moderation.html")
+            try:
+                UserId = decode_token(request.cookies.get("token"))["sub"]
+                UserData = DBWorker.User().get(user = UserId, format = "obj")
+                if UserData.IsAdmin == 1:
+                    return render("user_moderation.html")
+                else:
+                    return render_template("info.html", message = "HTTP 404. Page not Found")
+            except:
+                return render_template("info.html", message="HTTP 404. Page not Found")
 
         @self.server.route("/FAQ")
         def FuYo():

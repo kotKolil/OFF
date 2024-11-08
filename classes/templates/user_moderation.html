@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block bo_dy %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src="/static/main.js"></script>
+<script src="/static/snippet.js"></script>
+<script>
+
+$(document).ready(async () => {
+    $("#get").click(async () => {
+        var UserId = $("#UserIdBar").val();
+        $.ajax({
+            url: `http://${location.host}/api/user?UserId=${UserId}`,
+            type: "GET",
+            success: (data) => {
+                console.log(data);
+            },
+            error: (data) => {
+                console.error(data);
+            }
+        });
+    });
+});
+
+</script>
+<hr>
+<H2>User moderation page</H2>
+<p>enter id of user to get him</p>
+<input id = "UserIdBar">
+<button id="get">get user</button>
+
+{% endblock bo_dy %}
