@@ -5,7 +5,7 @@ class UserStorage:
     def __init__(self, Data, DBWorker):
         self.DBWorker = DBWorker
 
-
+        self.__OldUserId = Data[0][1]
 
         self.email = Data[0][0]
         self.UserId = Data[0][1]
@@ -19,9 +19,12 @@ class UserStorage:
         self.NumOfPosts = Data[0][10]
 
     def save(self):
+        print(self.UserId)
         self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ?, NumOfPosts = ? WHERE UserId = ?""", param = [self.email, self.UserId, self.IsAdmin,
-                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.NumOfPosts , self.UserId])
-        
+                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.NumOfPosts , self.__OldUserId])
+
+        self.UserId = self.__OldUserId
+
 class TopicStorage:
 
     def __init__(self, Data, DBWorker):

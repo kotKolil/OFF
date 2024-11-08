@@ -1,7 +1,7 @@
 import logging
 import json
 
-from .tools import *
+from tools import *
 
 
 class ConsoleLog(object):

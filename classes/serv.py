@@ -1,6 +1,7 @@
 #external classes
 from msilib.schema import SelfReg
 from typing import Self
+import collections
 from flask import *
 from flask import render_template as render
 from werkzeug.utils import secure_filename
@@ -17,7 +18,7 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import *
 from flask_jwt_extended import exceptions
 # local classes
-from .loggers import *
+from loggers import *
 from .tools import *
 
 
@@ -391,17 +392,17 @@ class server:
 
 
 
-        @self.server.route("/api/user/change/user", method = ["PATCH"])
+        @self.server.route("/api/user/change/user", methods = ["PATCH"])
         def UserChange():
 
             Data = request.get_json()
 
-            UserIdFromToken = decode_token(["token"])["sub"]
-            password = Data['password']
+            UserIdFromToken = decode_token(Data["token"])["sub"]
+            password = Data['NewPassword']
             NewUserId = Data['NewUserId']
             citate = Data["citate"]
 
-            UserData = DBWorker.User.get(user = UserIdFromToken)
+            UserData = DBWorker.User().get(user = UserIdFromToken, format = "obj")
 
 
             if UserData.UserId != "":
@@ -416,18 +417,28 @@ class server:
                     UserData.save()
 
                     #change all topics, create by user
-                    AllUserTopic = DBWorker.User.all(format = "obj")
-                    for topic in AllUserTopic:
-                        if topic.author == UserIdFromToken:
-                            topic.author = NewUserId
-                            topic.save()
+                    AllUserTopic = DBWorker.Topic().all(format = "obj")
+                    print(type(AllUserTopic))
+                    if not isinstance(AllUserTopic, collections.abc.Iterable):
+                        AllUserTopic.author = NewUserId
+                        AllUserTopic.save()
+
+                    else:
+                        for topic in AllUserTopic:
+                            if topic.author == UserIdFromToken:
+                                topic.author = NewUserId
+                                topic.save()
 
                     #change all messages, create by user
-                    AllUserMsg = DBWorker.User.all(format = "obj")
-                    for msg in AllUserMsg:
-                        if msg.author == UserIdFromToken:
-                            msg.author = NewUserId
-                            msg.save()
+                    AllUserMsg = DBWorker.Message().all(format = "obj")
+                    if not isinstance(AllUserMsg, collections.abc.Iterable):
+                        AllUserTopic.author = NewUserId
+
+                    else:
+                        for msg in AllUserMsg:
+                            if msg.author == UserIdFromToken:
+                                msg.author = NewUserId
+                                msg.save()
 
                     return "201", 201
 
@@ -438,7 +449,7 @@ class server:
             else:
                 return "403", 403
 
-        @self.server.route("/api/user/change/admin", method=["PATCH"])
+        @self.server.route("/api/user/change/admin", methods = ["PATCH"])
         def AdminUserChange():
 
             try:
@@ -598,7 +609,7 @@ class server:
                 MsgId = RequestData["MsgId"]
                 UserId = decode_token(RequestData["UserToken"])["sub"]
 
-                MsgData = DBWorker.Message().get(MessageId = MsgId)
+                MsgData = DBWorker.Message().get(MessageId = MsgId, format = "obj")
 
                 if UserId == MsgData.author or UserId == AdminUser:
 
