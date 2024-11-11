@@ -350,11 +350,11 @@ class server:
                         UserId = decode_token(JWToken)["sub"]
                         return DBWorker.User().get(user = UserId, format = "json")
                     else:
-                        return "400"
+                        return "400", 400
                 elif UserId != None:
                     return DBWorker.User().get(user = UserId, format = "json")
                 else:
-                    return "400"
+                    return "400", 400
 
             elif request.method == "CREATE":
                 RequestData = request.get_json()
@@ -372,20 +372,20 @@ class server:
                         message = f"<p>Go to your email to activate your account</p>"
                         return message, 201
                     except:
-                        return "bad user or password", 400
+                        return "400", 400
                 else:
-                    return 400, "Bad Request"
+                    return "400", 400
                 
             elif request.method == "DELETE":
                 JWToken = request.args.get("JWToken")
                 if decode_token(JWToken):
                     try:
                         DBWorker.User().delete(user = get_jwt_identity(JWToken))
-                        return 200
+                        return "400", 400
                     except:
-                        return 400
+                        return "400", 400
                 else:
-                    return 401
+                    return "401", 401
 
 
 
@@ -454,19 +454,20 @@ class server:
 
                 data = request.get_json()
 
-                AdminUserId = decode_token(['AdminToken'])["sub"]
+                AdminUserId = decode_token(data['AdminToken'])["sub"]
                 UserId = data['UserId']
                 is_banned = data["IsBanned"]
                 is_admin = data["IsAdmin"]
 
-                AdminUserData = DBWorker.User().get(user = AdminUserId)
-                SimpleUserData = DBWorker.User().get(user = UserId)
-                if AdminUserData.IsAsdmin == 1:
+                AdminUserData = DBWorker.User().get(user = AdminUserId, format = "obj")
+                SimpleUserData = DBWorker.User().get(user = UserId, format = "obj")
+                if AdminUserData.IsAdmin == 1:
 
                     if SimpleUserData.UserId != "":
-                        SimpleUserData.is_banned = is_banned
-                        SimpleUserData.is_admin = is_admin
+                        SimpleUserData.IsBanned = is_banned
+                        SimpleUserData.IsAdmin = is_admin
                         SimpleUserData.save()
+                        return "200",200
                     else:
                         return "404", 404
 
