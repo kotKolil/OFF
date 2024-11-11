@@ -171,7 +171,7 @@ To send message on forum, you need to do this things:
 
 to delete topic or message, you can use buttons near message form in topic or button in messsage
 
-​	If you not logged in or not moderator, you can not delete messsage or topic
+​	If you not logged in or not moderator, you can`t delete messsage or topic
 
 # Classes
 

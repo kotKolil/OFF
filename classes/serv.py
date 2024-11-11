@@ -18,14 +18,14 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import *
 from flask_jwt_extended import exceptions
 # local classes
-from loggers import *
+from .loggers import *
 from .tools import *
 
 
 class server:
 
     def __init__(self,  ClassLoger, DBWorker, port=8000, IsDebug=True, host="127.0.0.1", AdminUser = "", AdminName = "", AdminPassword = "", 
-                 AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum", MailWorker:object = "", AppSecretKey = "", JwtSecretKey = ""):
+                 AdminCitate = "admin always right",AdminLogoPath = "/media/admin.png", ForumName = "Forum", MailWorker:object = "", AppSecretKey = "", JwtSecretKey = "", logger = Logger()):
         #settings of server's behavior
         self.host = host
         self.port = port
@@ -44,6 +44,9 @@ class server:
         self.AdminLogoPath = AdminLogoPath
         self.ForumName = ForumName
 
+        self.MailWorker = MailWorker
+        self.logger = logger
+
         SockIO = SocketIO(self.server)
 
         #creating Admin Acount
@@ -53,8 +56,7 @@ class server:
             AdminAkk.save()
 
         except sqlite3.IntegrityError:
-            print("[debug]:Admin User Already Exists")
-
+                self.logger.warning("Admin User Already Exists")
         @SockIO.on("TopicDelete")
         def topic_delete(message):
 
@@ -86,9 +88,6 @@ class server:
 
             UserData = DBWorker.User().get(user = UserToken, format="obj")
             MsgData = DBWorker.Message().get(MessageId = MessageId, format = "obj")
-
-            print(UserData.__dict__)
-            print(MsgData.__dict__)
 
             if UserData.UserId == MsgData.author or UserData.IsAdmin == 1:
                 DBWorker.Message().delete(MessageId = MessageId)
@@ -128,7 +127,7 @@ class server:
 
         @SockIO.on("connect")
         def OnOpenEvent():
-            print("WebSockets connection estabilished")
+            self.logger.info("WebSockets connection estabilished")
             emit("message", {"info":"WebSockets connection estabilished"})
 
         #views, wich handle errors
@@ -242,7 +241,7 @@ class server:
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
                         u = DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate, format = "obj")
-                        MailWorker.SendMessage(email, f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum}", "Account Activating")
+                        MailWorker.SendMessage(email, f"Hello! Go to this link http://{host}:{port}/ActivateEmail?num={u.ActiveNum}", "Account Activating")
                         resp = make_response("go to your email to activate email", 200)
 
                         resp.mimetype = "text/plain"
@@ -416,7 +415,6 @@ class server:
 
                     #change all topics, create by user
                     AllUserTopic = DBWorker.Topic().all(format = "obj")
-                    print(type(AllUserTopic))
                     if not isinstance(AllUserTopic, collections.abc.Iterable):
                         AllUserTopic.author = NewUserId
                         AllUserTopic.save()
@@ -463,7 +461,7 @@ class server:
                 SimpleUserData = DBWorker.User().get(user = UserId, format = "obj")
                 if AdminUserData.IsAdmin == 1:
 
-                    if SimpleUserData.UserId != "":
+                    if SimpleUserData.UserId != "" and SimpleUserData.UserId != self.AdminUser:
                         SimpleUserData.IsBanned = is_banned
                         SimpleUserData.IsAdmin = is_admin
                         SimpleUserData.save()
@@ -489,7 +487,7 @@ class server:
             if UserData.IsActivated == 1:
                 return render("info.html", message="account is activated now")
 
-            UserData.IsActivated == 1
+            UserData.IsActivated = 1
 
             UserData.save()
 

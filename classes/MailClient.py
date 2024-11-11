@@ -3,13 +3,22 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 class MailClient(object):
-    def __init__(self, SiteAdress, SitePort, MailLogin, MailPassword, ForumName):
+    def __init__(self, SiteAdress, SitePort, MailLogin, MailPassword, ForumName, logger):
 
-        self.ForumName = ForumName
-        self.MailLogin = MailLogin
-        self.server = smtp.SMTP(SiteAdress, SitePort)
-        self.server.starttls()
-        self.server.login(MailLogin, MailPassword)
+        self.logger = logger
+
+        try:
+
+            self.ForumName = ForumName
+            self.MailLogin = MailLogin
+            self.server = smtp.SMTP(SiteAdress, SitePort)
+            self.server.starttls()
+            self.server.login(MailLogin, MailPassword)
+
+        except smtp.SMTPServerDisconnected:
+
+            logger.error("Mail Worker not inited")
+
 
     def SendMessage(self, TargetMail, text, Theme):
         # Create a multipart message

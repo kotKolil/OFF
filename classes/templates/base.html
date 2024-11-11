@@ -25,6 +25,7 @@
                 var UserData = await UserDataGet(UserToken);
                 $("#LogoImage").attr("src", `/media/${UserData.LogoPath}`);
                 $("#UserName").text(`${UserData.UserId}`);
+                $("#PersonalPage").attr("href", `UserPage?id=${UserData.UserId}`);
             } else {
                 $("#LogoImage").attr("src", "/media/default.png");
                 $("#UserName").text("Anonim");
@@ -56,6 +57,11 @@
         
             $("#ForumState").text(`There are ${NumOfMessages} messages in ${NumOfTopicsCount} topics from ${NumOfUsers} users. Admin is ${Admin}`);
             $(".brand").text(ForumName.ForumName);
+            $(".brand").click( () =>  {
+
+                document.location.href = "/";
+
+            });
         });
         </script>
         
@@ -86,6 +92,7 @@
         </span>
         <span style="margin-left:4px;" id="UserName"></span>
         <a href="/auth/log">|log in</a> <a href="/auth/reg">|reg in</a> <a href="/auth/dislog">|log out</a>
+        <a id = "PersonalPage" href="/UserPage">| Personal Page</a>
         <a href="/FAQ">|FAQ - fast answers and questions</a>
         
     </footer>
