@@ -9,7 +9,7 @@ venv
 *.png
 *.gif
 
-
+TODO.txt
 
 !default.png
 !screenshot.jpg

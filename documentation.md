@@ -144,8 +144,8 @@ To create topic on forum, you need to do this things:
 3. If you get error "Token has expired", please log in system
 
 4. Fill form
-
-5. Click to button
+5. Field Is Secured disable sending message in your topic from other users
+6. Click to button
 
    
 
@@ -172,6 +172,36 @@ To send message on forum, you need to do this things:
 to delete topic or message, you can use buttons near message form in topic or button in messsage
 
 ​	If you not logged in or not moderator, you can`t delete messsage or topic
+
+## How to get on your personal page
+
+to go on your personal page, you may click on link personal page on toolbar in bottom of page
+On you personal page displayed your info and you can send message or make a posts on a "Wall", how
+in topic page
+
+## How to reply to message in topic
+
+To reply to message in topic, you can use button "reply" in message block. After your click button, html content of that message will be in text of your answer 
+
+## How use moderation page
+
+**moderators only!**
+
+to moderate users on forum, you must go to /moderate/users. If you not moderator, you will get 403 HTTP error. But, if you are have moderator status, you will see this page:
+
+![moderate](C:\Users\Treska\Documents\projects\OFF\assets\moderate.PNG)
+
+to get user, you must enter his id in input field and press on  button "get user". Page will change:
+
+![moderateuser](C:\Users\Treska\Documents\projects\OFF\assets\moderateuser.PNG)
+
+On page will display all info about user. You can change his rights via checkboxes.  When you finish, press on button "save info".  Info will send to forum, and if everything is all,  message display and user data updates:
+
+![moderatemessage](C:\Users\Treska\Documents\projects\OFF\assets\moderatemessage.PNG)
+
+For example, i moved user to moderator
+
+![image-20241113175758303](C:\Users\Treska\AppData\Roaming\Typora\typora-user-images\image-20241113175758303.png)
 
 # Classes
 
@@ -498,6 +528,12 @@ this function uses for generate unique values for id of topics and message
 usage:
 
 ![randomoutput](C:\Users\Treska\Documents\projects\OFF\assets\randomoutput.PNG)
+
+# Structure of project
+
+Structure have this structure (opened in PyCharm Community Edition 2023.3.5):
+
+
 
 # Client-side (Frontend)
 
