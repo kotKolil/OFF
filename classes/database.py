@@ -31,14 +31,15 @@ def InitDB(DBWorker: object):
     # structure of table topic time|theme|author|about|TopicId
 
     DBWorker(query="""
-        CREATE TABLE IF NOT EXISTS topic(
-            time TEXT,
+
+
+        CREATE TABLE IF NOT EXISTS topic (
+            time DATETIME,
             theme TEXT, 
             author TEXT REFERENCES user(UserId),
             about TEXT,
-            TopicId TEXT NOT NULL UNIQUE
-
-
+            TopicId TEXT PRIMARY KEY,
+            Protected BOOLEAN
         );
 
 

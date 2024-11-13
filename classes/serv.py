@@ -106,10 +106,30 @@ class server:
             message = message["message"]
 
             UserData = DBWorker.User().get(user = UserId, format = "obj")
+            TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
+
+            logger.info(UserData.UserId)
+            logger.info(TopicData.protected)
+            logger.info(TopicData.author)
+
+            logger.info(type(UserData.UserId))
+            logger.info(type(TopicData.protected))
+            logger.info(type(TopicData.author))
 
             result = ""
             
-            if UserData.IsBanned != 1 and UserData.IsActivated == 1:
+            if UserData.IsBanned != 1 and UserData.IsActivated == 1 and TopicData.protected != 1:
+
+                result = DBWorker.Message().create(TopicId = TopicId, author = UserId ,  text = message, format="json")
+
+                UserData.NumOfPosts += 1
+                UserData.save()
+
+                emit('NewMessage',  result, broadcast=True)
+
+
+
+            elif UserData.UserId == TopicData.author and TopicData.protected == 1:
 
                 result = DBWorker.Message().create(TopicId = TopicId, author = UserId ,  text = message, format="json")
 
@@ -174,6 +194,7 @@ class server:
                 Name = request.form.get("name")
                 Theme = request.form.get("theme")
                 About = request.form.get("about")
+                protected = request.form.get("protected")
 
                 if decode_token(request.cookies.get("token")):
 
@@ -189,17 +210,11 @@ class server:
                     if UserData.IsBanned:
                     
                         return render("info.html", message = "you are banned on this forum. Please, contact with moderators")
-                
-                    if UserData.IsAdmin == 1:
-                        
-                        NewTopic = DBWorker.Topic().create(Theme,  UserData.UserId , About, format = "obj")
-                        return redirect(f"http://{self.host}:{self.port}/topic?id={NewTopic.TopicId}")
-
                     else:
                         
                         try:
 
-                            NewTopic = DBWorker.Topic().create(Theme, UserData.UserId, About, format="obj")
+                            NewTopic = DBWorker.Topic().create(Theme, UserData.UserId, About, str( (protected == "on") * 1), format="obj")
                             return redirect("/")
                         
                         except Exception as e:
@@ -576,11 +591,19 @@ class server:
             elif request.method == "POST":
                 RequestData = request.get_json()
                 UserId = decode_token(RequestData["token"])["sub"]
-                if RequestData and UserId:
+                TopicData = DBWorker.Topic().get(TopicId = request.get_json()["TopicId"])
+                if RequestData and UserId and TopicData.protected != 1:
                     TopicId = RequestData["TopicId"]
                     text = RequestData["text"]
                     DBWorker.Message().create(TopicId, UserId, text)
                     return 201
+                elif TopicData.author == UserId and TopicData.protected == 1:
+                    TopicId = RequestData["TopicId"]
+                    text = RequestData["text"]
+                    DBWorker.Message().create(TopicId, UserId, text)
+                    return 201
+                else:
+                    return "403",403
             elif request.method == "DELETE":
                 RequestData = request.get_json()
 

@@ -123,7 +123,8 @@ def TopicFormatWrapper(InputFunc):
                             "theme": i[1],
                             "author": i[2],
                             "about": i[3],
-                            "TopicId": i[4]
+                            "TopicId": i[4],
+                            "protected": i[5],
                         }
                         for i in FuncData[0]
                     ]
@@ -138,6 +139,7 @@ def TopicFormatWrapper(InputFunc):
                     "author":FuncData[0][0][2],
                     "about":FuncData[0][0][3],
                     "TopicId":FuncData[0][0][4],
+                    "protected":FuncData[0][0][5],
 
 
                 }

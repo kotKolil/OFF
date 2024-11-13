@@ -21,13 +21,13 @@ class topic:
     def delete(self, TopicId):
         self.DBWorker(query = "DELETE from topic WHERE TopicId = ?", param = (TopicId,))
 
-    def create(self, theme, author, about, format = "obj"):
+    def create(self, theme, author, about, protected, format = "obj"):
         # time_of_creation|theme|author|about|sb_id
         
         Id = generate_id()
 
         try:
-            self.DBWorker(query = "INSERT INTO topic VALUES (?, ?, ?, ?, ?)", param = [get_current_time(), theme, author, about, Id])
+            self.DBWorker(query = "INSERT INTO topic VALUES (?, ?, ?, ?, ?, ?)", param = [get_current_time(), theme, author, about, Id, protected])
             return self.get(TopicId=Id, format = "obj")
         except sqlite3.IntegrityError or psycopg2.errors.UniqueViolation:
             return 0

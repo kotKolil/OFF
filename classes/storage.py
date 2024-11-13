@@ -35,10 +35,11 @@ class TopicStorage:
         self.author = Data[0][2]
         self.about = Data[0][3]
         self.TopicId = Data[0][4]
+        self.protected = Data[0][5]
 
     def save(self):
-        self.DBWorker(query = "UPDATE topic SET theme = ?, about = ? WHERE TopicId = ? ",
-                      param = [self.theme,self.about, self.TopicId])
+        self.DBWorker(query = "UPDATE topic SET theme = ?, about = ?, Protected = ? WHERE TopicId = ? ",
+                      param = [self.theme,self.about, self.protected, self.TopicId])
         
 class MessagesStorage:
 

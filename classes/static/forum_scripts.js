@@ -2,13 +2,23 @@ $(document).ready(async () => {
   // checking topic
   const TopicData = await (await fetch(`/api/topic?TopicId=${getQueryParam("id")}`)).json();
 
+
+
   if (TopicData.length === 0) {
     document.location.href = "/topic/create";
   }
 
   const TopicInfoVar = $("#TopicInfo");
-  const TopicHTML = $(`<p> ${TopicData.time}|${TopicData.theme}|${TopicData.author}|${TopicData.about} </p>`);
+  const TopicHTML = $(`<p id = "StatusBar"> ${TopicData.time}|${TopicData.theme}|${TopicData.author}|${TopicData.about} </p>`);
   TopicInfoVar.append(TopicHTML);
+
+  if (TopicData.protected == 1) {
+
+        $("#StatusBar").append("<p id='UserNameProfileAdmin' >in this topic can write only his creator</p>")
+
+  }
+
+
 
   // defining socket var
   const socket = io();
