@@ -7,15 +7,34 @@
 </script>
 <script src="/static/main.js"></script>
 <script src="/static/snippet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src="/static/main.js"></script>
+<script src="/static/snippet.js"></script>
+<script src="/static/forum_scripts.js"></script>
 <script>
+
+
+const socket = io();
+
+function DeleteMessage (MsgId) {
+
+    var data = JSON.stringify( {"JWToken":getCookie("token"), "MessageId":MsgId })
+    socket.emit("MessageDelete", data)
+
+}
+
+function ReplyToMsg(element) {
+  console.log(element);
+  $("#MsgInput").val(`<div style="border: 2px white solid;">${$(element).html()}</div>`);
+}
 
 $.ajax(
     {
         url:`/api/user?UserId=${getQueryParam("id")}`,
         success: (data) => {
             var UserInfoElem = $("#UserData")
-            var AkkImg = `<img src="/media/${data.LogoPath}" id="UserProfilePic">`
-            $('body').append(AkkImg)
+            var AkkImg = `<img src="/media/${data.LogoPath}" id="UserProfilePic"   >`
+            $(".UserInfo").append(AkkImg)
             if (data.IsAdmin == "1") {
                 UserInfoElem.append(`<p id='UserNameProfileAdmin'>${data.UserId}</p>`)
             } else { // Fixed: Use 'else' instead of 'else ('
@@ -39,9 +58,34 @@ $.ajax(
 
 <hr>
 
-<div id="UserData">
+<div class="UserInfo">
+
+  <div id="UserData">
+
+
+  </div>
+
+  <hr>
 
 </div>
+
+  <br>
+
+  <p style="color:red;" id="error"></p>
+  <form method="POST" enctype="multipart/form-data" id="MsgForm">
+    Write your message
+    <input id="MsgInput" name="Message" type="text">
+    <input type="submit" value="Send Message">
+  </form>
+  <div class="navigate">
+    <span id="TopicInfo"></span>
+  </div>
+
+
+
+<div id="Msgs"></div>
+
+
 
 </body>
 

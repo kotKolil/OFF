@@ -108,14 +108,6 @@ class server:
             UserData = DBWorker.User().get(user = UserId, format = "obj")
             TopicData = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
 
-            logger.info(UserData.UserId)
-            logger.info(TopicData.protected)
-            logger.info(TopicData.author)
-
-            logger.info(type(UserData.UserId))
-            logger.info(type(TopicData.protected))
-            logger.info(type(TopicData.author))
-
             result = ""
             
             if UserData.IsBanned != 1 and UserData.IsActivated == 1 and TopicData.protected != 1:
@@ -256,6 +248,7 @@ class server:
                     file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
                     try:
                         u = DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate, format = "obj")
+                        TheWall = DBWorker.Topic().create(f"Private page of {u.UserId}", u.UserId, "The Wall", 0, format = "obj", TopicId = u.UserId)
                         MailWorker.SendMessage(email, f"Hello! Go to this link http://{host}:{port}/ActivateEmail?num={u.ActiveNum}", "Account Activating")
                         resp = make_response("go to your email to activate email", 200)
 
@@ -661,9 +654,9 @@ class server:
                 if UserData.IsAdmin == 1:
                     return render("user_moderation.html")
                 else:
-                    return render_template("info.html", message = "HTTP 404. Page not Found")
+                    return render_template("info.html", message = "HTTP 403. Access denied")
             except:
-                return render_template("info.html", message="HTTP 404. Page not Found")
+                return render_template("info.html", message="HTTP 403. Access denied")
 
         @self.server.route("/FAQ")
         def FuYo():
