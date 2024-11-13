@@ -68,7 +68,7 @@ to configure up, you may change values in config.py. All necessary variables, th
 | DBport | 5432 | sets port of gost, where DB is placed |integer|
 | DBpassword | "" (empty string) | set DB password, where app will connect |string|
 | DBuser | "" empty string | sets user of DB, where app will connect |string|
-| DBname | "" empty string | sets name of DB, where app will connect |string|
+| DBname | "" empty string | sets name of DB, where app will connect, On empty strings, app will set DB type "sqlite3" and name of DB "main.db" |string|
 | DBhost | "" empty string | sets host, where DB is placed |string|
 | ForumName | "Awesome Forum" | set name of forum, thats will displayed on pages |string|
 | IsDebug | True | on or off debug mode of app |Boolean|
@@ -78,13 +78,13 @@ to configure up, you may change values in config.py. All necessary variables, th
 |AdminCitate|""|sets citate, that will display under admin messages|string|
 |AdminLogoPath|"admin.png"|sets name of file, placed on "/media", thats will display on admin's accounts|string|
 |MailSite|""|sets host address of smpt server, that will be mail worker in app sends request|string|
-|MailPort|""|sets port of smpt server, that will be mail worker in app sends request|string|
+|MailPort|""|sets port of smpt server, where mail worker will sends request|string|
 |MailLogin|""|sets login of smpt server user, that will be mail worker in  app sends requests|string|
 |MailPassword|""|sets  password of smpt server user, that will be mail worker in app send requests|string|
 |AppSecretKey|""|sets variable ``'SECRET_KEY'`` in flask app|string|
 |JwtSecretKey|""|sets JWT tokens secret key|string|
-|APPport|8000|sets port of app, where it will be recieve|integer|
-|APPhost|"0.0.0.0"|sets host , will app will be placed|string|
+|APPport|8000|sets port of app, where it will be recieve requests|integer|
+|APPhost|"0.0.0.0"|sets host , where app will be placed|string|
 |||||
 
 ​	
@@ -531,9 +531,93 @@ usage:
 
 # Structure of project
 
-Structure have this structure (opened in PyCharm Community Edition 2023.3.5):
+Project have this structure (opened in PyCharm Community Edition 2023.3.5):
 
+![structure](C:\Users\Treska\Documents\projects\OFF\assets\structure.PNG)
 
+## assets
+
+In this folder stored images, used in documentation
+
+## classes
+
+in this folder stored classes, implementing parts of web app.  About classes and their purpose writed  in topic **Classes**
+
+### media
+
+This folder in folder **classes**. That using for storing images on forum. On default, in folder this files:
+
+1. **admin.png** - uses for logo for admin account
+
+2. **default.png** - uses for not registred or not uploaded account photo user 
+
+3. **OFF.ico** - uses like a icon of forum
+
+   
+
+### static
+
+this folder in folder **classes**. In this folder stored static files for frontend like css, js scripts and etc. . On default, in folder this files:
+
+1. **aquire.otf** & **CaptureIt.ttf** - file of fonts, that used on forum
+
+2. **forum_scripts.js** - in this file defined some metothds, for working of  topic page
+
+3. **main.js** - in this file defined some JS scripts, need to get user data, coockie and query param esasily
+
+4. **snippets.js** - in this file deifned methods on JS for fast inserting html markup of messages and topic blocks in page
+
+5. **styles.css** - css file for forum pages
+
+   
+
+### templates
+
+in this folder stored templates, uses for rendering pages via Jijna 2
+
+### python files
+
+This python files impplementing in class differnt parts of web app. About classes and their purpose writed  in chapter **Classes**
+
+## .gitignore
+
+This file uses GIT control version system for ignoring not important for project files, created by IDEs, python interpreter or programmer 
+
+## config.py
+
+in this class defined variables, that use OFF. What does they mean and how change writed in chapter **configuring app**
+
+## dockerfile
+
+this file uses Docker Engine for running app in docker containres. About this topic writed in chapter **Starting app with Docker**
+
+## index.html
+
+this file is main page of OFF project,placed on [kotkolil.github.io/OFF]()
+
+## license.txt
+
+in this file written license, on that you can use and modify source of OFF project
+
+## main.py
+
+this file uses for starting OFF project. In this classes defines "server" and other  classes on variables from config.py and runs it
+
+## r.txt
+
+in this file list of libraries, that OFF project uses. About installing libraries written in chapter **Starting**
+
+## readme.md
+
+in this file described project and main topics about OFF
+
+## test.py
+
+this files need for testing app. If your want check work of app or correct your changes in code,  use this file. Information about testing described in topic **testing**
+
+## documentation.md
+
+This file is base of knowledegs about OFF project and how it works
 
 # Client-side (Frontend)
 
