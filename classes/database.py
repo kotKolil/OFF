@@ -70,6 +70,7 @@ class SQLite3:
 
         con = sqlite3.connect(self.path)
         cursor = con.cursor()
+        cursor.execute('PRAGMA busy_timeout = 5000;')
         cursor.execute(query, param)
         data = cursor.fetchall()
         con.commit()
@@ -106,7 +107,7 @@ class postgres():
 
 class DB:
 
-    def __init__(self, DBType="sqlite3",host="", port="", name="", user="", password=""):
+    def __init__(self, DBType="",host="", port="", name="", user="", password=""):
 
         match DBType:
             case "":
