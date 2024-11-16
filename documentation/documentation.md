@@ -275,7 +275,7 @@ this function giving access to User table in DB.
 Definition:
 
 ```python
-DBClass = DB(DBType = "sqlite3", path = "main.db")
+DBClass = DB(DBType="sqlite3", path="../main.db")
 UserClass = DBClass.User()
 ```
 
