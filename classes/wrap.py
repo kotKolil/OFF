@@ -106,7 +106,7 @@ def TopicFormatWrapper(InputFunc):
         elif len(FuncData[0]) > 1 :
                 if TypeOfData == "obj":
                     return [
-                        TopicStorage(i, FuncData[1])
+                        TopicStorage([i], FuncData[1])
                         for i in FuncData[0]
                     ]
                 elif TypeOfData == "json":
