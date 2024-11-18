@@ -23,7 +23,7 @@ class UserStorage:
         self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ?, NumOfPosts = ? WHERE UserId = ?""", param = [self.email, self.UserId, self.IsAdmin,
                        self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.NumOfPosts , self.__OldUserId])
 
-        self.UserId = self.__OldUserId
+        self.__OldUserId = self.UserId
 
 class TopicStorage:
 

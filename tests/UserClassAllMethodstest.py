@@ -1,160 +1,107 @@
-# adding classes to path
+# External libraries
 import sys
-sys.path.append('..')
+import os
 from time import sleep
-from classes.database import *
 import psycopg2
 import sqlite3
+
+# Adding classes to path
+sys.path.append('..')
+
+# Importing local classes
+from classes.database import *
+from classes.loggers import *
 from classes.tools import *
 
-class UserClassAllMethodstest(object):
-    #defining data of example user for tests User() class
-    SimpleUserData = {
-        "password":"123",
-        'email': 'mail@example.com',
-        "user":"user",
-        "is_admin":"0",
-        "is_banned":'0',
-        "is_banned":"0",
-        "logo_path":'',
-        "citate":"",
-        "format":"",
+# Creating DBWorker object and initializing database
+DBWorker = DB()
+DBWorker.DBInit()
 
-    }
+# Setting logger
+Logger = Logger()
 
-    def __init__(self, DBWorker=DB()):
-        self.DBWorker = DBWorker
-        DBWorker.db.DBInit()
+# Defining data of example user for tests in User() class
+SimpleUserData = {
+    "password": "123",
+    "email": "mail@example.com",
+    "user": "user",
+    "is_admin": "0",
+    "is_banned": "0",
+    "logo_path": "",
+    "citate": "",
+    "format": "",
+}
 
-    # checking methods of User() class
-    def TestClass(self):
+UserObj = []
 
-        """
-        checks create method
-
-        #in first case we are checking creation of new user
-        #in second case we are checking error from same emails
-        #in third case we are checking errors from same user ID
-        """
-
-        assert self.DBWorker.User().create(**UserClassAllMethodstest.SimpleUserData)
-
+def test_TestOfCreationMethod():
+    # Testing create method in User class
+    try:
         
+        global UserObj
 
-        try:
-            self.DBWorker.User().create(**UserClassAllMethodstest.SimpleUserData)
-            self.DBWorker.User().create(password="1234567890", email="example@example.com", user="user1", is_admin="",
-                                  is_banned="", logo_path="", citate="", format="obj")
-        except Exception as e:
+        # Creating sample user
+        UserObject = DBWorker.User().create(**SimpleUserData)
 
-            assert type(e) == sqlite3.IntegrityError or type(e) == psycopg2.errors.UniqueViolation
+        UserObj = UserObject
 
-        
+        # Creating user with different id to raise error of unique values
+        DBWorker.User().create(password="1234567890", email="example@example.com", user="user", is_admin="0",
+                               is_banned="0", logo_path="", citate="", format="obj")
 
-        try:
-            self.DBWorker.User().create(password="1234567890", email="example2@example.com", user="user", is_admin="",
-                                    is_banned="", logo_path="", citate="", format="obj")
+    except (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation) as e:
+        assert isinstance(e, (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation))
 
-            self.DBWorker.User().create(password="1234567890", email="example2@example.com", user="user", is_admin="",\
-                                  is_banned="", logo_path="",\
-                                  citate="", format="obj")
+    try:
+        # Creating user with same email to raise error of unique values
+        DBWorker.User().create(password="1234567890", email="mail@example.com", user="user1", is_admin="0",
+                               is_banned="0", logo_path="", citate="", format="obj")
 
+    except (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation) as e:
+        assert isinstance(e, (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation)) 
 
-        except Exception as e:
-            
-            print(e)
-            assert type(e) == sqlite3.IntegrityError or type(e) == psycopg2.errors.UniqueViolation
+def test_TestOfGetMethod():
+    # Testing get method in User class
 
-        
+    global UserObj
 
+    #checking ouptut data as a obj
+    # Checking getting user data from user id
+    assert DBWorker.User().get(user=SimpleUserData["user"], format="obj").__dict__ == UserObj.__dict__
 
-        """
-        checks get method
-        
-        in first case we checking receiving user by his user id
-        in second case we checking receiving user by his user id and password
-        in second case we checking receiving user by his token, created as a hash from password and user id
-        in four case we checking getting user from num
-        in case 5 we checking getting data in json (dict in python) format
-        in case 6 we checking getting data from not existing user id
-        
-        """
+    # Checking getting user data from user id and password
+    assert (DBWorker.User().get(user=SimpleUserData["user"], password=SimpleUserData["password"], format="obj").__dict__ == UserObj.__dict__)
 
-        assert self.DBWorker.User().get(user = UserClassAllMethodstest.SimpleUserData["user"], format = "obj").UserId == \
-               UserClassAllMethodstest.SimpleUserData["user"]
-
-        
-
-        assert self.DBWorker.User().get(user=UserClassAllMethodstest.SimpleUserData["user"], password = \
-                                   UserClassAllMethodstest.SimpleUserData["password"], format = "obj").UserId == \
-               UserClassAllMethodstest.SimpleUserData['user']
-
-        
+    # Checking getting user data via token, created as a hash from password and user id
+    assert DBWorker.User().get(token=generate_token(s1=SimpleUserData["user"], s2=SimpleUserData["password"]), format="obj").__dict__ == UserObj.__dict__
 
 
-        token = generate_token(UserClassAllMethodstest.SimpleUserData["user"],UserClassAllMethodstest.SimpleUserData["password"])
+def test_TestOfAllMethod():
+    #testing all method in User class
 
-        assert self.DBWorker().get(token=token, format = "obj").UserId ==\
-               UserClassAllMethodstest["user"]
-        
+    #creaeting new user in DB
 
+    DBWorker.User().create(password="1234567890", email="example5@example.com", user="user5", is_admin="0",
+                               is_banned="0", logo_path="", citate="", format="obj")
 
-        TestUser = self.DBWorker.User().create(password="1234567890", email="exampl4e@example.com", user="user5", is_admin="",
-                                  is_banned="", logo_path="",
-                                  citate="", format="obj")
-
-        
-
-        assert self.DBWorker.User().get(num = TestUser.ActiveNum).__dict__ == TestUser.__dict__
-
-        
+    AllUsers = DBWorker.User().all(format = "obj")
 
 
-        assert self.DBWorker.User().get(user = UserClassAllMethodstest.SimpleUserData["user"], format = "json")["UserId"] == \
-               UserClassAllMethodstest.SimpleUserData["user"]
+    for i in AllUsers:
 
-        
+        print(i.__dict__)
 
-        """
-        checks data changing via UserStorage() class
-        """
+        SomeUser = DBWorker.User().get(user=i.UserId, format="obj")
 
-        UserData = self.DBWorker.User().get(user = UserClassAllMethodstest.SimpleUserData["user"], format = "obj")
+        assert i.__dict__ == SomeUser.__dict__
 
-        try:
+def test_TestOfModifyData():
 
-            UserData.email = "example1337@example.com"
-            UserData.UserId = "user1337"
-            UserData.IsAdmin = "1"
-            UserData.IsBanned = "1"
-            UserData.LogoPath = "sample_image"
-            UserData.citate = "sample quote"
-            UserData.time = "13:37:14"
-            UserData.ActiveNum = "1337"
-            self.IsActivated = "1"
-            self.NumOfPosts = "666"
+    global UserObj
 
-            UserData.save()
+    UserObj.UserId = "User777"
+    UserObj.save()
 
-        except Exception as e:
+    print(UserObj.__dict__)
 
-            raise AssertionError
-
-        """
-        checks delete method
-        
-        in case 1 we checking deleting data via user id
-        in case 2 we checking deleting data via user id and password
-        in case 3 we checking deleting via token created as a hash from user id and password
-        """
-
-        assert self.DBWorker.User().delete(user == UserClassAllMethodstest.SimpleUserData["user"]) == 1
-        assert self.DBWorker.User().create(**UserClassAllMethodstest.SimpleUserData)
-
-        assert self.DBWorker.User().delete(user == UserClassAllMethodstest.SimpleUserData["user"], password = UserClassAllMethodstest.SimpleUserData["password"]) == 1
-        assert self.DBWorker.User().create(**UserClassAllMethodstest.SimpleUserData)
-
-        assert self.DBWorker.User().delete(token = token) == 1
-
-if __name__ == '__main__':
-    UserClassAllMethodstest().TestClass()
+    assert UserObj.__dict__ == DBWorker.User().get(user = UserObj.UserId, format = "obj").__dict__

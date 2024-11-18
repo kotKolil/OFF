@@ -6,13 +6,10 @@ def UserFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
-        os.system("cls")
-        print(FuncData)
         if len(FuncData[0]) > 1:
 
             if TypeOfData == "obj":
-
-                return [ UserStorage(i[0], FuncData[1])  for i in FuncData[0]  ]
+                return [ UserStorage([i], FuncData[1])  for i in FuncData[0]  ]
             elif TypeOfData == "json":
                 return [
                             {
@@ -93,20 +90,16 @@ def MessageFormatWrapper(InputFunc):
                         "time":FuncData[0][0][4]
                     }
 
-
         except:
 
             return []
 
-            
     return wrapper
 
 def TopicFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
-
-
 
         if len(FuncData[0]) == 0:
             return []
@@ -140,8 +133,6 @@ def TopicFormatWrapper(InputFunc):
                     "about":FuncData[0][0][3],
                     "TopicId":FuncData[0][0][4],
                     "protected":FuncData[0][0][5],
-
-
                 }
 
     return wrapper
