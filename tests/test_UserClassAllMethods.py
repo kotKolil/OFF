@@ -99,9 +99,33 @@ def test_TestOfModifyData():
 
     global UserObj
 
+    #modifyning object
     UserObj.UserId = "User777"
     UserObj.save()
 
-    print(UserObj.__dict__)
-
+    # checking local object and data from DB
     assert UserObj.__dict__ == DBWorker.User().get(user = UserObj.UserId, format = "obj").__dict__
+
+def test_TestOfDeleteMethod():
+    #testing delete method in User class
+
+    #creating new user in DB
+    NewUser = DBWorker.User().create(password="1234567890", email="example7@example.com", user="user7", is_admin="0",
+                               is_banned="0", logo_path="", citate="", format="obj")
+    #deleting him via user id
+    assert DBWorker.User().delete(user = NewUser.UserId) == 1
+
+
+    #creating new user in DB
+    NewUser = DBWorker.User().create(password="1234567890", email="example7@example.com", user="user7", is_admin="0",
+                               is_banned="0", logo_path="", citate="", format="obj")
+    #deleting him via user id and password
+    assert DBWorker.User().delete(user = NewUser.UserId, password= "1234567890") == 1
+
+
+    #creating new user in DB
+    NewUser = DBWorker.User().create(password="1234567890", email="example7@example.com", user="user7", is_admin="0",
+                               is_banned="0", logo_path="", citate="", format="obj")
+    #deleting him via his token
+    token = generate_token("user7", "1234567890")
+    assert DBWorker.User().delete(token=token) == 1
