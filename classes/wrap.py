@@ -64,7 +64,7 @@ def MessageFormatWrapper(InputFunc):
 
             if len(FuncData[0]) > 1:
                 if TypeOfData == "obj":
-                    return [ MessagesStorage(i[0], FuncData[1]) for i in FuncData[0] ]
+                    return [ MessagesStorage(i, FuncData[1]) for i in FuncData[0] ]
                 elif TypeOfData == "json":
                     return [
                             {

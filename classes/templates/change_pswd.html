@@ -1,0 +1,22 @@
+
+{% extends "base.html" %}
+
+
+
+{% block bo_dy %}
+
+    <H3>{{message}}  </H3>
+
+    <form method="POST"  action = "/auth/change_password">
+
+        <p> enter your UserId </p>
+        <input type = "text" name = "user" />
+        <p>enter email, linked with your accounr </p>
+        <input type = "email" name = "email" />
+        <p> enter new password </p>
+        <input type = "password" name = "NewPswd" />
+        <input type="submit" />
+
+    </form>
+
+{% endblock bo_dy %}

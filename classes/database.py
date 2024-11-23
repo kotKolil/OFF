@@ -96,12 +96,20 @@ class postgres():
     def work(self, query, param = ("",)):
 
 
-        conn = psql.connect(dbname=self.name, user=self.user, password=self.password, host=self.host, port=self.port, timeout=7)
+        conn = psql.connect(dbname=self.name, user=self.user, password=self.password, host=self.host, port=self.port)
         cursor = conn.cursor()
-        cursor.execute(query,param)
-        data = cursor.fetchall()
-        cursor.commit()
-        cursor.close()
+        try:
+            cursor.execute(query, param)
+            data = cursor.fetchall()
+            conn.commit()
+            return data
+        except Exception as e:
+            print(f"Error executing query: {e}")
+            conn.rollback()  # Rollback if there's an error
+            return None
+        finally:
+            cursor.close()  # Close cursor
+            conn.close()  # Close connection
 
         return data
     
@@ -124,7 +132,7 @@ class DB:
                 raise TypeError("Unknown type of DB")
             
 
-    def DBInit(self):
+    def DBInit(self) -> object:
         self.db.DBInit()
 
     def User(self):

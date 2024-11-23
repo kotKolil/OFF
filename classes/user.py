@@ -30,9 +30,10 @@ class user():
     def all(self, format = "obj"):
         return [ self.DBworker("SELECT * FROM user", []), self.DBworker ]
 
-    def delete(self,user, password, token):
+    def delete(self,user = "", password = "", token = ""):
         if user != "" and password == "":
             self.DBworker(query = "DELETE * FROM user WHERE UserId = ?", param = [user] )
+            return 1
         elif user != "" and password != "":
             self.DBworker(query = "DELETE * FROM user WHERE token = ?", param = [ generate_token(user, password) ] )
             return 1

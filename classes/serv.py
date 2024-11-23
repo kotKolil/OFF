@@ -16,10 +16,13 @@ from flask_socketio import *
 import sqlite3
 from flask import Flask, jsonify, request
 from flask_jwt_extended import *
-from flask_jwt_extended import exceptions
+import sqlite3
+import psycopg2
+
 # local classes
 from .loggers import *
 from .tools import *
+from .storage import *
 
 
 class server:
@@ -262,7 +265,7 @@ class server:
                         return render_template("reg.html", message="Username already used")
   
                 else:
-                    return "400 Bad Request"
+                    return "400",400
 
 
         #log method
@@ -290,7 +293,46 @@ class server:
                         resp.set_cookie("token", JWToken)
                         return resp
 
-            
+        """
+        
+        entripoint for changing passowrd
+        
+        in GET method we return for password changing
+        in POST method we get data from this form
+        
+        """
+        @self.server.route("/auth/change_password", methods=["GET","POST", "PATCH"])
+        def ChangePswd():
+
+            if request.method == "GET":
+                return render("change_pswd.html")
+            elif request.method == "POST":
+                user = request.form.get("user")
+                email = request.form.get("email")
+                NewPassword = request.form.get("NewPswd")
+
+                UserData = DBWorker.User().get(user = user, format = "obj")
+                if UserData != 0:
+                    UserData.ActiveNum = randint(1, 10**6)
+                    UserData.save()
+                    MailWorker.SendMessage(email, f"""Please, go to this link 
+                    http://{host}:{port}/auth/action_change_password?num={UserData.ActiveNum}&NewPswd={NewPassword} 
+to change password""", "password changing")
+                    return render("info.html", message = "check your email")
+                else:
+                    return render("change_pswd.whtml", message = "invalid user")
+
+        @self.server.route("/auth/action_change_password", methods = ["GET", "POST"])
+        def PasswordChangeForm():
+            if request.args.get("num") != None and request.args.get("NewPswd") != None:
+                Num = request.args.get("num")
+                NewPswd = request.args.get("NewPswd")
+                UserData = DBWorker.User().get(num = Num, format = "obj")
+                if isinstance(UserData, UserStorage) and str(UserData.ActiveNum) == Num:
+                    UserHash = generate_token(UserData.UserId, NewPswd)
+                    UserData.token = UserHash
+                    UserData.save()
+                    return render("info.html", message = "password updated.Please, log in system")
 
         #logging out
         @self.server.route("/auth/dislog", methods=["GET"])
@@ -303,20 +345,24 @@ class server:
         
         @self.server.route("/api/user/ChangeLogo", methods = ["POST"])
         def ChangeLogo():
-            if request.method == "POST":
-                UserId = decode_token(request.json()["token"])["sub"]
-                file = request.files.get('logo')
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(file.filename)
-                    file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
-                    DBWorker.User().get(user = UserId).LogoPath = file.filename
-                    return os.path.join(os.getcwd(), "classes\media", file.filename), 201
-                return "Bad Request", 400
+            UserId = decode_token(request.json()["token"])["sub"]
+            Filename = request.json()["filename"]
+            File = request.json()['file']
+            #check filename security
+            if secure_filename(Filename):
+                #writing to file
+                with open(os.path.join(os.getcwd(), "classes\media", Filename), "wb") as file:
+                    file.write(File)
+                    file.save()
+                    file.close()
 
-        
-
-    
-        
+                #changing data in DB
+                User = DBWorker.User().get(user = UserId)
+                User.LogoPath = Filename
+                User.save()
+                return "201", 201
+            else:
+                return "400", 400
 
         @self.server.route("/api/user/CheckToken", methods = ["POST"])
         def CheckToken():
@@ -338,16 +384,14 @@ class server:
 
                 if UserData.UserId != "":
                     JWToken = create_access_token(identity=UserData.UserId)
-                    return JWToken, 201
+                    return {"JWToken":JWToken}, 201
                 else:
                     return "incorrect user or password", 400
             else:
                 return "400", 400
 
 
-
-
-        @self.server.route("/api/user", methods=["GET", "POST", "CREATE" ,"DELETE", "PATCH"])
+        @self.server.route("/api/user", methods=["GET", "POST", "CREATE" ,"DELETE"])
         def MisatoKForever():
             if request.method == "GET":
                 JWToken = request.args.get("JWToken")
@@ -355,11 +399,20 @@ class server:
                 if JWToken != None:
                     if decode_token(JWToken):
                         UserId = decode_token(JWToken)["sub"]
-                        return DBWorker.User().get(user = UserId, format = "json")
+                        data = DBWorker.User().get(user = UserId, format = "json")
+                        if type(data) != int:
+                            return data
+                        else:
+                            return "404",404
                     else:
                         return "400", 400
                 elif UserId != None:
-                    return DBWorker.User().get(user = UserId, format = "json")
+                    data = DBWorker.User().get(user=UserId, format="json")
+                    if type(data) != int:
+                        return data
+                    else:
+                        return "404", 404
+
                 else:
                     return "400", 400
 
@@ -378,21 +431,23 @@ class server:
                         MailWorker(f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum} to activate you account")
                         message = f"<p>Go to your email to activate your account</p>"
                         return message, 201
-                    except:
+                    except (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation):
                         return "400", 400
                 else:
                     return "400", 400
                 
             elif request.method == "DELETE":
-                JWToken = request.args.get("JWToken")
-                if decode_token(JWToken):
+                RequestData = request.get_json()
+                user0 = decode_token(RequestData["JWToken"])["sub"]
+                user = RequestData["user"]
+                if user0 == user or user0.IsAdmin:
                     try:
-                        DBWorker.User().delete(user = get_jwt_identity(JWToken))
-                        return "400", 400
+                        DBWorker.User().delete(user = user)
+                        return "201", 200
                     except:
-                        return "400", 400
+                        return "404", 404
                 else:
-                    return "401", 401
+                    return "403", 403
 
 
 
@@ -412,12 +467,9 @@ class server:
                 #if citate is not set, we are changing password and user id
                 if citate == "":
 
-                    password = Data['NewPassword']
                     NewUserId = Data['NewUserId']
 
                     #creating new hash from user and password
-                    NewHashToken = generate_token(NewUserId, password)
-                    UserData.token = NewHashToken
                     UserData.UserId = NewUserId
                     UserData.save()
 
@@ -449,9 +501,6 @@ class server:
                 else:
                     UserData.citate = citate
                     UserData.save()
-
-            else:
-                return "403", 403
 
         @self.server.route("/api/user/change/admin", methods = ["PATCH"])
         def AdminUserChange():
@@ -496,6 +545,7 @@ class server:
                 return render("info.html", message="account is activated now")
 
             UserData.IsActivated = 1
+            UserData.ActiveNum = 0
 
             UserData.save()
 

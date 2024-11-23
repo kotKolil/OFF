@@ -34,8 +34,10 @@ class messages():
 
         if MessageId != "":
             self.DBWorker(query="DELETE from messages WHERE MessageId = ? ", param=[MessageId])
+            return 1
         elif TopicId != "":
             self.DBWorker(query="DELETE from messages WHERE TopicId = ? ", param=[TopicId])
+            return 1
 
     def create(self, TopicId, author, text, format = "obj"):
         # TopicId, MessageId, author, text, time_of_publication

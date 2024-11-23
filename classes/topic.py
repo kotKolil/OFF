@@ -20,6 +20,7 @@ class topic:
 
     def delete(self, TopicId):
         self.DBWorker(query = "DELETE from topic WHERE TopicId = ?", param = (TopicId,))
+        return 1
 
     def create(self, theme, author, about, protected, format = "obj", TopicId = ""):
         # time_of_creation|theme|author|about|sb_id
