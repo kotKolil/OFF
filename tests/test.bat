@@ -18,7 +18,7 @@ endlocal
 
 @echo on
 
-pytest -vv
+pytest -v
 
 @echo off
 

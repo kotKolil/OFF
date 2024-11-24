@@ -10,17 +10,5 @@ from classes.database import *
 from config import *
 from config import *
 
-def test_TestingSQLite3Class():
-
-    #creating DB object
-    DBWorker = DB()
-    #testing DB initialization
-    DBWorker.DBInit()
-
-
-def test_TestingPSQLClass():
-
-    #creating DB object
-    DBWorker = DB(DBType="postgres",host = DBhost, port = DBport, name = DBname, user = DBuser, password = DBpassword)
-    #testing DB initialization
-    DBWorker.DBInit()
+def test_TestingDBFromConfig():
+    db = DB(DBType=DBtype, port = DBport, host=DBhost, name = DBname, password = DBpassword, user = DBuser, )
