@@ -1,5 +1,5 @@
 config.py
-
+.idea
 venv
 .vscode
 *.log

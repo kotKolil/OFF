@@ -313,8 +313,6 @@ class server:
 
                 UserData = DBWorker.User().get(user = user, format = "obj")
                 if UserData != 0:
-                    UserData.ActiveNum = randint(1, 10**6)
-                    UserData.save()
                     MailWorker.SendMessage(email, f"""Please, go to this link 
                     http://{host}:{port}/auth/action_change_password?num={UserData.ActiveNum}&NewPswd={NewPassword} 
 to change password""", "password changing")

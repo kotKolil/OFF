@@ -21,7 +21,7 @@ class UserStorage:
 
     def save(self):
         print(self.UserId)
-        self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ?, NumOfPosts = ?, token =  WHERE UserId = ?""", param = [self.email, self.UserId, self.IsAdmin,
+        self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ?, NumOfPosts = ?, token = ? WHERE UserId = ?""", param = [self.email, self.UserId, self.IsAdmin,
                        self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.NumOfPosts , self.token, self.__OldUserId])
 
         self.__OldUserId = self.UserId
