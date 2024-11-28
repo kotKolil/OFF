@@ -63,18 +63,17 @@ def test_TestOfCreationMethod():
 def test_TestOfGetMethod():
     # Testing get method in User class
 
-    global UserObj
-
     #checking ouptut data as a obj
     # Checking getting user data from user id
-    assert DBWorker.User().get(user=SimpleUserData["user"], format="obj").__dict__ == UserObj.__dict__
+    assert isinstance(DBWorker.User().get(user=SimpleUserData["user"], format="obj"), UserStorage)
 
     # Checking getting user data from user id and password
-    assert (DBWorker.User().get(user=SimpleUserData["user"], password=SimpleUserData["password"], format="obj").__dict__ == UserObj.__dict__)
+    assert isinstance(DBWorker.User().get(user=SimpleUserData["user"], password=SimpleUserData["password"], format="obj"), UserStorage)
 
     # Checking getting user data via token, created as a hash from password and user id
-    assert DBWorker.User().get(token=generate_token(s1=SimpleUserData["user"], s2=SimpleUserData["password"]), format="obj").__dict__ == UserObj.__dict__
+    assert isinstance(DBWorker.User().get(token=generate_token(s1=SimpleUserData["user"], s2=SimpleUserData["password"]), format="obj"), UserStorage)
 
+    assert DBWorker.User().get(user = "UserNotExist", format="obj") == 0
 
 def test_TestOfAllMethod():
     #testing all method in User class

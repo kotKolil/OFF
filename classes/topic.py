@@ -22,7 +22,7 @@ class topic:
         self.DBWorker(query = "DELETE from topic WHERE TopicId = ?", param = (TopicId,))
         return 1
 
-    def create(self, theme, author, about, protected, format = "obj", TopicId = ""):
+    def create(self, theme, author, about, protected, format = "obj" , TopicId = ""):
         # time_of_creation|theme|author|about|sb_id
 
 
@@ -32,7 +32,7 @@ class topic:
 
             try:
                 self.DBWorker(query = "INSERT INTO topic VALUES (?, ?, ?, ?, ?, ?)", param = [get_current_time(), theme, author, about, Id, protected])
-                return self.get(TopicId=Id, format = "obj")
+                return self.get(TopicId=Id, format = format)
             except sqlite3.IntegrityError or psycopg2.errors.UniqueViolation:
                 return 0
 
@@ -40,6 +40,6 @@ class topic:
 
             try:
                 self.DBWorker(query = "INSERT INTO topic VALUES (?, ?, ?, ?, ?, ?)", param = [get_current_time(), theme, author, about, TopicId, protected])
-                return self.get(TopicId=TopicId, format = "obj")
+                return self.get(TopicId=TopicId, format = format)
             except sqlite3.IntegrityError or psycopg2.errors.UniqueViolation:
                 return 0

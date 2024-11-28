@@ -338,33 +338,10 @@ to change password""", "password changing")
             resp = redirect("/")
             resp.set_cookie("token", "Null")
             return resp
-        
-        
-        
-        @self.server.route("/api/user/ChangeLogo", methods = ["POST"])
-        def ChangeLogo():
-            UserId = decode_token(request.json()["token"])["sub"]
-            Filename = request.json()["filename"]
-            File = request.json()['file']
-            #check filename security
-            if secure_filename(Filename):
-                #writing to file
-                with open(os.path.join(os.getcwd(), "classes\media", Filename), "wb") as file:
-                    file.write(File)
-                    file.save()
-                    file.close()
-
-                #changing data in DB
-                User = DBWorker.User().get(user = UserId)
-                User.LogoPath = Filename
-                User.save()
-                return "201", 201
-            else:
-                return "400", 400
 
         @self.server.route("/api/user/CheckToken", methods = ["POST"])
         def CheckToken():
-            JWToken = request.get_json()["JWToken"]
+            JWToken = request.json["JWToken"]
             if decode_token(JWToken):
                 return [1]
             else:
@@ -373,18 +350,19 @@ to change password""", "password changing")
         @self.server.route("/api/user/generate_token", methods = ["POST"])
         def GenerateToken():
             if request.method == "POST":
-                user = request.get_json()["user"]
-                pswd = request.get_json()["password"]
+                user = request.json["user"]
+                pswd = request.json["password"]
 
                 UserHash = generate_token(user, pswd)
 
                 UserData = DBWorker.User().get(token = UserHash, format = "obj")
+                logger.info(UserData)
 
-                if UserData.UserId != "":
+                if type(UserData) != int:
                     JWToken = create_access_token(identity=UserData.UserId)
                     return {"JWToken":JWToken}, 201
                 else:
-                    return "incorrect user or password", 400
+                    return "400", 400
             else:
                 return "400", 400
 
@@ -414,61 +392,66 @@ to change password""", "password changing")
                 else:
                     return "400", 400
 
-            elif request.method == "CREATE":
-                RequestData = request.get_json()
-                
+            elif request.method == "POST":
+                RequestData = request.json
+
                 if RequestData:
-                    
+
                     email = RequestData["email"]
                     UserId = RequestData["UserId"]
                     password  = RequestData["password"]
                     citate = RequestData["citate"]
 
-                    try:
-                        u = DBWorker.User().create(password, email, UserId, 0, 0, "", citate)
-                        MailWorker(f"Hello! Go to this link http://{host}/ActivateEmail?num={u.ActiveNum} to activate you account")
+                    UserData = DBWorker.User().get(user = UserId, format = "ojb")
+                    if UserData == 0:
+
+                        u = DBWorker.User().create(password=password, email = email, user=UserId, is_admin = 0,
+                                                   is_banned=0, logo_path = "default.png",citate = citate,
+                                                   format = "obj")
+                        MailWorker.SendMessage(TargetMail = email, text = f"""Hello! Go to this link http://{host}:{app}/ActivateEmail?num={u.ActiveNum} 
+                        to activate you account""", Theme = "account activating")
                         message = f"<p>Go to your email to activate your account</p>"
-                        return message, 201
-                    except (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation):
-                        return "400", 400
+                        return "201", 201
+                    else:
+                        return "400",400
                 else:
                     return "400", 400
-                
             elif request.method == "DELETE":
-                RequestData = request.get_json()
+                RequestData = request.json
                 user0 = decode_token(RequestData["JWToken"])["sub"]
+                user0 = DBWorker.User().get(user = user0, format = "obj")
                 user = RequestData["user"]
                 if user0 == user or user0.IsAdmin:
                     try:
                         DBWorker.User().delete(user = user)
-                        return "201", 200
+                        return "201", 201
                     except:
                         return "404", 404
                 else:
                     return "403", 403
 
-
-
-        @self.server.route("/api/user/change/user", methods = ["PATCH"])
+        @self.server.route("/api/user/change/user", methods = ["POST"])
         def UserChange():
 
-            Data = request.get_json()
+            Data = request.json
 
             UserIdFromToken = decode_token(Data["token"])["sub"]
             citate = Data["citate"]
 
             UserData = DBWorker.User().get(user = UserIdFromToken, format = "obj")
-
+            logger.info(UserData.__dict__)
 
             if UserData.UserId != "":
 
                 #if citate is not set, we are changing password and user id
                 if citate == "":
 
+                    Password = Data["password"]
                     NewUserId = Data['NewUserId']
 
                     #creating new hash from user and password
                     UserData.UserId = NewUserId
+                    UserData.token = generate_token(NewUserId, Password)
                     UserData.save()
 
                     #change all topics, create by user
@@ -499,13 +482,14 @@ to change password""", "password changing")
                 else:
                     UserData.citate = citate
                     UserData.save()
+                    return "201", 201
 
-        @self.server.route("/api/user/change/admin", methods = ["PATCH"])
+        @self.server.route("/api/user/change/admin", methods = ["POST"])
         def AdminUserChange():
 
             try:
 
-                data = request.get_json()
+                data = request.json
 
                 AdminUserId = decode_token(data['AdminToken'])["sub"]
                 UserId = data['UserId']
@@ -520,7 +504,7 @@ to change password""", "password changing")
                         SimpleUserData.IsBanned = is_banned
                         SimpleUserData.IsAdmin = is_admin
                         SimpleUserData.save()
-                        return "200",200
+                        return "201",201
                     else:
                         return "404", 404
 
@@ -537,7 +521,7 @@ to change password""", "password changing")
             num = request.args.get('num')
 
             UserData = DBWorker.User().get(num=num, format = "obj")
-            
+
 
             if UserData.IsActivated == 1:
                 return render("info.html", message="account is activated now")
@@ -557,7 +541,7 @@ to change password""", "password changing")
                 return [DBWorker.User().all(format="json")]
 
             return DBWorker.User().all(format="json")
-        
+
         @self.server.route("/api/topic", methods=["GET", "POST", "DELETE", "PATCH"])
         def ApiTopic():
             if request.method == "GET":
@@ -565,19 +549,19 @@ to change password""", "password changing")
                 return DBWorker.Topic().get(TopicId = TopciId, format = 'json')
             elif request.method == "POST":
                 RequestData = request.get_json()
-                UserId = get_jwt_identity(RequestData["token"])
+                UserId = decode_token(RequestData["token"])["sub"]
 
                 if RequestData and UserId:
                     theme = RequestData["theme"]
                     about = RequestData["about"]
+                    is_protected = RequestData["is_protected"]
 
-                    TopicCreated = DBWorker.Topic().create(theme, UserId, about)
-
-                    return DBWorker.Topic().get(TopciId = TopicCreated.TopicId, format = "json")
+                    TopicCreated = DBWorker.Topic().create(theme, UserId, about, is_protected, format = "obj")
+                    return DBWorker.Topic().get(TopicId = TopicCreated.TopicId, format = "json")
 
                 else:
                     return 400
-                
+
             elif request.method == "DELETE":
                 RequestData = request.get_json()
 
@@ -598,14 +582,14 @@ to change password""", "password changing")
 
                 RequestData = request.get_json()
 
-                UserId = decode_token(RequestData["UserToken"])["sub"]
+                UserId = decode_token(RequestData["token"])["sub"]
                 TopicId = RequestData["TopicId"]
 
                 Topic = DBWorker.Topic().get(TopicId = TopicId, format = "obj")
                 User = DBWorker.User().get(user = UserId, format = "obj" )
                 if Topic.author == UserId or User.IsAdmin == 1:
-                    Topic.theme = RequestData["TopicTheme"]
-                    Topic.about = RequestData["TopicAbout"]
+                    Topic.theme = RequestData["theme"]
+                    Topic.about = RequestData["about"]
                     Topic.save()
 
                     return "201", 201
@@ -620,7 +604,7 @@ to change password""", "password changing")
             if type(DBWorker.Topic().all(format = "json")) != list:
                 return [DBWorker.Topic().all(format = "json")]
             return DBWorker.Topic().all(format = "json")
-        
+
 
         @self.server.route("/api/messages", methods = ["GET", "POST", "DELETE", "PATCH"])
         def ApiMessage():

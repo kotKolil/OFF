@@ -134,5 +134,7 @@ def TopicFormatWrapper(InputFunc):
                     "TopicId":FuncData[0][0][4],
                     "protected":FuncData[0][0][5],
                 }
+            else:
+                raise TypeError("Unknown format of output data")
 
     return wrapper

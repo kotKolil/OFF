@@ -32,13 +32,13 @@ class user():
 
     def delete(self,user = "", password = "", token = ""):
         if user != "" and password == "":
-            self.DBworker(query = "DELETE * FROM user WHERE UserId = ?", param = [user] )
+            self.DBworker(query = "DELETE FROM user WHERE UserId = ?", param = [user] )
             return 1
         elif user != "" and password != "":
-            self.DBworker(query = "DELETE * FROM user WHERE token = ?", param = [ generate_token(user, password) ] )
+            self.DBworker(query = "DELETE FROM user WHERE token = ?", param = [ generate_token(user, password) ] )
             return 1
         elif token != "":
-            self.DBworker(query = "DELETE * FROM user WHERE token = ?", param = [ generate_token(user, password) ] )
+            self.DBworker(query = "DELETE FROM user WHERE token = ?", param = [ generate_token(user, password) ] )
             return 1
     
     def create(self, password = "", email = "", user = "", is_admin = "", is_banned = "", logo_path = "", 
