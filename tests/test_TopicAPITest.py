@@ -1,14 +1,15 @@
 #importing external libs
 import requests as r
 import sys
-import os
+import requests
 
 #importing local classes
 sys.path.append("...")
 sys.path.append("..")
+
+#importing local classes
 from config import *
 import requests
-import pytest
 
 BASE_URL = f"http://{APPhost}:{APPport}/api/topic"  #api entripoint URI
 

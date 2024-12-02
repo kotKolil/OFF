@@ -25,3 +25,12 @@
 {"level": "info", "message": "connection estabilished", "time": "2024-11-28 23:56:20"}
 {"level": "warning", "message": "invalid HTTP headers", "time": "2024-11-28 23:56:20"}
 {"level": "error", "message": "kernel panik", "time": "2024-11-28 23:56:20"}
+{"level": "info", "message": "connection estabilished", "time": "2024-12-02 19:18:35"}
+{"level": "warning", "message": "invalid HTTP headers", "time": "2024-12-02 19:18:35"}
+{"level": "error", "message": "kernel panik", "time": "2024-12-02 19:18:35"}
+{"level": "info", "message": "connection estabilished", "time": "2024-12-02 19:19:12"}
+{"level": "warning", "message": "invalid HTTP headers", "time": "2024-12-02 19:19:12"}
+{"level": "error", "message": "kernel panik", "time": "2024-12-02 19:19:12"}
+{"level": "info", "message": "connection estabilished", "time": "2024-12-02 20:58:03"}
+{"level": "warning", "message": "invalid HTTP headers", "time": "2024-12-02 20:58:03"}
+{"level": "error", "message": "kernel panik", "time": "2024-12-02 20:58:03"}
