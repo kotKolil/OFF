@@ -610,39 +610,49 @@ to change password""", "password changing")
         def ApiMessage():
             if request.method == "GET":
                 TopicId = request.args.get("TopicId")
-                if type(DBWorker.Message().get(TopicId = TopicId, format = 'json')) != list:
-                    return [DBWorker.Message().get(TopicId = TopicId, format = 'json')]
-                return DBWorker.Message().get(TopicId=TopicId, format='json')
+                MessageId = request.args.get("MessageId")
+                logger.info(TopicId)
+                logger.info(MessageId)
+                if TopicId != None:
+                    if type(DBWorker.Message().get(TopicId = TopicId, format = 'json')) != list:
+                        return [DBWorker.Message().get(TopicId = TopicId, format = 'json')]
+                    return DBWorker.Message().get(TopicId=TopicId, format='json')
+                elif MessageId != None:
+                    MessageData = DBWorker.Message().get(MessageId = MessageId, format = "json")
+                    if MessageData != []:
+                        return MessageData, 200
+                    return '404', 404
+
             elif request.method == "POST":
                 RequestData = request.get_json()
+                self.logger.info(text = RequestData)
                 UserId = decode_token(RequestData["token"])["sub"]
-                TopicData = DBWorker.Topic().get(TopicId = request.get_json()["TopicId"])
+                TopicData = DBWorker.Topic().get(TopicId = RequestData["TopicId"], format = "obj")
+                if TopicData == []:
+                    return "404", 404
                 if RequestData and UserId and TopicData.protected != 1:
                     TopicId = RequestData["TopicId"]
                     text = RequestData["text"]
-                    DBWorker.Message().create(TopicId, UserId, text)
-                    return 201
+                    NewMessage = DBWorker.Message().create(TopicId, UserId, text, format = "json")
+                    return NewMessage, 201
                 elif TopicData.author == UserId and TopicData.protected == 1:
                     TopicId = RequestData["TopicId"]
                     text = RequestData["text"]
-                    DBWorker.Message().create(TopicId, UserId, text)
-                    return 201
+                    NewMessage = DBWorker.Message().create(TopicId, UserId, text, format = "json")
+                    return NewMessage, 201
                 else:
                     return "403",403
             elif request.method == "DELETE":
                 RequestData = request.get_json()
 
-                # emit('NewMessage', result, broadcast=True)
-
                 MessageId = RequestData["MessageId"]
                 UserId = decode_token(RequestData["token"])["sub"]
 
-                UserData = DBWorker.User().get(user = UserId)
-                MsgData = DBWorker.Message().get(MessageId = MessageId)
+                UserData = DBWorker.User().get(user=UserId, format='obj')
+                MsgData = DBWorker.Message().get(MessageId=MessageId, format='obj')
                 if MsgData.author == UserId or UserData.IsAdmin == 1:
                     DBWorker.Message().delete(MessageId = MessageId)
-                    emit("MsgDel", result = {"TopicId":MsgData.TopicId, "MessageId":MsgData.MessageId}, broadcast=True)
-                    return "200", 200
+                    return "200", 201
                 else:
                     return "403", 403
 
@@ -652,7 +662,7 @@ to change password""", "password changing")
 
                 text = RequestData['text']
                 MsgId = RequestData["MsgId"]
-                UserId = decode_token(RequestData["UserToken"])["sub"]
+                UserId = decode_token(RequestData["token"])["sub"]
 
                 MsgData = DBWorker.Message().get(MessageId = MsgId, format = "obj")
 

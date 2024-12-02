@@ -12,9 +12,9 @@ venv
 TODO.txt
 
 !default.png
-!assets/screenshot.jpg
+!documentation/assets/screenshot.jpg
 !admin.png
-!assets/
+!documentation/assets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
