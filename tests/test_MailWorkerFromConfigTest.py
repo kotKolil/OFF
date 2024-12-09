@@ -17,4 +17,4 @@ def test_MailWorkerConfigTest():
     MailWorker = MailClient(SiteAdress=MailSite, SitePort=MailPort, MailLogin=MailLogin, MailPassword=MailPassword,
                         ForumName=ForumName, logger = logger)
 
-    MailWorker.SendMessage(MailLogin, "It works!", "MailWorker test")
+    MailWorker.SendMessage(MailLogin, "It works!", "mail_worker test")

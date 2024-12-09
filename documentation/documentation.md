@@ -72,10 +72,10 @@ to configure up, you may change values in config.py. All necessary variables, th
 | AdminName        | "anomin"          | sets admin nickname, that will displays instead of AdminUser | string        |
 | AdminCitate      | ""                | sets citate, that will display under admin messages          | string        |
 | AdminLogoPath    | "admin.png"       | sets name of file, placed on "/media", thats will display on admin's accounts | string        |
-| MailSite         | ""                | sets host address of smpt server, that will be mail worker in app sends request | string        |
-| MailPort         | ""                | sets port of smpt server, where mail worker will sends request | string        |
-| MailLogin        | ""                | sets login of smpt server user, that will be mail worker in app sends requests | string        |
-| MailPassword     | ""                | sets password of smpt server user, that will be mail worker in app send requests | string        |
+| MailSite         | ""                | sets host address of smpt Server, that will be mail worker in app sends request | string        |
+| MailPort         | ""                | sets port of smpt Server, where mail worker will sends request | string        |
+| MailLogin        | ""                | sets login of smpt Server user, that will be mail worker in app sends requests | string        |
+| MailPassword     | ""                | sets password of smpt Server user, that will be mail worker in app send requests | string        |
 | AppSecretKey     | ""                | sets variable `'SECRET_KEY'` in flask app                    | string        |
 | JwtSecretKey     | ""                | sets JWT tokens secret key                                   | string        |
 | APPport          | 8000              | sets port of app, where it will be recieve requests          | integer       |
@@ -532,7 +532,7 @@ This documentation outlines the API endpoints for managing  messages within the 
 
 This documentation serves as a comprehensive guide for developers  interacting with the message management API, ensuring clarity and ease  of use when implementing features related to messages.
 
-## server
+## Server
 
 ### description
 
@@ -547,7 +547,7 @@ Variables in `__init__` function, that class uses:
 | ClassLogger   | `class txt_logger()` `class json_logger()` | defining class, that will log information                    |
 | DBWorker      | `class DB()`                               | defining class, wich gives acess to tables in DB             |
 | port          | `int`                                      | sets number of port, where will work flask app               |
-| IsDebug       | `bool`                                     | setting mode of flask app. If IsDebug`True` server will show error traceback on user side and reloads app when code is changing |
+| IsDebug       | `bool`                                     | setting mode of flask app. If IsDebug`True` Server will show error traceback on user side and reloads app when code is changing |
 | AdminUser     | `str`                                      | setting UserId of forum admin                                |
 | AdminName     | `str`                                      | setting psevodnim of forum admin                             |
 | AdminPassword | `str`                                      | setting forum admin password                                 |
@@ -557,12 +557,12 @@ Variables in `__init__` function, that class uses:
 | MailWorker    | `class MailClient()`                       | setting class, via which we will sends e-mails               |
 | AppSecretKey  | `str`                                      | setting flask app secret key                                 |
 
-### URI Entripoints of Flask App in server class
+### URI Entripoints of Flask App in Server class
 
 | URI                   | HTTP methods           | name of view function | purpose                                                      |
 | --------------------- | ---------------------- | --------------------- | ------------------------------------------------------------ |
 | /static/path:path     | GET                    | static\_files         | serving static files, like CSS, JS or font files on /static entrypoint |
-| /media/path:path      | GET                    | media\_files          | serving media files from server, like users logos            |
+| /media/path:path      | GET                    | media\_files          | serving media files from Server, like users logos            |
 | /                     | GET                    | index                 | returns main page of forum                                   |
 | /topic                | GET                    | topic                 | return html content of topic page                            |
 | /topic/create         | GET POST               | TopicCreate           | return page with topic creating form and servs POST request from submitted form |
@@ -997,7 +997,7 @@ in this file written license, on that you can use and modify source of OFF proje
 
 ## main.py
 
-this file uses for starting OFF project. In this classes defines "server" and other classes on variables from config.py and runs it
+this file uses for starting OFF project. In this classes defines "Server" and other classes on variables from config.py and runs it
 
 ## r.txt
 

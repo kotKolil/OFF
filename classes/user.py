@@ -9,8 +9,8 @@ class user():
     def __init__(self, DBworker):
         self.DBworker = DBworker
 
-    @UserFormatWrapper
-    def get(self, user="", password="", format = "obj", token = "", num = ""):    
+    @UserData_FormatWrapper
+    def get(self, user="", password="", data_format = "obj", token = "", num = ""):    
 
         if user != "" and password == "" and token == "":
             return [ self.DBworker(query = "SELECT * FROM user WHERE UserId = ?", param = [user] ) , self.DBworker]
@@ -26,8 +26,8 @@ class user():
             UserHash = generate_token(user, password)
             return [self.DBworker( query = "SELECT * FROM user WHERE token = ?", param =  [UserHash] ), self.DBworker ]
     
-    @UserFormatWrapper
-    def all(self, format = "obj"):
+    @UserData_FormatWrapper
+    def all(self, data_format = "obj"):
         return [ self.DBworker("SELECT * FROM user", []), self.DBworker ]
 
     def delete(self,user = "", password = "", token = ""):
@@ -42,8 +42,8 @@ class user():
             return 1
     
     def create(self, password = "", email = "", user = "", is_admin = "", is_banned = "", logo_path = "", 
-               citate = "", format = "obj"):
+               citate = "", data_format = "obj"):
         self.DBworker(query = """INSERT INTO user VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) """,
                       param = [ email,  user, is_admin, is_banned,  logo_path, citate,
                                 get_current_time(), generate_token(user, password), randint(0,10**6), 0, 0 ])
-        return self.get(user= user, password = password, format="obj")
+        return self.get(user= user, password = password, data_format="obj")

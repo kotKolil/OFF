@@ -2,7 +2,7 @@ from .storage import *
 
 import os
 
-def UserFormatWrapper(InputFunc):
+def UserData_FormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
@@ -55,7 +55,7 @@ def UserFormatWrapper(InputFunc):
 
 
 
-def MessageFormatWrapper(InputFunc):
+def MessageData_FormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)
@@ -96,7 +96,7 @@ def MessageFormatWrapper(InputFunc):
 
     return wrapper
 
-def TopicFormatWrapper(InputFunc):
+def TopicData_FormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
         TypeOfData = kwargs["format"]
         FuncData = InputFunc(*args, **kwargs)

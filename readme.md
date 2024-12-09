@@ -95,10 +95,10 @@ to configure up, you may change values in config.py. All necessary variables, th
 | AdminName        | "anomin"          | sets admin nickname, that will displays instead of AdminUser | string        |
 | AdminCitate      | ""                | sets citate, that will display under admin messages          | string        |
 | AdminLogoPath    | "admin.png"       | sets name of file, placed on "/media", thats will display on admin's accounts | string        |
-| MailSite         | ""                | sets host address of smpt server, that will be mail worker in app sends request | string        |
-| MailPort         | ""                | sets port of smpt server, that will be mail worker in app sends request | string        |
-| MailLogin        | ""                | sets login of smpt server user, that will be mail worker in  app sends requests | string        |
-| MailPassword     | ""                | sets  password of smpt server user, that will be mail worker in app send requests | string        |
+| MailSite         | ""                | sets host address of smpt Server, that will be mail worker in app sends request | string        |
+| MailPort         | ""                | sets port of smpt Server, that will be mail worker in app sends request | string        |
+| MailLogin        | ""                | sets login of smpt Server user, that will be mail worker in  app sends requests | string        |
+| MailPassword     | ""                | sets  password of smpt Server user, that will be mail worker in app send requests | string        |
 | AppSecretKey     | ""                | sets variable ``'SECRET_KEY'`` in flask app                  | string        |
 | JwtSecretKey     | ""                | sets JWT tokens secret key                                   | string        |
 | APPport          | 8000              | sets port of app, where it will be recieve                   | integer       |

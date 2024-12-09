@@ -2,7 +2,7 @@ import logging
 import json
 import os
 
-from .tools import *
+from classes.tools import *
 
 
 class ConsoleLog(object):
@@ -48,7 +48,7 @@ class JsonLog(object):
         self.logger.setLevel(logging.DEBUG)
 
         file_handler = logging.FileHandler(f'{self.filename}.json')
-        file_handler.setFormatter(logging.Formatter('%(message)s'))
+        file_handler.setData_Formatter(logging.Data_Formatter('%(message)s'))
         self.logger.addHandler(file_handler)
 
     def log(self, text, level):

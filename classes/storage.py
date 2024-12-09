@@ -8,14 +8,14 @@ class UserStorage:
         self.__OldUserId = Data[0][1]
 
         self.email = Data[0][0]
-        self.UserId = Data[0][1]
+        self.user_id = Data[0][1]
         self.IsAdmin = Data[0][2]
         self.IsBanned = Data[0][3]
         self.LogoPath = Data[0][4]
         self.citate = Data[0][5]
         self.time = Data[0][6]
         self.token = Data[0][7]
-        self.ActiveNum = Data[0][8]
+        self.active_num = Data[0][8]
         self.IsActivated = Data[0][9]
         self.NumOfPosts = Data[0][10]
 
@@ -35,19 +35,19 @@ class TopicStorage:
         self.theme = Data[0][1]
         self.author = Data[0][2]
         self.about = Data[0][3]
-        self.TopicId = Data[0][4]
+        self.Topic_Id = Data[0][4]
         self.protected = Data[0][5]
 
     def save(self):
         self.DBWorker(query = "UPDATE topic SET theme = ?, about = ?, Protected = ? WHERE TopicId = ? ",
-                      param = [self.theme,self.about, self.protected, self.TopicId])
+                      param = [self.theme,self.about, self.protected, self.Topic_Id])
         
 class MessagesStorage:
 
     def __init__(self, Data, DBWorker):
         self.DBWorker = DBWorker
 
-        self.TopicId = Data[0]
+        self.Topic_Id = Data[0]
         self.MessageId = Data[1]
         self.author = Data[2]
         self.text = Data[3]
@@ -55,4 +55,4 @@ class MessagesStorage:
 
     def save(self):
         self.DBWorker(query = "UPDATE messages SET TopicId = ?, author = ?, text = ?, time = ? WHERE MessageId = ? ",
-                      param =  (self.TopicId,  self.author, self.text, self.time, self.MessageId) )
+                      param =  (self.Topic_Id,  self.author, self.text, self.time, self.MessageId) )

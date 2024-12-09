@@ -13,7 +13,7 @@ from classes.database import *
 from classes.loggers import *
 from classes.tools import *
 
-# Creating DBWorker object and initializing database
+# Creating db_worker object and initializing database
 DBWorker = DB()
 DBWorker.DBInit()
 

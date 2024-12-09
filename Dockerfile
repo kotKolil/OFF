@@ -1,18 +1,13 @@
-FROM python:3.11
+FROM python:latest-slim
 
 COPY . /app
 
 WORKDIR /app
 
-# RUN apt-get update -y
+USER root
 
-# RUN pip install --upgrade pip
+RUN pip install --upgrade pip && pip install --no-build-isolation --no-cache-dir -r r.txt
 
-# RUN pip install "cython<3.0.0"
-
-RUN pip install -r r.txt --no-cache-dir
-
-
-EXPOSE 8000, 80
+EXPOSE 8000, 8000
 
 CMD ["python", "main.py"]

@@ -8,7 +8,7 @@ sys.path.append('..')
 from classes.database import *
 from classes.loggers import *
 
-# Creating DBWorker object and initializing database
+# Creating db_worker object and initializing database
 DBWorker = DB()
 DBWorker.DBInit()
 
@@ -51,8 +51,8 @@ def test_TestOfGetMethod():
     #checking getting message via message id in json format
     MsgFromDB = DBWorker.Message().get(MessageId=SimpleMsgObj.MessageId, format="json")
 
-    #removing DBWorker from MsgFromDB, this variable not in MsgFromDB
-    del SimpleMsgObj.__dict__["DBWorker"]
+    #removing db_worker from MsgFromDB, this variable not in MsgFromDB
+    del SimpleMsgObj.__dict__["db_worker"]
 
     assert SimpleMsgObj.__dict__ == MsgFromDB
 
