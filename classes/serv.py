@@ -10,7 +10,7 @@ from pathlib import *
 import os
 from pathlib import *
 from os import *
-from flask_sock import *
+from flask_socketio import *
 from time import *
 from flask_socketio import *
 import sqlite3
