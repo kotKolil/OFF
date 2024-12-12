@@ -6,7 +6,7 @@ sys.path.append('..')
 sys.path.append('...')
 
 #importing local libraries
-from classes.database import *
+from app.database import *
 from config import *
 from config import *
 

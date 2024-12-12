@@ -5,8 +5,8 @@ import sys
 sys.path.append('..')
 
 # Importing local classes
-from classes.database import *
-from classes.loggers import *
+from app.database import *
+from app.loggers import *
 
 # Creating DBWorker object and initializing database
 DBWorker = DB()

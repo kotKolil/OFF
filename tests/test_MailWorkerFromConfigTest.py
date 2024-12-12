@@ -6,9 +6,9 @@ sys.path.append('..')
 sys.path.append('...')
 
 #importing local libraries
-from classes.MailClient import *
+from app.MailClient import *
 from config import *
-from classes.loggers import *
+from app.loggers import *
 
 def test_MailWorkerConfigTest():
 

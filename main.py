@@ -1,7 +1,7 @@
-from classes.loggers import *
-from classes.serv import *
-from classes.database import *
-from classes.MailClient import *
+from app.loggers import *
+from app.serv import *
+from app.database import *
+from app.MailClient import *
 from config import *
 
 import sys
@@ -23,6 +23,8 @@ if __name__ == "__main__":
                AdminName=AdminName, AdminPassword=AdminPassword, AdminCitate=AdminCitate,
                AdminLogoPath=AdminLogoPath, ForumName=ForumName, AppSecretKey=AppSecretKey, JwtSecretKey=JwtSecretKey,
                MailWorker=MailWorker, port=APPport, host=APPhost)
+        A.add_custom_views()
+        A.run()
         input()
         sys.exit(0)
     except Exception as e:

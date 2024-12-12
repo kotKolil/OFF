@@ -9,9 +9,9 @@ import sqlite3
 sys.path.append('..')
 
 # Importing local classes
-from classes.database import *
-from classes.loggers import *
-from classes.tools import *
+from app.database import *
+from app.loggers import *
+from app.tools import *
 
 # Creating DBWorker object and initializing database
 DBWorker = DB()
