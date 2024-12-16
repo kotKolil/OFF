@@ -1,10 +1,8 @@
 import sqlite3
 import psycopg2
-from os import *
 
-from .tools import *
-from .storage import *
-from .wrap import *
+from app.classes.other.tools import *
+from app.classes.Serialisation.wrap import *
 
 class messages():
 

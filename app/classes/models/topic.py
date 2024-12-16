@@ -1,6 +1,5 @@
-from .tools import *
-from .storage import *
-from .wrap import *
+from app.classes.other.tools import *
+from app.classes.Serialisation.wrap import *
 
 import sqlite3
 import psycopg2

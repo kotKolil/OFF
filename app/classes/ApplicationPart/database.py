@@ -1,12 +1,8 @@
-from mailbox import Message
-import sqlite3
 import psycopg2 as psql
 
-from .user import user
-from .message import *
-from .topic import *
-from .user import user
-from .tools import *
+from app.classes.models.message import *
+from app.classes.models.topic import *
+from app.classes.models.user import user
 
 
 def InitDB(DBWorker: object):

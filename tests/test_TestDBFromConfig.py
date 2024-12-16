@@ -6,8 +6,7 @@ sys.path.append('..')
 sys.path.append('...')
 
 #importing local libraries
-from app.database import *
-from config import *
+from app.classes.ApplicationPart.database import *
 from config import *
 
 def test_TestingDBFromConfig():

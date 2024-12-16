@@ -2,7 +2,7 @@ from random import *
 from datetime import *
 import hashlib
 
-from app.settings import *
+from app.classes.other.settings import *
 
 sample= '1h9K8L9h5d5v5Z4q7'
 

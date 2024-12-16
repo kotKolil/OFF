@@ -1,9 +1,8 @@
 import sys
 
-sys.path.self.server.append("...")
+sys.path.append("...")
 
-from config import *
-from app.classes.tools import *
+from app.classes.other.tools import *
 from flask_jwt_extended import *
 from flask import Blueprint, request
 import collections
@@ -12,16 +11,17 @@ class UserAPIController():
 
     def __init__(self, server_object):
         self.server_object = server_object
-        self.bp = Blueprint('my_controller', __name__)
-        self.register_routes(self)
+        self.bp = Blueprint('UserAPI controller', __name__,)
+        self.register_routes()
 
     def register_routes(self):
         # Loop through all methods in the class
         for method_name in dir(self):
             method = getattr(self, method_name)
             if callable(method) and hasattr(method, 'route'):
-                # Register the method as a route
-                self.bp.add_url_rule(method.route, view_func=method, methods=method.methods)
+                if hasattr(method, "methods"):
+                    # Register the method as a route
+                    self.bp.add_url_rule(method.route, view_func=method, methods=method.methods)
 
     @staticmethod
     def route(path, methods=['GET']):
@@ -50,7 +50,7 @@ class UserAPIController():
 
             UserHash = generate_token(user, pswd)
 
-            UserData = self.server_object.DBWorker.User(self).get(token = UserHash, format = "obj")
+            UserData = self.server_object.DBWorker.User().get(token = UserHash, format = "obj")
             self.server.logger.info(UserData)
 
             if type(UserData) != int:
@@ -70,7 +70,7 @@ class UserAPIController():
             if JWToken != None:
                 if decode_token(JWToken):
                     UserId = decode_token(JWToken)["sub"]
-                    data = self.server_object.DBWorker.User(self).get(user = UserId, format = "json")
+                    data = self.server_object.DBWorker.User().get(user = UserId, format = "json")
                     if type(data) != int:
                         return data
                     else:
@@ -78,7 +78,7 @@ class UserAPIController():
                 else:
                     return "400", 400
             elif UserId != None:
-                data = self.server_object.DBWorker.User(self).get(user=UserId, format="json")
+                data = self.server_object.DBWorker.User().get(user=UserId, format="json")
                 if type(data) != int:
                     return data
                 else:
@@ -97,10 +97,10 @@ class UserAPIController():
                 password  = RequestData["password"]
                 citate = RequestData["citate"]
 
-                UserData = self.server_object.DBWorker.User(self).get(user = UserId, format = "ojb")
+                UserData = self.server_object.DBWorker.User().get(user = UserId, format = "ojb")
                 if UserData == 0:
 
-                    u = self.server_object.DBWorker.User(self).create(password=password, email = email, user=UserId, is_admin = 0,
+                    u = self.server_object.DBWorker.User().create(password=password, email = email, user=UserId, is_admin = 0,
                                                is_banned=0, logo_path = "default.png",citate = citate,
                                                format = "obj")
                     self.server.MailWorker.SendMessage(TargetMail = email, text = f"""Hello! Go to this link http://{self.server.host}:{self.server.app}/ActivateEmail?num={u.ActiveNum} 
@@ -114,11 +114,11 @@ class UserAPIController():
         elif request.method == "DELETE":
             RequestData = request.json
             user0 = decode_token(RequestData["JWToken"])["sub"]
-            user0 = self.server_object.DBWorker.User(self).get(user = user0, format = "obj")
+            user0 = self.server_object.DBWorker.User().get(user = user0, format = "obj")
             user = RequestData["user"]
             if user0 == user or user0.IsAdmin:
                 try:
-                    self.server_object.DBWorker.User(self).delete(user = user)
+                    self.server_object.DBWorker.User().delete(user = user)
                     return "201", 201
                 except:
                     return "404", 404
@@ -133,7 +133,7 @@ class UserAPIController():
         UserIdFromToken = decode_token(Data["token"])["sub"]
         citate = Data["citate"]
 
-        UserData = self.server_object.DBWorker.User(self).get(user = UserIdFromToken, format = "obj")
+        UserData = self.server_object.DBWorker.User().get(user = UserIdFromToken, format = "obj")
         self.server.logger.info(UserData.__dict__)
 
         if UserData.UserId != "":
@@ -191,8 +191,8 @@ class UserAPIController():
             is_banned = data["IsBanned"]
             is_admin = data["IsAdmin"]
 
-            AdminUserData = self.server_object.DBWorker.User(self).get(user = AdminUserId, format = "obj")
-            SimpleUserData = self.server_object.DBWorker.User(self).get(user = UserId, format = "obj")
+            AdminUserData = self.server_object.DBWorker.User().get(user = AdminUserId, format = "obj")
+            SimpleUserData = self.server_object.DBWorker.User().get(user = UserId, format = "obj")
             if AdminUserData.IsAdmin == 1:
 
                 if SimpleUserData.UserId != "" and SimpleUserData.UserId != self.AdminUser:

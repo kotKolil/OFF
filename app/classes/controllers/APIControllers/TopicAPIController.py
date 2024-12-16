@@ -8,16 +8,17 @@ from flask import Blueprint, request
 class TopicAPIController:
     def __init__(self, server_object):
         self.server_object = server_object
-        self.bp = Blueprint('my_controller', __name__)
-        self.register_routes(self)
+        self.bp = Blueprint('TopicAPI controller', __name__, )
+        self.register_routes()
 
     def register_routes(self):
         # Loop through all methods in the class
         for method_name in dir(self):
             method = getattr(self, method_name)
             if callable(method) and hasattr(method, 'route'):
-                # Register the method as a route
-                self.bp.add_url_rule(method.route, view_func=method, methods=method.methods)
+                if hasattr(method, "methods"):
+                    # Register the method as a route
+                    self.bp.add_url_rule(method.route, view_func=method, methods=method.methods)
 
     @staticmethod
     def route(path, methods=['GET']):

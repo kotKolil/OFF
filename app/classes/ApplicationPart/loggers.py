@@ -2,7 +2,7 @@ import logging
 import json
 import os
 
-from .tools import *
+from app.classes.other.tools import *
 
 
 class ConsoleLog(object):

@@ -1,17 +1,13 @@
 # External libraries
 import sys
-import os
-from time import sleep
-import psycopg2
-import sqlite3
 
 # Adding classes to path
 sys.path.append('..')
 
 # Importing local classes
-from app.database import *
-from app.loggers import *
-from app.tools import *
+from app.classes.ApplicationPart.database import *
+from app.classes.ApplicationPart.loggers import *
+from app.classes.other.tools import *
 
 # Creating DBWorker object and initializing database
 DBWorker = DB()
