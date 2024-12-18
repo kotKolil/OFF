@@ -1,4 +1,4 @@
-from .storage import *
+from .TableFieldsStorage import *
 
 import os
 

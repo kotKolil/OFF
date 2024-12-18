@@ -1,1 +1,9 @@
-{}
+{
+  "test_MailWorkerFromConfigTest.py::test_MailWorkerConfigTest": true,
+  "test_MessageAPI.py::test_CreateMessageViaAPI": true,
+  "test_MessageAPI.py::test_GetMessageFromTopic": true,
+  "test_MessageAPI.py::test_GetMessageViaMessageId": true,
+  "test_MessageAPI.py::test_EditingMessageText": true,
+  "test_MessageAPI.py::test_DeleteMessage": true,
+  "test_UserAPITest.py::test_TestOfCreationUser": true
+}
