@@ -51,7 +51,6 @@ class UserAPIController():
             UserHash = generate_token(user, pswd)
 
             UserData = self.server_object.DBWorker.User().get(token = UserHash, format = "obj")
-            self.server.logger.info(UserData)
 
             if type(UserData) != int:
                 JWToken = create_access_token(identity=UserData.UserId)
@@ -103,14 +102,13 @@ class UserAPIController():
                     u = self.server_object.DBWorker.User().create(password=password, email = email, user=UserId, is_admin = 0,
                                                is_banned=0, logo_path = "default.png",citate = citate,
                                                format = "obj")
-                    self.server.MailWorker.SendMessage(TargetMail = email, text = f"""Hello! Go to this link http://{self.server.host}:{self.server.app}/ActivateEmail?num={u.ActiveNum} 
+                    self.server_object.MailWorker.SendMessage(TargetMail = email, text = f"""Hello! Go to this link http://{self.server_object.host}:{self.server_object.port}/ActivateEmail?num={u.ActiveNum} 
                     to activate you account""", Theme = "account activating")
                     message = f"<p>Go to your email to activate your account</p>"
                     return "201", 201
                 else:
                     return "400",400
-            else:
-                return "400", 400
+
         elif request.method == "DELETE":
             RequestData = request.json
             user0 = decode_token(RequestData["JWToken"])["sub"]
@@ -134,7 +132,6 @@ class UserAPIController():
         citate = Data["citate"]
 
         UserData = self.server_object.DBWorker.User().get(user = UserIdFromToken, format = "obj")
-        self.server.logger.info(UserData.__dict__)
 
         if UserData.UserId != "":
 
@@ -147,22 +144,22 @@ class UserAPIController():
                 #creating new hash from user and password
                 UserData.UserId = NewUserId
                 UserData.token = generate_token(NewUserId, Password)
-                UserData.save(self)
+                UserData.save()
 
                 #change all topics, create by user
-                AllUserTopic = self.server_object.DBWorker.Topic(self).all(format = "obj")
+                AllUserTopic = self.server_object.DBWorker.Topic().all(format = "obj")
                 if not isinstance(AllUserTopic, collections.abc.Iterable):
                     AllUserTopic.author = NewUserId
-                    AllUserTopic.save(self)
+                    AllUserTopic.save()
 
                 else:
                     for topic in AllUserTopic:
                         if topic.author == UserIdFromToken:
                             topic.author = NewUserId
-                            topic.save(self)
+                            topic.save()
 
                 #change all messages, create by user
-                AllUserMsg = self.server_object.DBWorker.Message(self).all(format = "obj")
+                AllUserMsg = self.server_object.DBWorker.Message().all(format = "obj")
                 if not isinstance(AllUserMsg, collections.abc.Iterable):
                     AllUserTopic.author = NewUserId
 
@@ -170,13 +167,13 @@ class UserAPIController():
                     for msg in AllUserMsg:
                         if msg.author == UserIdFromToken:
                             msg.author = NewUserId
-                            msg.save(self)
+                            msg.save()
 
                 return "201", 201
 
             else:
                 UserData.citate = citate
-                UserData.save(self)
+                UserData.save()
                 return "201", 201
 
     @route("/api/user/change/admin", methods = ["POST"])
@@ -195,10 +192,10 @@ class UserAPIController():
             SimpleUserData = self.server_object.DBWorker.User().get(user = UserId, format = "obj")
             if AdminUserData.IsAdmin == 1:
 
-                if SimpleUserData.UserId != "" and SimpleUserData.UserId != self.AdminUser:
+                if SimpleUserData.UserId != "" and SimpleUserData.UserId != self.server_object.AdminUser:
                     SimpleUserData.IsBanned = is_banned
                     SimpleUserData.IsAdmin = is_admin
-                    SimpleUserData.save(self)
+                    SimpleUserData.save()
                     return "201",201
                 else:
                     return "404", 404

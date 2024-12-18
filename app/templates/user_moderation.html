@@ -56,7 +56,7 @@ $(document).ready(async () => {
 
                     $.ajax({
                       url: `http://${location.host}/api/user/change/admin`,
-                      type: "PATCH",
+                      type: "POST",
                       data: JSON.stringify(data), // Send data as JSON string
                       contentType: "application/json", // Set Content-Type header
                       dataType: "json", // Expect JSON response

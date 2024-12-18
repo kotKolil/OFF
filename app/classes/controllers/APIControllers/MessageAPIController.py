@@ -36,8 +36,6 @@ class MessageAPIController:
         if request.method == "GET":
             TopicId = request.args.get("TopicId")
             MessageId = request.args.get("MessageId")
-            self.logger.DBWorker.info(TopicId)
-            self.logger.DBWorker.info(MessageId)
             if TopicId != None:
                 if type(self.server_object.DBWorker.Message().get(TopicId = TopicId, format = 'json')) != list:
                     return [self.server_object.DBWorker.Message().get(TopicId = TopicId, format = 'json')]
@@ -50,7 +48,6 @@ class MessageAPIController:
 
         elif request.method == "POST":
             RequestData = request.get_json()
-            self.self.logger.DBWorker.info(text = RequestData)
             UserId = decode_token(RequestData["token"])["sub"]
             TopicData = self.server_object.DBWorker.Topic().get(TopicId = RequestData["TopicId"], format = "obj")
             if TopicData == []:

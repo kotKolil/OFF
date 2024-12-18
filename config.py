@@ -36,7 +36,13 @@ JwtSecretKey = "1234567890"
 APPport = 8000
 APPhost = "127.0.0.1"
 
-# TEMPLATE_PREFIX = os.getcwd() + "\\app\\classes\\templates"
+"""
+explanation of PREFIX values creating
+
+in python, function os.path.join() join parts of path to file or directory,
+taking as a argument his parts
+function os.getcwd() return path, where file run 
+"""
 TEMPLATE_PREFIX = os.path.join(os.getcwd(), "app", "templates", "")
 MEDIA_PREFIX = os.path.join(os.getcwd(), "app", "media")
 STATIC_PREFIX = os.path.join(os.getcwd(), "app", "static")

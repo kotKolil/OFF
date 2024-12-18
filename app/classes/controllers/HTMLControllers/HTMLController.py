@@ -125,14 +125,12 @@ class HTMLController:
                 return redirect(request.url)
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(os.getcwd(), "classes\media", file.filename))
+                file.save(os.path.join(os.getcwd(), MEDIA_PREFIX, file.filename))
                 try:
                     u = self.server_object.DBWorker.User().create(password=password, email = email, user=login, is_admin = 0, is_banned=0, logo_path = filename,citate = citate, format = "obj")
                     TheWall = self.server_object.DBWorker.Topic().create(f"Private page of {u.UserId}", u.UserId, "The Wall", 0, format = "obj", TopicId = u.UserId)
                     self.server_object.MailWorker.SendMessage(email, f"Hello! Go to this link http://{self.server_object.host}:{self.server_object.port}/ActivateEmail?num={u.ActiveNum}", "Account Activating")
-                    resp = make_response("go to your email to activate email", 200)
-
-                    resp.mimetype = "text/plain"
+                    resp = render("info.html", "Please, go to your email and activate account")
 
                     JWToken = create_access_token(identity=u.UserId)
 
