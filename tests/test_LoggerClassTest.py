@@ -5,8 +5,7 @@ import sys
 sys.path.append('..')
 
 # Importing local classes
-from classes.database import *
-from classes.loggers import *
+from app.classes.ApplicationPart.loggers import *
 
 def test_TestingUnknownTypeOfLogger():
 

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block bo_dy %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script src="/static/main.js"></script>
+<script src="/static/snippet.js"></script>
+<script>
+
+$(document).ready(async () => {
+    $("#get").click(async () => {
+        var UserId = $("#UserIdBar").val();
+        $.ajax({
+            url: `http://${location.host}/api/user?UserId=${UserId}`,
+            type: "GET",
+            success: (data) => {
+                //console.log(data);
+
+                $("#UserData").empty()
+                $("#UserProfilePic").remove()
+
+                var UserInfoElem = $("#UserData")
+                var AkkImg = `<img src="/media/${data.LogoPath}" id="UserProfilePic">`
+                $('body').append(AkkImg)
+                if (data.IsAdmin == "1") {
+                    UserInfoElem.append(`<p id='UserNameProfileAdmin'>${data.UserId}</p>`)
+                } else {
+                    UserInfoElem.append(`<p id='UserNameProfile'>${data.UserId}</p>`)
+                }
+                UserInfoElem.append(`<p>Quote: ${data.citate}</p>`)
+                UserInfoElem.append(`<p>Email: ${data.email} </p>`)
+                UserInfoElem.append(`<p>Number of posts on forum: ${data.NumOfPosts} </p>`)
+                UserInfoElem.append(`<p>Is admin: ${data.IsAdmin} </p>`)
+                UserInfoElem.append(`<p>Time of registration ${data.time}</p>`)
+                UserInfoElem.append(`Is banned:`)
+                var input = $('<input>', {
+                    type:"checkbox"
+                });
+                input.attr('checked', data.IsBanned == "1");
+                input.attr('id', "IsBanned");
+                $('#UserData').append(input);
+                UserInfoElem.append(`Is moderator:`)
+                var input = $('<input>', {
+                    type:"checkbox"
+                });
+                input.attr('checked', data.IsAdmin == "1");
+                input.attr('id', "IsAdmin");
+                $('#UserData').append(input);
+
+                UserInfoElem.append("<button id = 'save'>Save Info</button>")
+
+                $("#save").click( () => {
+                    data.IsAdmin = (+$("#IsAdmin").prop("checked")).toString();
+                    data.IsBanned = (+$("#IsBanned").prop("checked")).toString();
+
+                    data.AdminToken = getCookie("token")
+
+                    $.ajax({
+                      url: `http://${location.host}/api/user/change/admin`,
+                      type: "POST",
+                      data: JSON.stringify(data), // Send data as JSON string
+                      contentType: "application/json", // Set Content-Type header
+                      dataType: "json", // Expect JSON response
+                      success: (data) => {
+                        alert("User data updated");
+                      },
+                      error: (data) => {
+                        console.error(data);
+                      }
+                    });
+
+                });
+
+            },
+            error: (data) => {
+                alert("user not found")
+            }
+        });
+    });
+
+        $(document).keypress( (e) => {
+            if (e.which == 27){
+                e.preventDefault();
+            }
+        });
+
+
+
+});
+
+</script>
+<hr>
+<div>
+    <H2>User moderation page</H2>
+    <p>enter id of user to get him</p>
+    <input id = "UserIdBar">
+    <button id="get">get user</button>
+</div>
+<div id = "UserData">
+
+</div>
+{% endblock bo_dy %}
