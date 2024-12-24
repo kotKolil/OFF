@@ -13,9 +13,6 @@ from app.classes.other.tools import *
 DBWorker = DB()
 DBWorker.DBInit()
 
-# Setting logger
-Logger = Logger()
-
 # Defining data of example user for tests in User() class
 SimpleUserData = {
     "password": "123",
@@ -30,10 +27,11 @@ SimpleUserData = {
 
 UserObj = []
 
+
 def test_TestOfCreationMethod():
     # Testing create method in User class
     try:
-        
+
         global UserObj
 
         # Creating sample user
@@ -54,73 +52,76 @@ def test_TestOfCreationMethod():
                                is_banned="0", logo_path="", citate="", format="obj")
 
     except (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation) as e:
-        assert isinstance(e, (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation)) 
+        assert isinstance(e, (sqlite3.IntegrityError, psycopg2.errors.UniqueViolation))
+
 
 def test_TestOfGetMethod():
     # Testing get method in User class
 
-    #checking ouptut data as a obj
+    # checking output data as a obj
     # Checking getting user data from user id
     assert isinstance(DBWorker.User().get(user=SimpleUserData["user"], format="obj"), UserStorage)
 
     # Checking getting user data from user id and password
-    assert isinstance(DBWorker.User().get(user=SimpleUserData["user"], password=SimpleUserData["password"], format="obj"), UserStorage)
+    assert isinstance(
+        DBWorker.User().get(user=SimpleUserData["user"], password=SimpleUserData["password"], format="obj"),
+        UserStorage)
 
     # Checking getting user data via token, created as a hash from password and user id
-    assert isinstance(DBWorker.User().get(token=generate_token(s1=SimpleUserData["user"], s2=SimpleUserData["password"]), format="obj"), UserStorage)
+    assert isinstance(
+        DBWorker.User().get(token=generate_token(s1=SimpleUserData["user"], s2=SimpleUserData["password"]),
+                            format="obj"), UserStorage)
 
-    assert DBWorker.User().get(user = "UserNotExist", format="obj") == 0
+    assert DBWorker.User().get(user="UserNotExist", format="obj") == 0
+
 
 def test_TestOfAllMethod():
-    #testing all method in User class
+    # testing all method in User class
 
-    #creaeting new user in DB
+    # creating new user in DB
 
     DBWorker.User().create(password="1234567890", email="example5@example.com", user="user5", is_admin="0",
-                               is_banned="0", logo_path="", citate="", format="obj")
+                           is_banned="0", logo_path="", citate="", format="obj")
 
-    AllUsers = DBWorker.User().all(format = "obj")
-
+    AllUsers = DBWorker.User().all(format="obj")
 
     for i in AllUsers:
-
         print(i.__dict__)
 
         SomeUser = DBWorker.User().get(user=i.UserId, format="obj")
 
         assert i.__dict__ == SomeUser.__dict__
 
-def test_TestOfModifyData():
 
+def test_TestOfModifyData():
     global UserObj
 
-    #modifyning object
+    # modifying object
     UserObj.UserId = "User777"
     UserObj.save()
 
     # checking local object and data from DB
-    assert UserObj.__dict__ == DBWorker.User().get(user = UserObj.UserId, format = "obj").__dict__
+    assert UserObj.__dict__ == DBWorker.User().get(user=UserObj.UserId, format="obj").__dict__
+
 
 def test_TestOfDeleteMethod():
-    #testing delete method in User class
+    # testing delete method in User class
 
-    #creating new user in DB
+    # creating new user in DB
     NewUser = DBWorker.User().create(password="1234567890", email="example7@example.com", user="user7", is_admin="0",
-                               is_banned="0", logo_path="", citate="", format="obj")
-    #deleting him via user id
-    assert DBWorker.User().delete(user = NewUser.UserId) == 1
+                                     is_banned="0", logo_path="", citate="", format="obj")
+    # deleting him via user id
+    assert DBWorker.User().delete(user=NewUser.UserId) == 1
 
-
-    #creating new user in DB
+    # creating new user in DB
     NewUser = DBWorker.User().create(password="1234567890", email="example7@example.com", user="user7", is_admin="0",
-                               is_banned="0", logo_path="", citate="", format="obj")
-    #deleting him via user id and password
-    assert DBWorker.User().delete(user = NewUser.UserId, password= "1234567890") == 1
+                                     is_banned="0", logo_path="", citate="", format="obj")
+    # deleting him via user id and password
+    assert DBWorker.User().delete(user=NewUser.UserId, password="1234567890") == 1
 
-
-    #creating new user in DB
-    NewUser = DBWorker.User().create(password="1234567890", email="example7@example.com", user="user7", is_admin="0",
-                               is_banned="0", logo_path="", citate="", format="obj")
-    #deleting him via his token
+    # creating new user in DB
+    DBWorker.User().create(password="1234567890", email="example7@example.com", user="user7", is_admin="0",
+                           is_banned="0", logo_path="", citate="", format="obj")
+    # deleting him via his token
     token = generate_token("user7", "1234567890")
     assert DBWorker.User().delete(token=token) == 1

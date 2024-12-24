@@ -1,5 +1,6 @@
 import os
 
+
 class UserStorage:
 
     def __init__(self, Data, DBWorker):
@@ -21,10 +22,15 @@ class UserStorage:
 
     def save(self):
         print(self.UserId)
-        self.DBWorker(query = """UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, time = ?, ActiveNum = ?, IsActivated = ?, NumOfPosts = ?, token = ? WHERE UserId = ?""", param = [self.email, self.UserId, self.IsAdmin,
-                       self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated, self.NumOfPosts , self.token, self.__OldUserId])
+        self.DBWorker(
+            query="""UPDATE user SET email = ?, UserId = ?, IsAdmin = ?, IsBanned = ?, LogoPath = ?, citate = ?, 
+            time = ?, ActiveNum = ?, IsActivated = ?, NumOfPosts = ?, token = ? WHERE UserId = ?""",
+            param=[self.email, self.UserId, self.IsAdmin,
+                   self.IsBanned, self.LogoPath, self.citate, self.time, self.ActiveNum, self.IsActivated,
+                   self.NumOfPosts, self.token, self.__OldUserId])
 
         self.__OldUserId = self.UserId
+
 
 class TopicStorage:
 
@@ -39,9 +45,10 @@ class TopicStorage:
         self.protected = Data[0][5]
 
     def save(self):
-        self.DBWorker(query = "UPDATE topic SET theme = ?, about = ?, Protected = ? WHERE TopicId = ? ",
-                      param = [self.theme,self.about, self.protected, self.TopicId])
-        
+        self.DBWorker(query="UPDATE topic SET theme = ?, about = ?, Protected = ? WHERE TopicId = ? ",
+                      param=[self.theme, self.about, self.protected, self.TopicId])
+
+
 class MessagesStorage:
 
     def __init__(self, Data, DBWorker):
@@ -54,5 +61,5 @@ class MessagesStorage:
         self.time = Data[4]
 
     def save(self):
-        self.DBWorker(query = "UPDATE messages SET TopicId = ?, author = ?, text = ?, time = ? WHERE MessageId = ? ",
-                      param =  (self.TopicId,  self.author, self.text, self.time, self.MessageId) )
+        self.DBWorker(query="UPDATE messages SET TopicId = ?, author = ?, text = ?, time = ? WHERE MessageId = ? ",
+                      param=(self.TopicId, self.author, self.text, self.time, self.MessageId))

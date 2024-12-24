@@ -19,7 +19,7 @@ class ConsoleLog(object):
         reset_code = "\033[0m"
 
         if level in color_codes:
-            print(f"{color_codes[level]} {get_current_time()} [{level}]:{text}{reset_code}")
+            print("{} {} [{}]: {}{}".format(color_codes[level], get_current_time(), level, text, reset_code))
         else:
             print(text)
 
@@ -32,8 +32,7 @@ class TxtLog(object):
 
     def log(self, text, level):
         with open(os.path.join(os.getcwd(), self.filename), 'a') as file:
-            file.write(f"{str(get_current_time())} [{level}]:{text} \n")
-            file.close()
+            file.write("{} [{}]: {} \n".format(str(get_current_time()), level, text))
             return 1
 
 
@@ -47,7 +46,7 @@ class JsonLog(object):
         self.logger = logging.getLogger('js_logger')
         self.logger.setLevel(logging.DEBUG)
 
-        file_handler = logging.FileHandler(f'{self.filename}.json')
+        file_handler = logging.FileHandler('{}.json'.format(self.filename))
         file_handler.setFormatter(logging.Formatter('%(message)s'))
         self.logger.addHandler(file_handler)
 
@@ -57,15 +56,15 @@ class JsonLog(object):
             'message': text,
             "time": str(get_current_time()),
         }
-        match level:
-            case "info":
-                self.logger.error(json.dumps(data))
-            case "warning":
-                self.logger.warning(json.dumps(data))
-            case "error":
-                self.logger.error(json.dumps(data))
-            case _:
-                raise TypeError("Unknown type of debug level")
+
+        if level == "info":
+            self.logger.error(json.dumps(data))
+        elif level == "warning":
+            self.logger.warning(json.dumps(data))
+        elif level == "error":
+            self.logger.error(json.dumps(data))
+        else:
+            raise TypeError("Unknown type of debug level")
 
 
 class Logger(object):
@@ -74,17 +73,16 @@ class Logger(object):
 
         self.NameOfFile = name_of_file
 
-        match logger_type:
-            case "":
-                self.LoggerClass = ConsoleLog()
-            case "console":
-                self.LoggerClass = ConsoleLog()
-            case "txt":
-                self.LoggerClass = TxtLog(filename=self.NameOfFile, path=os.getcwd())
-            case "json":
-                self.LoggerClass = JsonLog(filename=self.NameOfFile, path=os.getcwd())
-            case _:
-                raise TypeError("Unknown type of logger")
+        if logger_type == "":
+            self.LoggerClass = ConsoleLog()
+        elif logger_type == "console":
+            self.LoggerClass = ConsoleLog()
+        elif logger_type == "txt":
+            self.LoggerClass = TxtLog(filename=self.NameOfFile, path=os.getcwd())
+        elif logger_type == "json":
+            self.LoggerClass = JsonLog(filename=self.NameOfFile, path=os.getcwd())
+        else:
+            raise TypeError("Unknown type of logger")
 
     def info(self, text):
         self.LoggerClass.log(text, level="info")

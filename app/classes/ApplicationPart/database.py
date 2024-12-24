@@ -1,11 +1,12 @@
 import psycopg2 as psql
+import sqlite3  # Added import for sqlite3
 
 from app.classes.models.message import *
 from app.classes.models.topic import *
 from app.classes.models.user import user
 
 
-def InitDB(DBWorker: object):
+def init_db(DBWorker: object):
     # structure of table user: email,  UserId, IsAdmin, IsBanned, LogoPath, citate, time, token
 
     DBWorker(query="""
@@ -27,8 +28,6 @@ def InitDB(DBWorker: object):
     # structure of table topic time|theme|author|about|TopicId
 
     DBWorker(query="""
-
-
         CREATE TABLE IF NOT EXISTS topic (
             time DATETIME,
             theme TEXT, 
@@ -37,10 +36,7 @@ def InitDB(DBWorker: object):
             TopicId TEXT PRIMARY KEY,
             Protected BOOLEAN
         );
-
-
-
-              """, param=())
+    """, param=())
 
     # creating table messages, which represents the message class
     # structure of table messages: TopicId, MessageId, author, text, time
@@ -62,25 +58,26 @@ class SQLite3:
         self.path = path
 
     def work(self, query, param=("",)):
-            con = sqlite3.connect(self.path, timeout=7)
-            cursor = con.cursor()
-            try:
-                cursor.execute(query, param)
-                data = cursor.fetchall()
-                con.commit()
-                return data
-            except Exception as e:
-                print(f"Error executing query: {e}")
-                con.rollback()  # Rollback if there's an error
-                return None
-            finally:
-                cursor.close()  # Close cursor
-                con.close()     # Close connection
-    
-    def DBInit(self):
+        con = sqlite3.connect(self.path, timeout=7)
+        cursor = con.cursor()
+        try:
+            cursor.execute(query, param)
+            data = cursor.fetchall()
+            con.commit()
+            return data
+        except Exception as e:
+            print("Error executing query: {}".format(e))
+            con.rollback()  # Rollback if there's an error
+            return None
+        finally:
+            cursor.close()  # Close cursor
+            con.close()  # Close connection
+
+    def db_init(self):
         InitDB(self.work)
 
-class postgres():
+
+class postgres:
 
     def __init__(self, host, port, name, user, password):
         self.host = host
@@ -89,9 +86,7 @@ class postgres():
         self.user = user
         self.password = password
 
-    def work(self, query, param = ("",)):
-
-
+    def work(self, query, param=("",)):
         conn = psql.connect(dbname=self.name, user=self.user, password=self.password, host=self.host, port=self.port)
         cursor = conn.cursor()
         try:
@@ -100,48 +95,37 @@ class postgres():
             conn.commit()
             return data
         except Exception as e:
-            print(f"Error executing query: {e}")
+            print("Error executing query: {}".format(e))
             conn.rollback()  # Rollback if there's an error
             return None
         finally:
             cursor.close()  # Close cursor
             conn.close()  # Close connection
 
-        return data
-    
-    def DBInit(self):
+    def db_init(self):
         InitDB(self.work)
 
 
 class DB:
 
-    def __init__(self, DBType="",host="", port="", name="", user="", password=""):
+    def __init__(self, DBType="", host="", port="", name="", user="", password=""):
+        if DBType == "":
+            self.db = SQLite3("main.db")
+        elif DBType == "sqlite3":
+            self.db = SQLite3(name)
+        elif DBType == "postgres":
+            self.db = postgres(host, port, name, user, password)
+        else:
+            raise TypeError("Unknown type of DB")
 
-        match DBType:
-            case "":
-                self.db = SQLite3("main.db")
-            case "sqlite3":
-                self.db = SQLite3(name)
-            case "postgres":
-                self.db = postgres(host, port, name, user, password)
-            case _:
-                raise TypeError("Unknown type of DB")
-            
-
-    def DBInit(self) -> object:
+    def db_init(self) -> object:
         self.db.DBInit()
 
-    def User(self):
+    def user(self):
         return user(self.db.work)
 
-    def Topic(self):
+    def topic(self):
         return topic(self.db.work)
 
-    def Message(self):
+    def message(self):
         return messages(self.db.work)
-
-    
-
-    
-
-

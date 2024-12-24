@@ -1,9 +1,6 @@
-import sys
-
-sys.path.append("...")
-
 from flask_jwt_extended import *
 from flask import Blueprint, request
+
 
 class MessageAPIController:
 
@@ -25,73 +22,74 @@ class MessageAPIController:
     @staticmethod
     def route(path, methods=['GET']):
         """Decorator to define route path and methods."""
+
         def decorator(func):
             func.route = path
             func.methods = methods
             return func
+
         return decorator
 
-    @route("/api/messages", methods = ["GET", "POST", "DELETE", "PATCH"])
+    @route("/api/messages", methods=["GET", "POST", "DELETE", "PATCH"])
     def ApiMessage(self):
         if request.method == "GET":
-            TopicId = request.args.get("TopicId")
-            MessageId = request.args.get("MessageId")
-            if TopicId != None:
-                if type(self.server_object.DBWorker.Message().get(TopicId = TopicId, format = 'json')) != list:
-                    return [self.server_object.DBWorker.Message().get(TopicId = TopicId, format = 'json')]
-                return self.server_object.DBWorker.Message().get(TopicId=TopicId, format='json')
-            elif MessageId != None:
-                MessageData = self.server_object.DBWorker.Message().get(MessageId = MessageId, format = "json")
-                if MessageData != []:
-                    return MessageData, 200
+            topic_id = request.args.get("TopicId")
+            message_id = request.args.get("MessageId")
+            if topic_id:
+                if type(self.server_object.DBWorker.Message().get(TopicId=topic_id, format='json')) != list:
+                    return [self.server_object.DBWorker.Message().get(TopicId=topic_id, format='json')]
+                return self.server_object.DBWorker.Message().get(TopicId=topic_id, format='json')
+            elif message_id:
+                message_data = self.server_object.DBWorker.Message().get(MessageId=message_id, format="json")
+                if message_data:
+                    return message_data, 200
                 return '404', 404
 
         elif request.method == "POST":
-            RequestData = request.get_json()
-            UserId = decode_token(RequestData["token"])["sub"]
-            TopicData = self.server_object.DBWorker.Topic().get(TopicId = RequestData["TopicId"], format = "obj")
-            if TopicData == []:
+            request_data = request.get_json()
+            user_id = decode_token(request_data["token"])["sub"]
+            topic_data = self.server_object.DBWorker.Topic().get(TopicId=request_data["TopicId"], format="obj")
+            if not topic_data:
                 return "404", 404
-            if RequestData and UserId and TopicData.protected != 1:
-                TopicId = RequestData["TopicId"]
-                text = RequestData["text"]
-                NewMessage = self.server_object.DBWorker.Message().create(TopicId, UserId, text, format = "json")
-                return NewMessage, 201
-            elif TopicData.author == UserId and TopicData.protected == 1:
-                TopicId = RequestData["TopicId"]
-                text = RequestData["text"]
-                NewMessage = self.server_object.DBWorker.Message().create(TopicId, UserId, text, format = "json")
-                return NewMessage, 201
+            if request_data and user_id and topic_data.protected != 1:
+                topic_id = request_data["TopicId"]
+                text = request_data["text"]
+                new_message = self.server_object.DBWorker.Message().create(topic_id, user_id, text, format="json")
+                return new_message, 201
+            elif topic_data.author == user_id and topic_data.protected == 1:
+                topic_id = request_data["TopicId"]
+                text = request_data["text"]
+                new_message = self.server_object.DBWorker.Message().create(topic_id, user_id, text, format="json")
+                return new_message, 201
             else:
-                return "403",403
+                return "403", 403
         elif request.method == "DELETE":
-            RequestData = request.get_json()
+            request_data = request.get_json()
 
-            MessageId = RequestData["MessageId"]
-            UserId = decode_token(RequestData["token"])["sub"]
+            message_id = request_data["MessageId"]
+            user_id = decode_token(request_data["token"])["sub"]
 
-            UserData = self.server_object.DBWorker.User().get(user=UserId, format='obj')
-            MsgData = self.server_object.DBWorker.Message().get(MessageId=MessageId, format='obj')
-            if MsgData.author == UserId or UserData.IsAdmin == 1:
-                self.server_object.DBWorker.Message().delete(MessageId = MessageId)
+            user_data = self.server_object.DBWorker.User().get(user=user_id, format='obj')
+            msg_data = self.server_object.DBWorker.Message().get(MessageId=message_id, format='obj')
+            if msg_data.author == user_id or user_data.IsAdmin == 1:
+                self.server_object.DBWorker.Message().delete(MessageId=message_id)
                 return "200", 201
             else:
                 return "403", 403
 
         elif request.method == "PATCH":
 
-            RequestData = request.get_json()
+            request_data = request.get_json()
 
-            text = RequestData['text']
-            MsgId = RequestData["MsgId"]
-            UserId = decode_token(RequestData["token"])["sub"]
+            text = request_data['text']
+            msg_id = request_data["MsgId"]
+            user_id = decode_token(request_data["token"])["sub"]
 
-            MsgData = self.server_object.DBWorker.Message().get(MessageId = MsgId, format = "obj")
+            msg_data = self.server_object.DBWorker.Message().get(MessageId=msg_id, format="obj")
 
-            if UserId == MsgData.author or UserId == self.server_object.AdminUser:
-
-                MsgData.text = text
-                MsgData.save()
+            if user_id == msg_data.author or user_id == self.server_object.AdminUser:
+                msg_data.text = text
+                msg_data.save()
 
                 return "201", 201
 

@@ -1,49 +1,47 @@
-#importing external libs
+# importing external libs
 import requests as r
 import sys
-import requests
 
-#importing local classes
+# adding paths to venv
 sys.path.append("...")
 sys.path.append("..")
 
-#importing local classes
+# importing local classes
 from config import *
-import requests
 
-BASE_URL = f"http://{APPhost}:{APPport}/api/topic"  #api entripoint URI
+BASE_URL = "http://{}:{}/api/topic".format(APPhost, APPport)  # api entrypoint URI
 
-#generating user token
-r = requests.post(
-    f"http://{APPhost}:{APPport}/api/user/generate_token",
-    json = {
-    "user" : AdminUser,
-    "password":AdminPassword,
+# generating user token
+request_data = r.post(
+    "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+    json={
+        "user": AdminUser,
+        "password": AdminPassword,
     },
     headers={
-    'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
     }
 )
 
-valid_token = r.json()["JWToken"]
+valid_token = request_data.json()["JWToken"]
 
 topic_data = {
-        "theme": "Test Topic",
-        "about": "This is a test topic.",
-        "is_protected":"0"
-    }
+    "theme": "Test Topic",
+    "about": "This is a test topic.",
+    "is_protected": "0"
+}
 
 
-#creating topic
+# creating topic
 def test_TopicCreation():
     global topic_data
 
-    r = requests.post(
+    response = r.post(
         BASE_URL,
-        json = {
-             "token":str(valid_token),
-            "theme":topic_data["theme"],
-            "about":topic_data["about"],
+        json={
+            "token": str(valid_token),
+            "theme": topic_data["theme"],
+            "about": topic_data["about"],
             "is_protected": topic_data["is_protected"]
         },
         headers={
@@ -51,50 +49,50 @@ def test_TopicCreation():
         }
     )
 
-    topic_data = r.json()
-    assert r.status_code == 200
+    topic_data = response.json()
+    assert response.status_code == 200
+
 
 def test_TopicGet():
-    r = requests.get(
-        BASE_URL + f"?TopicId={topic_data["TopicId"]}"
+    response = r.get(
+        BASE_URL + "?TopicId={}".format(topic_data["TopicId"])
     )
 
-    assert topic_data == r.json()
+    assert topic_data == response.json()
+
 
 def test_PatchTopicData():
-
     global topic_data
 
     topic_data["theme"] = "Test Topic No. 2"
     topic_data["about"] = "This is a test topic No. 2"
 
-    r = requests.patch(
+    response = r.patch(
         BASE_URL,
-        json = {
-             "token":str(valid_token),
-            "theme":topic_data["theme"],
-            "about":topic_data["about"],
-            "TopicId":topic_data["TopicId"]
+        json={
+            "token": str(valid_token),
+            "theme": topic_data["theme"],
+            "about": topic_data["about"],
+            "TopicId": topic_data["TopicId"]
         },
         headers={
             'Content-Type': 'application/json'
         }
     )
 
-    assert r.status_code == 201
+    assert response.status_code == 201
 
 
 def test_DeleteTopic():
-
-    r = requests.delete(
-    BASE_URL,
-    json = {
-         "token":str(valid_token),
-        "TopicId": topic_data["TopicId"]
-    },
-    headers={
-        'Content-Type': 'application/json'
-    }
+    response = r.delete(
+        BASE_URL,
+        json={
+            "token": str(valid_token),
+            "TopicId": topic_data["TopicId"]
+        },
+        headers={
+            'Content-Type': 'application/json'
+        }
     )
 
-    assert r.status_code == 200
+    assert response.status_code == 200

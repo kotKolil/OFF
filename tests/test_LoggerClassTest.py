@@ -7,37 +7,29 @@ sys.path.append('..')
 # Importing local classes
 from app.classes.ApplicationPart.loggers import *
 
-def test_TestingUnknownTypeOfLogger():
 
+def test_TestingUnknownTypeOfLogger():
     try:
         Logger("awesome type")
     except Exception as e:
         assert isinstance(e, TypeError)
 
+
 def test_TestingConsoleLogger():
+    # creating new logger
+    console_logger = Logger("console")
 
-    #creating new logger
-    ConsoleLogger = Logger("console")
+    # testing functions
+    console_logger.info("connection established")
+    console_logger.warning("invalid HTTP headers")
+    console_logger.error("kernel panik")
 
-    #testing functions
-    ConsoleLogger.info("connection estabilished")
-    ConsoleLogger.warning("invalid HTTP headers")
-    ConsoleLogger.error("kernel panik")
-
-def test_TestingTxtLogger():
-    #creating new logger
-    ConsoleLogger = Logger("txt", name_of_file="main.txt")
-
-    #testing functions
-    ConsoleLogger.info("connection estabilished")
-    ConsoleLogger.warning("invalid HTTP headers")
-    ConsoleLogger.error("kernel panik")
 
 def test_TestingTxtLogger():
-    #creating new logger
-    ConsoleLogger = Logger("json", name_of_file="main.json")
+    # creating new logger
+    console_logger = Logger("txt", name_of_file="main.txt")
 
-    #testing functions
-    ConsoleLogger.info("connection estabilished")
-    ConsoleLogger.warning("invalid HTTP headers")
-    ConsoleLogger.error("kernel panik")
+    # testing functions
+    console_logger.info("connection established")
+    console_logger.warning("invalid HTTP headers")
+    console_logger.error("kernel panik")

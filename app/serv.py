@@ -72,12 +72,13 @@ class server:
 
         @self.server.errorhandler(404)
         def Handler404(e):
-            return render("info.html", message="HTTP 404.Page Not Found", code=404)
+            return render("info.html", message=e, code=404)
 
         # in this place we are registering error handlers
         self.server.register_error_handler(404, Handler404)
 
-    def render(self, template_name, **context):
+    @staticmethod
+    def render(template_name, **context):
         return render_template(template_name, **context)
 
     def run(self):

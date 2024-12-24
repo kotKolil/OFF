@@ -1,9 +1,6 @@
-import sys
-
-sys.path.append("...")
-
 from flask_jwt_extended import *
 from flask import Blueprint, request
+
 
 class TopicAPIController:
     def __init__(self, server_object):
@@ -23,43 +20,45 @@ class TopicAPIController:
     @staticmethod
     def route(path, methods=['GET']):
         """Decorator to define route path and methods."""
+
         def decorator(func):
             func.route = path
             func.methods = methods
             return func
-        return decorator
 
+        return decorator
 
     @route("/api/topic", methods=["GET", "POST", "DELETE", "PATCH"])
     def ApiTopic(self):
         if request.method == "GET":
-            TopciId = request.args.get("TopicId")
-            return self.server_object.DBWorker.Topic().get(TopicId = TopciId, format = 'json')
+            topic_id = request.args.get("TopicId")
+            return self.server_object.DBWorker.Topic().get(TopicId=topic_id, format='json')
         elif request.method == "POST":
-            RequestData = request.get_json()
-            UserId = decode_token(RequestData["token"])["sub"]
+            request_data = request.get_json()
+            user_id = decode_token(request_data["token"])["sub"]
 
-            if RequestData and UserId:
-                theme = RequestData["theme"]
-                about = RequestData["about"]
-                is_protected = RequestData["is_protected"]
+            if request_data and user_id:
+                theme = request_data["theme"]
+                about = request_data["about"]
+                is_protected = request_data["is_protected"]
 
-                TopicCreated = self.server_object.DBWorker.Topic().create(theme, UserId, about, is_protected, format = "obj")
-                return self.server_object.DBWorker.Topic().get(TopicId = TopicCreated.TopicId, format = "json")
+                topic_created = self.server_object.DBWorker.Topic().create(theme, user_id, about, is_protected,
+                                                                           format="obj")
+                return self.server_object.DBWorker.Topic().get(TopicId=topic_created.TopicId, format="json")
 
             else:
                 return 400
 
         elif request.method == "DELETE":
-            RequestData = request.get_json()
+            request_data = request.get_json()
 
-            TopicId = RequestData["TopicId"]
-            UserId = decode_token(RequestData["token"])["sub"]
+            topic_id = request_data["TopicId"]
+            user_id = decode_token(request_data["token"])["sub"]
 
-            UserData = self.server_object.DBWorker.User().get(user = UserId, format = "obj")
-            TopicData = self.server_object.DBWorker.Topic().get(TopicId = TopicId, format = "obj")
-            if TopicData.author == UserId or UserData.IsAdmin == 1:
-                self.server_object.DBWorker.Topic().delete(TopicId = TopicId)
+            user_data = self.server_object.DBWorker.User().get(user=user_id, format="obj")
+            topic_data = self.server_object.DBWorker.Topic().get(TopicId=topic_id, format="obj")
+            if topic_data.author == user_id or user_data.IsAdmin == 1:
+                self.server_object.DBWorker.Topic().delete(TopicId=topic_id)
                 return "200", 200
             else:
                 return "403", 403
@@ -68,22 +67,22 @@ class TopicAPIController:
 
             # try:
 
-            RequestData = request.get_json()
+            request_data = request.get_json()
 
-            UserId = decode_token(RequestData["token"])["sub"]
-            TopicId = RequestData["TopicId"]
+            user_id = decode_token(request_data["token"])["sub"]
+            topic_id = request_data["TopicId"]
 
-            Topic = self.server_object.DBWorker.Topic().get(TopicId = TopicId, format = "obj")
-            User = self.server_object.DBWorker.User().get(user = UserId, format = "obj" )
-            if Topic.author == UserId or User.IsAdmin == 1:
-                Topic.theme = RequestData["theme"]
-                Topic.about = RequestData["about"]
-                Topic.save()
+            topic = self.server_object.DBWorker.Topic().get(TopicId=topic_id, format="obj")
+            user = self.server_object.DBWorker.User().get(user=user_id, format="obj")
+            if topic.author == user_id or user.IsAdmin == 1:
+                topic.theme = request_data["theme"]
+                topic.about = request_data["about"]
+                topic.save()
 
                 return "201", 201
 
     @route("/api/topic/all")
     def AllTopic(self):
-        if type(self.server_object.DBWorker.Topic().all(format = "json")) != list:
-            return [self.server_object.DBWorker.Topic().all(format = "json")]
-        return self.server_object.DBWorker.Topic().all(format = "json")
+        if type(self.server_object.DBWorker.Topic().all(format="json")) != list:
+            return [self.server_object.DBWorker.Topic().all(format="json")]
+        return self.server_object.DBWorker.Topic().all(format="json")

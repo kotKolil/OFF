@@ -1,17 +1,18 @@
+from flask_jwt_extended import *
+from flask import Blueprint, request
+import collections
 import sys
 
 sys.path.append("...")
 
 from app.classes.other.tools import *
-from flask_jwt_extended import *
-from flask import Blueprint, request
-import collections
 
-class UserAPIController():
+
+class UserAPIController:
 
     def __init__(self, server_object):
         self.server_object = server_object
-        self.bp = Blueprint('UserAPI controller', __name__,)
+        self.bp = Blueprint('UserAPI controller', __name__, )
         self.register_routes()
 
     def register_routes(self):
@@ -26,59 +27,58 @@ class UserAPIController():
     @staticmethod
     def route(path, methods=['GET']):
         """Decorator to define route path and methods."""
+
         def decorator(func):
             func.route = path
             func.methods = methods
             return func
+
         return decorator
 
-
-
-    @route("/api/user/CheckToken", methods = ["POST"])
+    @route("/api/user/CheckToken", methods=["POST"])
     def CheckToken(self):
-        JWToken = request.json["JWToken"]
-        if decode_token(JWToken):
+        user_hash = request.json["JWToken"]
+        if decode_token(user_hash):
             return [1]
         else:
             return [0]
 
-    @route("/api/user/generate_token", methods = ["POST"])
+    @route("/api/user/generate_token", methods=["POST"])
     def GenerateToken(self):
         if request.method == "POST":
             user = request.json["user"]
-            pswd = request.json["password"]
+            password = request.json["password"]
 
-            UserHash = generate_token(user, pswd)
+            user_hash = generate_token(user, password)
 
-            UserData = self.server_object.DBWorker.User().get(token = UserHash, format = "obj")
+            user_data = self.server_object.DBWorker.User().get(token=user_hash, format="obj")
 
-            if type(UserData) != int:
-                JWToken = create_access_token(identity=UserData.UserId)
-                return {"JWToken":JWToken}, 201
+            if isinstance(user_data, int):
+                jwt_token = create_access_token(identity=user_data.UserId)
+                return {"JWToken": jwt_token}, 201
             else:
                 return "400", 400
         else:
             return "400", 400
 
-
-    @route("/api/user", methods=["GET", "POST", "CREATE" ,"DELETE"])
+    @route("/api/user", methods=["GET", "POST", "CREATE", "DELETE"])
     def MisatoKForever(self):
         if request.method == "GET":
-            JWToken = request.args.get("JWToken")
-            UserId = request.args.get("UserId")
-            if JWToken != None:
-                if decode_token(JWToken):
-                    UserId = decode_token(JWToken)["sub"]
-                    data = self.server_object.DBWorker.User().get(user = UserId, format = "json")
-                    if type(data) != int:
+            jwt_token = request.args.get("JWToken")
+            user_id = request.args.get("UserId")
+            if jwt_token:
+                if decode_token(jwt_token):
+                    user_id = decode_token(jwt_token)["sub"]
+                    data = self.server_object.DBWorker.User().get(user=user_id, format="json")
+                    if isnstance(data, int):
                         return data
                     else:
-                        return "404",404
+                        return "404", 404
                 else:
                     return "400", 400
-            elif UserId != None:
-                data = self.server_object.DBWorker.User().get(user=UserId, format="json")
-                if type(data) != int:
+            elif user_id:
+                data = self.server_object.DBWorker.User().get(user=user_id, format="json")
+                if isinctance(data, int):
                     return data
                 else:
                     return "404", 404
@@ -87,116 +87,121 @@ class UserAPIController():
                 return "400", 400
 
         elif request.method == "POST":
-            RequestData = request.json
+            request_data = request.json
 
-            if RequestData:
+            if request_data:
 
-                email = RequestData["email"]
-                UserId = RequestData["UserId"]
-                password  = RequestData["password"]
-                citate = RequestData["citate"]
+                email = request_data["email"]
+                user_id = request_data["UserId"]
+                password = request_data["password"]
+                citate = request_data["citate"]
 
-                UserData = self.server_object.DBWorker.User().get(user = UserId, format = "ojb")
-                if UserData == 0:
+                user_data = self.server_object.DBWorker.User().get(user=user_id, format="ojb")
+                if user_data == 0:
 
-                    u = self.server_object.DBWorker.User().create(password=password, email = email, user=UserId, is_admin = 0,
-                                               is_banned=0, logo_path = "default.png",citate = citate,
-                                               format = "obj")
-                    self.server_object.MailWorker.SendMessage(TargetMail = email, text = f"""Hello! Go to this link http://{self.server_object.host}:{self.server_object.port}/ActivateEmail?num={u.ActiveNum} 
-                    to activate you account""", Theme = "account activating")
-                    message = f"<p>Go to your email to activate your account</p>"
-                    return "201", 201
+                    u = self.server_object.DBWorker.User().create(password=password, email=email, user=user_id,
+                                                                  is_admin=0,
+                                                                  is_banned=0, logo_path="default.png", citate=citate,
+                                                                  format="obj")
+                    self.server_object.MailWorker.SendMessage(TargetMail=email,
+                                                              text="""Hello! Go to this link http://{host}:{port}/
+                                                          ActivateEmail?num={num} to activate your account""".format(
+                                                                  host=self.server_object.host,
+                                                                  port=self.server_object.port,
+                                                                  num=u.ActiveNum
+                                                              ), Theme="account activating")
+                    return "Go to your email to activate your account", 201
                 else:
-                    return "400",400
+                    return "400", 400
 
         elif request.method == "DELETE":
-            RequestData = request.json
-            user0 = decode_token(RequestData["JWToken"])["sub"]
-            user0 = self.server_object.DBWorker.User().get(user = user0, format = "obj")
-            user = RequestData["user"]
+            request_data = request.json
+            user0 = decode_token(request_data["JWToken"])["sub"]
+            user0 = self.server_object.DBWorker.User().get(user=user0, format="obj")
+            user = request_data["user"]
             if user0 == user or user0.IsAdmin:
                 try:
-                    self.server_object.DBWorker.User().delete(user = user)
+                    self.server_object.DBWorker.User().delete(user=user)
                     return "201", 201
-                except:
+                except Exception:
                     return "404", 404
             else:
                 return "403", 403
 
-    @route("/api/user/change/user", methods = ["POST"])
+    @route("/api/user/change/user", methods=["POST"])
     def UserChange(self):
 
-        Data = request.json
+        data = request.json
 
-        UserIdFromToken = decode_token(Data["token"])["sub"]
-        citate = Data["citate"]
+        user_id_from_token = decode_token(data["token"])["sub"]
+        citate = data["citate"]
 
-        UserData = self.server_object.DBWorker.User().get(user = UserIdFromToken, format = "obj")
+        user_data = self.server_object.DBWorker.User().get(user=user_id_from_token, format="obj")
 
-        if UserData.UserId != "":
+        if user_data.UserId != "":
 
-            #if citate is not set, we are changing password and user id
+            # if citate is not set, we are changing password and user id
             if citate == "":
 
-                Password = Data["password"]
-                NewUserId = Data['NewUserId']
+                password = data["password"]
+                new_user_id = data['NewUserId']
 
-                #creating new hash from user and password
-                UserData.UserId = NewUserId
-                UserData.token = generate_token(NewUserId, Password)
-                UserData.save()
+                # creating new hash from user and password
+                user_data.UserId = new_user_id
+                user_data.token = generate_token(new_user_id, password)
+                user_data.save()
 
-                #change all topics, create by user
-                AllUserTopic = self.server_object.DBWorker.Topic().all(format = "obj")
-                if not isinstance(AllUserTopic, collections.abc.Iterable):
-                    AllUserTopic.author = NewUserId
-                    AllUserTopic.save()
+                # change all topics, create by user
+                all_user_topic = self.server_object.DBWorker.Topic().all(format="obj")
+                if not isinstance(all_user_topic, collections.abc.Iterable):
+                    all_user_topic.author = new_user_id
+                    all_user_topic.save()
 
                 else:
-                    for topic in AllUserTopic:
-                        if topic.author == UserIdFromToken:
-                            topic.author = NewUserId
+                    for topic in all_user_topic:
+                        if topic.author == user_id_from_token:
+                            topic.author = new_user_id
                             topic.save()
 
-                #change all messages, create by user
-                AllUserMsg = self.server_object.DBWorker.Message().all(format = "obj")
-                if not isinstance(AllUserMsg, collections.abc.Iterable):
-                    AllUserTopic.author = NewUserId
+                # change all messages, create by user
+                all_user_msg = self.server_object.DBWorker.Message().all(format="obj")
+                if not isinstance(all_user_msg, collections.abc.Iterable):
+                    all_user_topic.author = new_user_id
 
                 else:
-                    for msg in AllUserMsg:
-                        if msg.author == UserIdFromToken:
-                            msg.author = NewUserId
+                    for msg in all_user_msg:
+                        if msg.author == user_id_from_token:
+                            msg.author = new_user_id
                             msg.save()
 
                 return "201", 201
 
             else:
-                UserData.citate = citate
-                UserData.save()
+                user_data.citate = citate
+                user_data.save()
                 return "201", 201
 
-    @route("/api/user/change/admin", methods = ["POST"])
+    @route("/api/user/change/admin", methods=["POST"])
     def AdminUserChange(self):
 
         try:
 
             data = request.json
 
-            AdminUserId = decode_token(data['AdminToken'])["sub"]
-            UserId = data['UserId']
+            admin_user_id = decode_token(data['AdminToken'])["sub"]
+            user_id = data['UserId']
             is_banned = data["IsBanned"]
             is_admin = data["IsAdmin"]
 
-            AdminUserData = self.server_object.DBWorker.User().get(user = AdminUserId, format = "obj")
-            SimpleUserData = self.server_object.DBWorker.User().get(user = UserId, format = "obj")
-            if AdminUserData.IsAdmin == 1:
+            admin_user_data = self.server_object.DBWorker.User().get(user=admin_user_id, format="obj")
+            simple_user_data = self.server_object.DBWorker.User().get(user=user_id, format="obj")
+            if admin_user_data.IsAdmin == 1:
 
-                if SimpleUserData.UserId != "" and SimpleUserData.UserId != self.server_object.AdminUser:
-                    SimpleUserData.IsBanned = is_banned
-                    SimpleUserData.IsAdmin = is_admin
-                    SimpleUserData.save()
-                    return "201",201
+                if simple_user_data.UserId != "" and simple_user_data.UserId != self.server_object.AdminUser:
+                    simple_user_data.IsBanned = is_banned
+                    simple_user_data.IsAdmin = is_admin
+                    simple_user_data.save()
+                    return "201", 201
                 else:
                     return "404", 404
 
@@ -206,7 +211,6 @@ class UserAPIController():
         except IndexError or KeyError:
 
             return "400", 400
-
 
     @route("/api/user/all")
     def UserAll(self):
