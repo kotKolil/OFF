@@ -1,5 +1,5 @@
 from app.classes.other.tools import *
-from app.classes.Serialisation.wrap import *
+from app.classes.Serialisation.TableDataSerialisation import *
 from random import *
 
 
@@ -11,37 +11,37 @@ class user:
     @UserFormatWrapper
     def get(self, username="", password="", format="obj", token="", num=""):
 
-        if user != "" and password == "" and token == "":
-            return [self.DBworker(query="SELECT * FROM user WHERE UserId = ?", param=[user]), self.DBworker]
+        if username != "" and password == "" and token == "":
+            return [self.db_worker(query="SELECT * FROM user WHERE UserId = ?", param=[username,]), self.db_worker]
 
-        elif user == "" and password == "" and token == "" and num != "":
-            return [self.DBworker(query="SELECT * FROM user WHERE ActiveNum = ?", param=[num]), self.DBworker]
+        elif username == "" and password == "" and token == "" and num != "":
+            return [self.db_worker(query="SELECT * FROM user WHERE ActiveNum = ?", param=[num,]), self.db_worker]
 
-        elif token != "" and user == "" and password == "":
-            return [self.DBworker(query="SELECT * FROM user WHERE token = ?", param=[token]), self.DBworker]
+        elif token != "" and username == "" and password == "":
+            return [self.db_worker(query="SELECT * FROM user WHERE token = ?", param=[token,]), self.db_worker]
 
-        elif user != "" and password != "" and token == "":
-            user_hash = generate_token(user, password)
-            return [self.DBworker(query="SELECT * FROM user WHERE token = ?", param=[user_hash]), self.DBworker]
+        elif username != "" and password != "" and token == "":
+            user_hash = generate_token(username, password)
+            return [self.db_worker(query="SELECT * FROM user WHERE token = ?", param=[user_hash,]), self.db_worker]
 
     @UserFormatWrapper
     def all(self, format="obj"):
-        return [self.DBworker("SELECT * FROM user", []), self.DBworker]
+        return [self.db_worker("SELECT * FROM user", []), self.db_worker]
 
     def delete(self, username="", password="", token=""):
-        if user != "" and password == "":
-            self.DBworker(query="DELETE FROM user WHERE UserId = ?", param=[user])
+        if username != "" and password == "":
+            self.db_worker(query="DELETE FROM user WHERE UserId = ?", param=[username,])
             return 1
-        elif user != "" and password != "":
-            self.DBworker(query="DELETE FROM user WHERE token = ?", param=[generate_token(user, password)])
+        elif username != "" and password != "":
+            self.db_worker(query="DELETE FROM user WHERE token = ?", param=[generate_token(username, password)])
             return 1
         elif token != "":
-            self.DBworker(query="DELETE FROM user WHERE token = ?", param=[generate_token(user, password)])
+            self.db_worker(query="DELETE FROM user WHERE token = ?", param=[generate_token(username, password)])
             return 1
 
     def create(self, password="", email="", username="", is_admin="", is_banned="", logo_path="",
                citate="", format="obj"):
-        self.DBworker(query="""INSERT INTO user VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) """,
-                      param=[email, user, is_admin, is_banned, logo_path, citate,
-                             get_current_time(), generate_token(user, password), randint(0, 10 ** 6), 0, 0])
-        return self.get(user=user, password=password)
+        self.db_worker(query="""INSERT INTO user VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) """,
+                      param=[email, username, is_admin, is_banned, logo_path, citate,
+                             get_current_time(), generate_token(username, password), randint(0, 10 ** 6), 0, 0])
+        return self.get(username=username, password=password, format = "obj")

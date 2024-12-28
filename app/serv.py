@@ -62,7 +62,7 @@ class server:
 
         # creating Admin account
         try:
-            admin_akk = DBWorker.User().create(AdminPassword, "", AdminUser, 1, 0, "admin.png", AdminCitate,
+            admin_akk = DBWorker.user().create(AdminPassword, "", AdminUser, 1, 0, "admin.png", AdminCitate,
                                                format="obj")
             admin_akk.IsActivated = 1
             admin_akk.save()

@@ -1,5 +1,5 @@
 from app.classes.other.tools import *
-from app.classes.Serialisation.wrap import *
+from app.classes.Serialisation.TableDataSerialisation import *
 
 import sqlite3
 import psycopg2

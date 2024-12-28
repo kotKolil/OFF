@@ -45,19 +45,16 @@ class UserAPIController:
 
     @route("/api/user/generate_token", methods=["POST"])
     def GenerateToken(self):
-        if request.method == "POST":
-            user = request.json["user"]
-            password = request.json["password"]
+        user = request.json["user"]
+        password = request.json["password"]
 
-            user_hash = generate_token(user, password)
+        user_hash = generate_token(user, password)
 
-            user_data = self.server_object.DBWorker.User().get(token=user_hash, format="obj")
+        user_data = self.server_object.DBWorker.user().get(token=user_hash, format="obj")
 
-            if isinstance(user_data, int):
-                jwt_token = create_access_token(identity=user_data.UserId)
-                return {"JWToken": jwt_token}, 201
-            else:
-                return "400", 400
+        if not isinstance(user_data, int):
+            jwt_token = create_access_token(identity=user_data.UserId)
+            return {"JWToken": jwt_token}, 201
         else:
             return "400", 400
 
@@ -66,19 +63,20 @@ class UserAPIController:
         if request.method == "GET":
             jwt_token = request.args.get("JWToken")
             user_id = request.args.get("UserId")
+            self.server_object.logger.info(jwt_token)
             if jwt_token:
                 if decode_token(jwt_token):
                     user_id = decode_token(jwt_token)["sub"]
-                    data = self.server_object.DBWorker.User().get(user=user_id, format="json")
-                    if isnstance(data, int):
+                    data = self.server_object.DBWorker.user().get(username=user_id, format="json")
+                    if not isinstance(data, int):
                         return data
                     else:
                         return "404", 404
                 else:
                     return "400", 400
             elif user_id:
-                data = self.server_object.DBWorker.User().get(user=user_id, format="json")
-                if isinctance(data, int):
+                data = self.server_object.DBWorker.user().get(username=user_id, format="json")
+                if not isinstance(data, int):
                     return data
                 else:
                     return "404", 404
@@ -96,14 +94,14 @@ class UserAPIController:
                 password = request_data["password"]
                 citate = request_data["citate"]
 
-                user_data = self.server_object.DBWorker.User().get(user=user_id, format="ojb")
+                user_data = self.server_object.DBWorker.user().get(username=user_id, format="ojb")
                 if user_data == 0:
 
-                    u = self.server_object.DBWorker.User().create(password=password, email=email, user=user_id,
+                    u = self.server_object.DBWorker.user().create(password=password, email=email, username=user_id,
                                                                   is_admin=0,
                                                                   is_banned=0, logo_path="default.png", citate=citate,
                                                                   format="obj")
-                    self.server_object.MailWorker.SendMessage(TargetMail=email,
+                    self.server_object.MailWorker.send_message(TargetMail=email,
                                                               text="""Hello! Go to this link http://{host}:{port}/
                                                           ActivateEmail?num={num} to activate your account""".format(
                                                                   host=self.server_object.host,
@@ -117,11 +115,11 @@ class UserAPIController:
         elif request.method == "DELETE":
             request_data = request.json
             user0 = decode_token(request_data["JWToken"])["sub"]
-            user0 = self.server_object.DBWorker.User().get(user=user0, format="obj")
+            user0 = self.server_object.DBWorker.user().get(username=user0, format="obj")
             user = request_data["user"]
             if user0 == user or user0.IsAdmin:
                 try:
-                    self.server_object.DBWorker.User().delete(user=user)
+                    self.server_object.DBWorker.user().delete(username=user)
                     return "201", 201
                 except Exception:
                     return "404", 404
@@ -136,7 +134,7 @@ class UserAPIController:
         user_id_from_token = decode_token(data["token"])["sub"]
         citate = data["citate"]
 
-        user_data = self.server_object.DBWorker.User().get(user=user_id_from_token, format="obj")
+        user_data = self.server_object.DBWorker.user().get(username=user_id_from_token, format="obj")
 
         if user_data.UserId != "":
 
@@ -152,7 +150,7 @@ class UserAPIController:
                 user_data.save()
 
                 # change all topics, create by user
-                all_user_topic = self.server_object.DBWorker.Topic().all(format="obj")
+                all_user_topic = self.server_object.DBWorker.topic().all(format="obj")
                 if not isinstance(all_user_topic, collections.abc.Iterable):
                     all_user_topic.author = new_user_id
                     all_user_topic.save()
@@ -164,7 +162,7 @@ class UserAPIController:
                             topic.save()
 
                 # change all messages, create by user
-                all_user_msg = self.server_object.DBWorker.Message().all(format="obj")
+                all_user_msg = self.server_object.DBWorker.message().all(format="obj")
                 if not isinstance(all_user_msg, collections.abc.Iterable):
                     all_user_topic.author = new_user_id
 
@@ -193,8 +191,8 @@ class UserAPIController:
             is_banned = data["IsBanned"]
             is_admin = data["IsAdmin"]
 
-            admin_user_data = self.server_object.DBWorker.User().get(user=admin_user_id, format="obj")
-            simple_user_data = self.server_object.DBWorker.User().get(user=user_id, format="obj")
+            admin_user_data = self.server_object.DBWorker.user().get(username=admin_user_id, format="obj")
+            simple_user_data = self.server_object.DBWorker.user().get(username=user_id, format="obj")
             if admin_user_data.IsAdmin == 1:
 
                 if simple_user_data.UserId != "" and simple_user_data.UserId != self.server_object.AdminUser:
@@ -214,7 +212,7 @@ class UserAPIController:
 
     @route("/api/user/all")
     def UserAll(self):
-        if type(self.server_object.DBWorker.User().all(format="json")) != list:
-            return [self.server_object.DBWorker.User().all(format="json")]
+        if type(self.server_object.DBWorker.user().all(format="json")) != list:
+            return [self.server_object.DBWorker.user().all(format="json")]
 
-        return self.server_object.DBWorker.User().all(format="json")
+        return self.server_object.DBWorker.user().all(format="json")

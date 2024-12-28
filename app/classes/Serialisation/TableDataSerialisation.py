@@ -1,5 +1,4 @@
-import os
-
+from app.classes.Serialisation.TableFieldsStorage import *
 
 def UserFormatWrapper(InputFunc):
     def wrapper(*args, **kwargs):
@@ -19,7 +18,6 @@ def UserFormatWrapper(InputFunc):
                         "LogoPath": i[4],
                         "citate": i[5],
                         "time": i[6],
-                        "ActiveNum": i[8],
                         "IsActivated": i[9],
                         "NumOfPosts": i[10]
                     }

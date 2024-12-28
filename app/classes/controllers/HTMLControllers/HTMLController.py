@@ -1,4 +1,3 @@
-import os
 import sys
 
 sys.path.append("...")
@@ -6,7 +5,7 @@ import sqlite3
 from flask import render_template as render
 from flask import *
 from flask_jwt_extended import *
-from app.classes.Serialisation.storage import *
+from app.classes.Serialisation.TableFieldsStorage import *
 from config import *
 from app.classes.other.tools import *
 from werkzeug.utils import secure_filename
@@ -73,7 +72,7 @@ class HTMLController:
             if decode_token(request.cookies.get("token")):
                 jwt_data = decode_token(request.cookies.get("token").encode())
                 user_id = jwt_data["sub"]
-                user_data = self.server_object.DBWorker.User().get(user=user_id, format="obj")
+                user_data = self.server_object.DBWorker.user().get(username=user_id, format="obj")
                 if not user_data.IsActivated:
                     return render("info.html",
                                   message="you are not activated you account. Please, go to your e-mail and activate")
@@ -81,7 +80,7 @@ class HTMLController:
                     return render("info.html", message="you are banned on this forum. Please, contact with moderators")
                 else:
                     try:
-                        self.server_object.DBWorker.Topic().create(theme, user_data.UserId, about,
+                        self.server_object.DBWorker.topic().create(theme, user_data.UserId, about,
                                                                    str((protected == "on") * 1), format="obj")
                         return redirect("/")
                     except Exception as e:
@@ -113,21 +112,20 @@ class HTMLController:
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(os.getcwd(), MEDIA_PREFIX, file.filename))
                 try:
-                    u = self.server_object.DBWorker.User().create(password=password, email=email,
-                                                                  user=login, is_admin=0,
+                    u = self.server_object.DBWorker.user().create(password=password, email=email,
+                                                                  username=login, is_admin=0,
                                                                   is_banned=0, logo_path=filename,
                                                                   citate=citate, format="obj")
-                    self.server_object.DBWorker.Topic().create(
+                    self.server_object.DBWorker.topic().create(
                         "Private page of {}".format(u.UserId), u.UserId,
                         "The Wall", 0, format="obj", TopicId=u.UserId)
-                    self.server_object.MailWorker.SendMessage(email,
-                                                              """Hello! Go to this link http://{}:{}/
-                                                              ActivateEmail?num={}""".format(
+                    self.server_object.MailWorker.send_message(email,
+                                                              """Hello! Go to this link http://{}:{}/ActivateEmail?num={}""".format(
                                                                   self.server_object.host,
                                                                   self.server_object.port,
                                                                   u.ActiveNum),
                                                               "Account Activating")
-                    resp = render("info.html", "Please, go to your email and activate account")
+                    resp = make_response(render("info.html", message = "Please, go to your email and activate account"))
                     jw_token = create_access_token(identity=u.UserId)
                     resp.set_cookie("token", jw_token)
                     return resp
@@ -150,7 +148,7 @@ class HTMLController:
         elif request.method == "POST":
             login = request.form.get("login")
             password = request.form.get("password")
-            u = self.server_object.DBWorker.User().get(token=generate_token(login, password), format="obj")
+            u = self.server_object.DBWorker.user().get(token=generate_token(login, password), format="obj")
             if u == 0:
                 return render("log.html", Text="Incorrect user or password")
             else:
@@ -171,7 +169,7 @@ class HTMLController:
             user = request.form.get("user")
             email = request.form.get("email")
             new_password = request.form.get("NewPassword")
-            user_data = self.server_object.DBWorker.User().get(user=user, format="obj")
+            user_data = self.server_object.DBWorker.user().get(user=user, format="obj")
             if user_data != 0:
                 self.server_object.MailWorker.SendMessage(email,
                                                           "Please, go to this link... http://{}:{}/"
@@ -190,7 +188,7 @@ class HTMLController:
         if request.args.get("num") and request.args.get("NewPassword"):
             num = request.args.get("num")
             new_password = request.args.get("NewPassword")
-            user_data = self.server_object.DBWorker.User().get(num=num, format="obj")
+            user_data = self.server_object.DBWorker.user().get(num=num, format="obj")
             if isinstance(user_data, UserStorage) and str(user_data.ActiveNum) == num:
                 user_hash = generate_token(user_data.UserId, new_password)
                 user_data.token = user_hash
@@ -207,7 +205,9 @@ class HTMLController:
     @route("/ActivateEmail")
     def ActivateEmail(self):
         num = request.args.get('num')
-        user_data = self.server_object.DBWorker.User().get(num=num, format="obj")
+        self.server_object.logger.info(num)
+        user_data = self.server_object.DBWorker.user().get(num=num, format="obj")
+        self.server_object.logger.info(user_data.__dict__)
         if user_data.IsActivated == 1:
             return render("info.html", message="account is activated now")
 
@@ -215,7 +215,7 @@ class HTMLController:
         user_data.ActiveNum = 0
         user_data.save()
 
-        self.server_object.MailWorker.SendMessage(user_data.email,
+        self.server_object.MailWorker.send_message(user_data.email,
                                                   "Congratulations! Account is activated!",
                                                   "account status")
 
@@ -233,7 +233,7 @@ class HTMLController:
     def UsersModerate(self):
         try:
             user_id = decode_token(request.cookies.get("token"))["sub"]
-            user_data = self.server_object.DBWorker.User().get(user=user_id, format="obj")
+            user_data = self.server_object.DBWorker.user().get(user=user_id, format="obj")
 
             if user_data.IsAdmin == 1:
                 return render("user_moderation.html")

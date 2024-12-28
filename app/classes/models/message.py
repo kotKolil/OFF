@@ -2,7 +2,7 @@ import sqlite3
 import psycopg2
 
 from app.classes.other.tools import *
-from app.classes.Serialisation.wrap import *
+from app.classes.Serialisation.TableDataSerialisation import *
 
 
 class messages:
@@ -11,7 +11,7 @@ class messages:
         self.DBWorker = DBWorker
 
     @MessageFormatWrapper
-    def get(self, TopicId="", MessageId=""):
+    def get(self, TopicId="", MessageId="", format = "obj"):
 
         if TopicId != "" and MessageId == "":
 
@@ -25,7 +25,7 @@ class messages:
             return 0
 
     @MessageFormatWrapper
-    def all(self):
+    def all(self, format = "json"):
         return [self.DBWorker(query="SELECT * FROM messages ORDER BY DATETIME(time)", param=[]), self.DBWorker]
 
     def delete(self, MessageId="", TopicId=""):

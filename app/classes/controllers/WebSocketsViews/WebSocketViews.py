@@ -23,12 +23,12 @@ class WebSocketViews(object):
             user_token = decode_token(message["JWToken"])["sub"]
             topic_id = message["TopicId"]
 
-            user_data = self.server_object.DBWorker.User().get(user=user_token, format="obj")
-            topic_data = self.server_object.DBWorker.Topic().get(TopicId=topic_id, format="obj")
+            user_data = self.server_object.DBWorker.user().get(username=user_token, format="obj")
+            topic_data = self.server_object.DBWorker.topic().get(TopicId=topic_id, format="obj")
 
             if user_data.UserId == topic_data.author or user_data.IsAdmin == 1:
-                self.server_object.DBWorker.Topic().delete(TopicId=topic_id)
-                self.server_object.DBWorker.Message().delete(TopicId=topic_id)
+                self.server_object.DBWorker.topic().delete(TopicId=topic_id)
+                self.server_object.DBWorker.message().delete(TopicId=topic_id)
                 emit("TopicDelete", {"TopicId": topic_data.TopicId}, broadcast=True)
 
         @self.SockIO.on("MessageDelete")
@@ -40,11 +40,11 @@ class WebSocketViews(object):
             user_token = decode_token(message["JWToken"])["sub"]
             message_id = message["MessageId"]
 
-            user_data = self.server_object.DBWorker.User().get(user=user_token, format="obj")
-            msg_data = self.server_object.DBWorker.Message().get(MessageId=message_id, format="obj")
+            user_data = self.server_object.DBWorker.user().get(username=user_token, format="obj")
+            msg_data = self.server_object.DBWorker.message().get(MessageId=message_id, format="obj")
 
             if user_data.UserId == msg_data.author or user_data.IsAdmin == 1:
-                self.server_object.DBWorker.Message().delete(MessageId=message_id)
+                self.server_object.DBWorker.message().delete(MessageId=message_id)
                 emit("MsgDel", {"MessageId": message_id}, broadcast=True)
 
         @self.SockIO.on("message")
@@ -59,12 +59,12 @@ class WebSocketViews(object):
             topic_id = message["TopicId"]
             message = message["message"]
 
-            user_data = self.server_object.DBWorker.User().get(user=user_id, format="obj")
-            topic_data = self.server_object.DBWorker.Topic().get(TopicId=topic_id, format="obj")
+            user_data = self.server_object.DBWorker.user().get(username=user_id, format="obj")
+            topic_data = self.server_object.DBWorker.topic().get(TopicId=topic_id, format="obj")
 
             if user_data.IsBanned != 1 and user_data.IsActivated == 1 and topic_data.protected != 1:
 
-                result = self.server_object.DBWorker.Message().create(TopicId=topic_id, author=user_id, text=message,
+                result = self.server_object.DBWorker.message().create(TopicId=topic_id, author=user_id, text=message,
                                                                       format="json")
 
                 user_data.NumOfPosts += 1
@@ -74,7 +74,7 @@ class WebSocketViews(object):
 
             elif user_data.UserId == topic_data.author and topic_data.protected == 1:
 
-                result = self.server_object.DBWorker.Message().create(TopicId=topic_id, author=user_id, text=message,
+                result = self.server_object.DBWorker.message().create(TopicId=topic_id, author=user_id, text=message,
                                                                       format="json")
 
                 user_data.NumOfPosts += 1
@@ -90,5 +90,4 @@ class WebSocketViews(object):
 
         @self.SockIO.on("connect")
         def OnOpenEvent():
-            self.logger.info("WebSockets connection established")
             emit("message", {"info": "WebSockets connection established"})

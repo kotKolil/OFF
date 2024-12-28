@@ -23,11 +23,17 @@ AdminName = "anonim"
 AdminCitate = ""
 AdminLogoPath = "admin.png"
 
-# configuring mail worker
-MailSite = ""
+# # configuring mail worker
+# MailSite = ""
+# MailPort = "587"
+# MailLogin = ""
+# MailPassword = ""
+
+#configuring mail worker
+MailSite = "smtp.yandex.ru"
 MailPort = "587"
-MailLogin = ""
-MailPassword = ""
+MailLogin = "uran54321@yandex.ru"
+MailPassword = "srgybcirofqtbncl"
 
 # configuring flask app
 AppSecretKey = "1234567890"

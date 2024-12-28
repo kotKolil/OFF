@@ -74,7 +74,7 @@ class SQLite3:
             con.close()  # Close connection
 
     def db_init(self):
-        InitDB(self.work)
+        init_db(self.work)
 
 
 class postgres:
@@ -119,7 +119,7 @@ class DB:
             raise TypeError("Unknown type of DB")
 
     def db_init(self) -> object:
-        self.db.DBInit()
+        self.db.db_init()
 
     def user(self):
         return user(self.db.work)
