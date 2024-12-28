@@ -26,7 +26,7 @@ import requests
 def test_TestOfCreationUser():
     # Creating example user from SampleUserData
     response = requests.post(
-        url="http://{}:{}/api/user".format(APPhost, APPport),
+        url="http://{}:{}/api/user".format(app_host, app_port),
         json=SampleUserData,
         headers={
             'Content-Type': 'application/json'
@@ -38,7 +38,7 @@ def test_TestOfCreationUser():
 
     # creating sample user to raise error
     response = requests.post(
-        url="http://{}:{}/api/user".format(APPhost, APPport),
+        url="http://{}:{}/api/user".format(app_host, app_port),
         json=SampleUserData,
         headers={
             'Content-Type': 'application/json'
@@ -51,7 +51,7 @@ def test_TestOfCreationUser():
 
 def test_TestGetUserViaUserId():
     response = r.get(
-        "http://{}:{}/api/user?UserId={}".format(APPhost, APPport, SampleUserData["UserId"])
+        "http://{}:{}/api/user?UserId={}".format(app_host, app_port, SampleUserData["UserId"])
     )
     print(response.raw)
     assert response.json()["email"] == SampleUserData["email"]
@@ -60,7 +60,7 @@ def test_TestGetUserViaUserId():
 
 def test_TestGetUserNotFound():
     response = r.get(
-        "http://{}:{}/api/user?UserId={}".format(APPhost, APPport, "NotExistingUser")
+        "http://{}:{}/api/user?UserId={}".format(app_host, app_port, "NotExistingUser")
     )
     assert response.status_code == 404
 
@@ -68,7 +68,7 @@ def test_TestGetUserNotFound():
 def test_TestGetUserTokenAndUserTokenOperations():
     # creating request to API
     response = r.post(
-        "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+        "http://{}:{}/api/user/generate_token".format(app_host, app_port),
         json={
             "user": SampleUserData["UserId"],
             "password": SampleUserData["password"],
@@ -83,7 +83,7 @@ def test_TestGetUserTokenAndUserTokenOperations():
 
     # checking token validness
     response = r.post(
-        "http://{}:{}/api/user/CheckToken".format(APPhost, APPport),
+        "http://{}:{}/api/user/CheckToken".format(app_host, app_port),
         json={
             "JWToken": UserToken
         }
@@ -95,7 +95,7 @@ def test_TestGetUserTokenAndUserTokenOperations():
 def test_TestOfChangingUserId():
     # make request to user token API
     response = r.post(
-        "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+        "http://{}:{}/api/user/generate_token".format(app_host, app_port),
         json={
             "user": SampleUserData["UserId"],
             "password": SampleUserData["password"],
@@ -111,7 +111,7 @@ def test_TestOfChangingUserId():
     SampleUserData["UserId"] = "tre-ska"
 
     response = r.post(
-        "http://{}:{}/api/user/change/user".format(APPhost, APPport),
+        "http://{}:{}/api/user/change/user".format(app_host, app_port),
         json={
             "NewUserId": SampleUserData["UserId"],
             "token": UserToken,
@@ -127,15 +127,16 @@ def test_TestOfChangingUserId():
 
     # checking user json in DB
     response = r.get(
-        "http://{}:{}/api/user?UserId={}".format(APPhost, APPport, SampleUserData["UserId"])
+        "http://{}:{}/api/user?UserId={}".format(app_host, app_port, SampleUserData["UserId"])
     )
+
     assert response.json()["UserId"] == SampleUserData["UserId"]
 
 
 def test_TestChangingUserQuote():
     # make request to user token API
     response = r.post(
-        "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+        "http://{}:{}/api/user/generate_token".format(app_host, app_port),
         json={
             "user": SampleUserData["UserId"],
             "password": SampleUserData["password"],
@@ -151,7 +152,7 @@ def test_TestChangingUserQuote():
     SampleUserData["quote"] = "another awesome quote"
 
     response = r.post(
-        "http://{}:{}/api/user/change/user".format(APPhost, APPport),
+        "http://{}:{}/api/user/change/user".format(app_host, app_port),
         json={
             "citate": SampleUserData["quote"],
             "token": UserToken,
@@ -164,7 +165,7 @@ def test_TestChangingUserQuote():
     assert response.status_code == 201
 
     # checking user json in DB
-    r.get("http://{}:{}/api/user?UserId={}".format(APPhost, APPport, SampleUserData['UserId']))
+    response = r.get("http://{}:{}/api/user?UserId={}".format(app_host, app_port, SampleUserData['UserId']))
 
     assert response.json()["citate"] == SampleUserData["quote"]
 
@@ -172,7 +173,7 @@ def test_TestChangingUserQuote():
 def test_TestAdminChangesAPI():
     # make request to user token API
     response = r.post(
-        "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+        "http://{}:{}/api/user/generate_token".format(app_host, app_port),
         json={
             "user": AdminUser,
             "password": AdminPassword,
@@ -186,7 +187,7 @@ def test_TestAdminChangesAPI():
     UserToken = response.json()["JWToken"]
 
     response = r.post(
-        "http://{}:{}/api/user/change/admin".format(APPhost, APPport),
+        "http://{}:{}/api/user/change/admin".format(app_host, app_port),
         json={
             "IsBanned": 1,
             "IsAdmin": 1,
@@ -203,7 +204,7 @@ def test_TestAdminChangesAPI():
 
 def test_TestAllMethod():
     # getting all users via API
-    response = r.get("http://{}:{}/api/user/all".format(APPhost, APPport))
+    response = r.get("http://{}:{}/api/user/all".format(app_host, app_port))
     k = 0
     for i in response.json():
         if i["UserId"] == SampleUserData["UserId"]:
@@ -215,7 +216,7 @@ def test_TestAllMethod():
 def test_TestDeleteMethodViaUserId():
     # make request to user token API
     response = r.post(
-        "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+        "http://{}:{}/api/user/generate_token".format(app_host, app_port),
         json={
             "user": SampleUserData["UserId"],
             "password": SampleUserData["password"],
@@ -231,7 +232,7 @@ def test_TestDeleteMethodViaUserId():
 
     # deleting user via user API
     response = r.delete(
-        "http://{}:{}/api/user".format(APPhost, APPport),
+        "http://{}:{}/api/user".format(app_host, app_port),
         json={
             "JWToken": UserToken,
             "user": SampleUserData['UserId'],
@@ -246,11 +247,11 @@ def test_TestDeleteMethodViaUserId():
 
 def test_TestDeleteMethodViaAdmin():
     # creating example user from SampleUserData
-    r.post("http://{}:{}/api/user".format(APPhost, APPport), json=SampleUserData)
+    r.post("http://{}:{}/api/user".format(app_host, app_port), json=SampleUserData)
 
     # make request to user token API
     response = r.post(
-        "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+        "http://{}:{}/api/user/generate_token".format(app_host, app_port),
         json={
             "user": AdminUser,
             "password": AdminPassword,
@@ -262,7 +263,7 @@ def test_TestDeleteMethodViaAdmin():
 
     # deleting user via user API
     response = r.delete(
-        "http://{}:{}/api/user".format(APPhost, APPport),
+        "http://{}:{}/api/user".format(app_host, app_port),
         json={
             "JWToken": UserToken,
             "user": SampleUserData['UserId'],

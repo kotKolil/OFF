@@ -9,11 +9,11 @@ sys.path.append("..")
 # importing local classes
 from config import *
 
-BASE_URL = "http://{}:{}/api/topic".format(APPhost, APPport)  # api entrypoint URI
+BASE_URL = "http://{}:{}/api/topic".format(app_host, app_port)  # api entrypoint URI
 
 # generating user token
 request_data = r.post(
-    "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+    "http://{}:{}/api/user/generate_token".format(app_host, app_port),
     json={
         "user": AdminUser,
         "password": AdminPassword,

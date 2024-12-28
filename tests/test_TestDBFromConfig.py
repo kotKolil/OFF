@@ -11,4 +11,4 @@ from config import *
 
 
 def test_TestingDBFromConfig():
-    DB(DBType=DBtype, port=DBport, host=DBhost, name=DBname, password=DBpassword, user=DBuser, )
+    DB(DBType=db_type, port=db_port, host=db_host, name=db_name, password=db_password, user=db_user, )

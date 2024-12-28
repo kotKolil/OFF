@@ -2,15 +2,16 @@
 import sys
 import requests
 
+from config import *
+
 # adding some paths to venv
 sys.path.append('..')
 
-# importing local
 from config import *
 
 # generating user token
 r = requests.post(
-    "http://{}:{}/api/user/generate_token".format(APPhost, APPport),
+    "http://{}:{}/api/user/generate_token".format(app_host, app_port),
     json={
         "user": AdminUser,
         "password": AdminPassword,
@@ -19,7 +20,8 @@ r = requests.post(
         'Content-Type': 'application/json'
     }
 )
-
+print(r)
+print(r.json())
 valid_token = r.json()["JWToken"]
 
 sample_message_data = {
@@ -27,11 +29,11 @@ sample_message_data = {
 }
 
 # base API url
-BASE_URL = "http://{}:{}/api/messages".format(APPhost, APPport)  # api entrypoint URI
+BASE_URL = "http://{}:{}/api/messages".format(app_host, app_port)  # api entrypoint URI
 
 # creating new topic
 r = requests.post(
-    "http://{}:{}/api/topic".format(APPhost, APPport),
+    "http://{}:{}/api/topic".format(app_host, app_port),
     json={
         "token": valid_token,
         "theme": "theme",
