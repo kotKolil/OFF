@@ -2,193 +2,326 @@
 
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)  ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=for-the-badge&logo=flask&logoColor=white)   ![Static Badge](https://img.shields.io/badge/by_kotkolil-%D0%BF%D0%B8%D1%88%D0%B3%D0%BA%D1%89%D0%B0%D1%82%D0%BC%D0%B7%D1%8F?link=https%3A%2F%2Fgithub.com%2FkotKolil%2FkotKolil)
 
-Contents
+## Description
 
-[TOC]
+**OFF** is a free, open-source web forum engine built on Python 3.x for the backend and JavaScript for the  client-side. It features flexible settings, real-time topic updates, and a robust moderation system. This forum engine utilizes JWT tokens to  secure user data and employs a class-based architecture to ensure  maintainability.
 
-
-
-# Description
-
-OFF -  is free, open-source , web-forum engine on python 3.* on backend and JS on client-side,  with flexible settings, updating topic in real-time and system of moderation. It's easy in installing, using and moderating. This forum engine uses JWT-tokens to secure user data.
-This forum uses a class system to make the project safe and easy to maintain. All parts of the application (logger, database, business logic) are implemented as classes.
-
-Documentation: https://kotkolil.github.io/OFF/documentation/documentation.html
-
-# Starting and setting up app
+## Starting and Configuring the App
 
 ## Starting
 
-1. You need to download latest version of python from www.python.org/downloads
-2. Run downoladed file
-3. during python installation, it is common to check the box "add python to path".
-4. When python is installed
-5. open terminal or shell
-6. in terminal, go to root directory of OFF project
-7. in terminal run this command to install libraries for app:
-``pip install -r r.txt``
-8. in terminal run this command  to run the app:
+1. Download the latest version of Python from [python.org/downloads](http://www.python.org/downloads).
 
-​	```python main.py```
+2. Run the downloaded installer.
 
-congratulations, you have launched the application
+3. During installation, check the box to "Add Python to PATH".
 
-# Starting and configuring an app
-## Starting
+4. After installation, open your terminal or command line interface.
 
-1. You need to download latest version of python from www.python.org/downloads
+5. Navigate to the root directory of the OFF project.
 
-2. Run downloaded file
+6. Install dependencies by running:
 
-3. during python installation, it is common to check the box "add python to path".
+   
 
-4. When python is installed, open terminal or shell
+```
+bash
+pip install -r requirements.txt
+```
 
-6. in terminal, go to root directory of OFF project
 
-7. in terminal run this command to install libraries for app: 
 
-   ```
-   pip install -r r.txt
+Start the application with:
+
+1. ```
+   bash
+   python main.py
    ```
 
    
 
-8. in terminal run this command  to run the app:
+   Congratulations! You have successfully launched the application.
 
-   	```python main.py```
+## Variables in `config.py`
 
-   congratulations, you have launched the application
+There are three types of variables in `config.py`:
 
-## variable in config.py types
+| Variable Type | Values                                                       | Example                        |
+| ------------- | ------------------------------------------------------------ | ------------------------------ |
+| `str`         | Characters (A-Z, a-z), numbers (0-9), and special characters | `"lorum ipsum dolor sit amet"` |
+| `bool`        | True or False                                                | `True`, `False`                |
+| `int`         | Whole numbers without a fractional part                      | `1337`, `-10`, `13`            |
 
-in config.py 3 types of variable: integer, string and boolean
+## Configuring the App
 
-| variable type | values                                                       | example                           |
-| ------------- | ------------------------------------------------------------ | --------------------------------- |
-| str           | characters(A-Z, a-z), numbers(0-9) and special characters    | ``"lorum ipsum dolor sit ammet"`` |
-| bool          | True or False                                                | ``True``, ``False``               |
-| int           | zero, positive or negative whole numbers without a fractional part and having unlimited precision | ``1337`` ``-10`` ``13.7``         |
+To configure the app, modify values in `config.py`. All necessary variables are defined in this file, which can be set  using either Python syntax or environment variables. Ensure proper  syntax; otherwise, the app will not start.
 
-## configuring app
+## List of Configurable Variables
 
-### overview
+| Variable Name   | Default Value       | Purpose                                                     | Variable Type |
+| --------------- | ------------------- | ----------------------------------------------------------- | ------------- |
+| `logger_type`   | `console`           | Sets the type of logger used in the app                     | string        |
+| `name_of_file`  | `""` (empty string) | Sets the name of the file where logging data will be stored | string        |
+| `DBtype`        | `""` (empty string) | Sets the database type; defaults to `"sqlite3"` if empty    | string        |
+| `DBport`        | `5432`              | Sets the port for the database                              | integer       |
+| `DBpassword`    | `""` (empty string) | Sets the database password                                  | string        |
+| `DBuser`        | `""` (empty string) | Sets the database user                                      | string        |
+| `DBname`        | `""` (empty string) | Sets the name of the database                               | string        |
+| `DBhost`        | `""` (empty string) | Sets the host for the database                              | string        |
+| `ForumName`     | `"Awesome Forum"`   | Name displayed on forum pages                               | string        |
+| `IsDebug`       | `True`              | Enables or disables debug mode                              | boolean       |
+| `AdminUser`     | `"admin"`           | Sets name of forum admin account                            | string        |
+| `AdminPassword` | `"1234567890"`      | Sets password for admin account                             | string        |
+| `AdminName`     | `"anomin"`          | Displays admin nickname instead of AdminUser                | string        |
+| `AdminCitate`   | `""`                | Sets citation displayed under admin messages                | string        |
+| `AdminLogoPath` | `"admin.png"`       | File name displayed on admin accounts                       | string        |
+| `MailSite`      | `""`                | SMTP server address for sending emails                      | string        |
+| `MailPort`      | `""`                | SMTP server port                                            | integer       |
+| `MailLogin`     | `""`                | SMTP server user login                                      | string        |
+| `MailPassword`  | `""`                | SMTP server user password                                   | string        |
+| `AppSecretKey`  | `""`                | Flask app secret key                                        | string        |
+| `JwtSecretKey`  | `""`                | JWT tokens secret key                                       | string        |
+| `APPport`       | `8000`              | Port for receiving requests                                 | integer       |
+| `APPhost`       | `"0.0.0.0"`         | Host where app will run                                     | string        |
 
-to configure up, you may change values in config.py. All necessary variables, that app uses, defined in this file. Variable defined in python syntax or in  environment variable's. If syntax will be wrong, app doesn't start
+## Using Docker
 
-### list of variables in environment or in config.py, that you can configure
+To run OFF using Docker:
 
-| name of variable | standart value    | purpose                                                      | variable type |
-| ---------------- | ----------------- | ------------------------------------------------------------ | ------------- |
-| logger_type      | console           | Sets type of logger in app                                   | string        |
-| name_of_file     | "" (empty string) | sets name of file, where will be store logging data          | string        |
-| DBtype           | "" (empty string) | sets type of db, that using in app;  may be sets "postgresql" or "sqlite3". On empty strings, app will set DB type "sqlite3" and name of DB "main.db" | string        |
-| DBport           | 5432              | sets port of gost, where DB is placed                        | integer       |
-| DBpassword       | "" (empty string) | set DB password, where app will connect                      | string        |
-| DBuser           | "" empty string   | sets user of DB, where app will connect                      | string        |
-| DBname           | "" empty string   | sets name of DB, where app will connect                      | string        |
-| DBhost           | "" empty string   | sets host, where DB is placed                                | string        |
-| ForumName        | "Awesome Forum"   | set name of forum, thats will displayed on pages             | string        |
-| IsDebug          | True              | on or off debug mode of app                                  | Boolean       |
-| AdminUser        | "admin"           | sets name of forum admin account                             | string        |
-| AdminPassword    | "1234567890"      | sets password of forum admin account                         | string        |
-| AdminName        | "anomin"          | sets admin nickname, that will displays instead of AdminUser | string        |
-| AdminCitate      | ""                | sets citate, that will display under admin messages          | string        |
-| AdminLogoPath    | "admin.png"       | sets name of file, placed on "/media", thats will display on admin's accounts | string        |
-| MailSite         | ""                | sets host address of smpt server, that will be mail worker in app sends request | string        |
-| MailPort         | ""                | sets port of smpt server, that will be mail worker in app sends request | string        |
-| MailLogin        | ""                | sets login of smpt server user, that will be mail worker in  app sends requests | string        |
-| MailPassword     | ""                | sets  password of smpt server user, that will be mail worker in app send requests | string        |
-| AppSecretKey     | ""                | sets variable ``'SECRET_KEY'`` in flask app                  | string        |
-| JwtSecretKey     | ""                | sets JWT tokens secret key                                   | string        |
-| APPport          | 8000              | sets port of app, where it will be recieve                   | integer       |
-| APPhost          | "0.0.0.0"         | sets host , will app will be placed                          | string        |
-|                  |                   |                                                              |               |
+1. Navigate to the root directory of the OFF project.
 
-​	
-
-## Starting app with Docker
-
-to run app with Docker, follow this instruction:
-
-1.  Go to root directory of OFF project
-2. Run in shell command ``sudo docker build OFF ..``
-3. Run in shell command ``sudo docker run OFF``
-
-If you hative some troubles with app,  read documention in documentation.md or on address https://kotkolil.github.io/OFF/, or create issue on GitHub 
-
-# How to use forum
-
-## How log in system
-
-To log in system, you need to do this things:
-
-1. Go to /auth/log or click on "log in" in bottom
-
-2. Enter you login and password
-
-3. Click on button "log in" under input fields
-
-4. If all data correct, you will be replaced to main page
-
-5. If you entered wrong data, will spawn text "Incorrect user or password". You must return to step number 2 and enter right data
+2. Build the Docker image:
 
    
 
-## How register in system
+```
+bash
+sudo docker build -t OFF .
+```
 
-To register in system, you need to do this things:
 
-1. Go to /auth/reg or click on "log in" in bottom "reg in"
 
-2. Enter you data in form
+Run the Docker container:
 
-3. Click on "reg in"
-
-4. go to email, that your enter in form
-
-5. You must be recieve  a letter with link, that will activate your account. Go to it
-
-   Congrulations! You are registred on forum
+1. ```
+   bash
+   sudo docker run -p 8000:8000 OFF
+   ```
 
    
 
-## How create topic on forum
+## Testing the App
 
-To create topic on forum, you need to do this things:
+Before testing, ensure that the application is running. Navigate to the "tests" directory in the OFF root folder and execute:
 
-1. You must be logged in system. Check, do you authorised on forum
+- For Windows:
 
-2. Click to create topic on main page of Forum or go to /topic/create
+  
 
-3. If you get error "Token has expired", please log in system
+```
+bash
+test.bat
+```
 
-4. Fill form
 
-5. Click to button
 
-   
+For UNIX systems:
 
-Congrulations! You are created topic on forum
+- ```
+  bash
+  ./test.sh
+  ```
 
-## How send message on forum
+  
 
-To send message on forum, you need to do this things:
+If tests pass, your configuration is correct. If issues arise, please create an issue on GitHub at [kotKolil/OFF](https://github.com/kotKolil/OFF).
 
-1. You must be logged in system. Check, do you authorised on forum
+## User Guide
 
-2. Go to topic, in that you want send message
+## Logging In
 
-3. Type your message in form on top
+1. Go to `/auth/log`, or click "Log In" at the bottom.
+2. Enter your username and password.
+3. Click "Log In".
+4. If successful, you'll be redirected to the main page; otherwise, an error message will prompt you to retry.
 
-4. Click on button  near
+## Registering an Account
 
-5. If message not send, you are not logged in. Please, log in 
+1. Go to `/auth/reg`, or click "Register" at the bottom.
+2. Fill out the registration form.
+3. Click "Register".
+4. Check your email for an activation link.
 
-   Congrulations! You are created topic on forum
+## Creating a Topic
 
-## How delete message or topic
+1. Ensure you are logged in.
+2. Click "Create Topic" on the main page or navigate to `/topic/create`.
+3. Fill out the form and submit.
 
-to delete topic or message, you can use buttons near message form in topic or button in messsage
+## Sending Messages
 
-​	If you not logged in or not moderator, you can not delete messsage or topic
+1. Ensure you are logged in.
+2. Go to a topic where you wish to post a message.
+3. Type your message and submit it.
+
+## Deleting Messages or Topics
+
+To delete a message or topic, use buttons near message forms in  topics or buttons within messages. Note that only logged-in users or  moderators can delete messages or topics.
+
+## Accessing Your Personal Page
+
+Click on "Personal Page" in the toolbar at the bottom of any page  to view your information and send messages or make posts on your wall.
+
+## Replying to Messages in a Topic
+
+To reply to a message in a topic, click "Reply" in that message's block; this will include its HTML content in your response.
+
+## Moderation Page (Moderators Only)
+
+To moderate users on forums, navigate to `/moderate/users`. Enter a user's ID in the input field and press "Get User". You can change their rights via checkboxes and save changes.
+
+## API Documentation
+
+OFF provides a comprehensive API for user management, topic handling, and message operations.
+
+## User API Endpoints
+
+## 1. Check Token
+
+- **Endpoint:** `/api/user/CheckToken`
+
+- **Method:** POST
+
+- **Description:** Validates provided JWT token.
+
+- **Request Body:**
+
+  
+
+- ```
+  json
+  { "JWToken": "string" }
+  ```
+
+  
+
+- **Response:** 200 OK: Valid token. 400 Bad Request: Invalid token.
+
+## 2. Generate Token
+
+- **Endpoint:** `/api/user/generate_token`
+
+- **Method:** POST
+
+- **Description:** Generates a new JWT token based on provided credentials.
+
+- **Request Body:**
+
+  
+
+- ```
+  json
+  { "user": "string", "password": "string" }
+  ```
+
+  
+
+- **Response:** 201 Created: Returns JWT token if credentials are valid. 400 Bad Request: Invalid credentials.
+
+## User Management Endpoints
+
+## Get User Information
+
+- **Endpoint:** `/api/user`
+- **Method:** GET
+- **Description:** Retrieves user information based on JWT token or UserId.
+- **Parameters:** Optional query parameter for JWT validation (`JWToken`) Optional query parameter for fetching user data directly (`UserId`)
+- **Response:** 200 OK: Returns user data if found. 404 Not Found: User data not found.
+
+## Create New User
+
+- **Endpoint:** `/api/user`
+
+- **Method:** POST
+
+- **Description:** Creates a new user account with provided details.
+
+- **Request Body:**
+
+  
+
+- ```
+  json
+  { "email": "string", "UserId": "string", "password": "string", "citate": "string" }
+  ```
+
+  
+
+- **Response:** 201 Created: Successful account creation; prompts email activation. 400 Bad Request: User already exists or request body is invalid.
+
+## Delete User Account
+
+- **Endpoint:** `/api/user`
+
+- **Method:** DELETE
+
+- **Description:** Deletes a user account based on provided JWT token and user identifier.
+
+- **Request Body:**
+
+  
+
+- ```
+  json
+  { "JWToken": "string", "user": "string" }
+  ```
+
+  
+
+- **Response:** 201 Created: Successful deletion of user account. 403 Forbidden: No permission to delete account. 404 Not Found: Specified user does not exist.
+
+## Topic API Endpoints
+
+## Topic Management Endpoints
+
+## Get Topic
+
+- **Method:** GET
+- **Description:** Retrieves a specific topic by its ID.
+- **Parameters:** Query parameter specifying TopicId to retrieve.
+
+## Create Topic
+
+- **Method:** POST
+- **Description:** Creates a new topic with provided details.
+
+## Update Topic
+
+- **Method:** PATCH
+- **Description:** Updates existing topic's details.
+
+## Delete Topic
+
+- **Method:** DELETE
+- **Description:** Deletes specific topic based on its ID.
+
+## Message API Endpoints
+
+## Message Management Endpoints
+
+## Get Messages
+
+- **Method:** GET
+- **Description:** Retrieves messages based on specified topic or message ID.
+
+## Create Message
+
+- **Method:** POST
+- **Description:** Creates a new message within specified topic.
+
+## Delete Message
+
+- **Method:** DELETE
+- **Description:** Deletes specific message by its ID if authorized.
+
+This documentation serves as a comprehensive guide for developers  interacting with OFF Forum Engine, ensuring clarity and ease of use when implementing features related to forum management and API interactions. For further assistance or contributions, please visit our GitHub  repository at [kotKolil/OFF](https://github.com/kotKolil/OFF).

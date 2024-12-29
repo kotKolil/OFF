@@ -933,7 +933,11 @@ Project have this structure (opened in PyCharm Community Edition 2023.3.5):
 
 ![structure](assets\structure.PNG)
 
-## assets
+## documentation
+
+In this directory placed code documentation
+
+### assets
 
 In this folder stored images, used in documentation
 
@@ -941,7 +945,27 @@ In this folder stored images, used in documentation
 
 in this folder stored classes, implementing parts of web app. About classes and their purpose writed in topic **Classes**
 
-### media
+### ApplicationPart
+
+In this folder placed classes, implementing Data Base, Logger и Mail Client. About this classes wroten in topic Classes
+
+### controllers
+
+Web app is splitted on many classes to make code more flexible and easy in long-term supporting
+
+#### APIControllers
+
+This classes provides API for acess to tables in Data Base
+
+#### HTMLControllers
+
+In this classes defined html views, that using in web version of app
+
+#### WebSocketsViews
+
+In this class impletended web sockets for syncing messages in topic in real-time
+
+#### media
 
 This folder in folder **classes**. That using for storing images on forum. On default, in folder this files:
 
@@ -952,7 +976,7 @@ This folder in folder **classes**. That using for storing images on forum. On de
 3.  **OFF.ico** - uses like a icon of forum
     
 
-### static
+#### static
 
 this folder in folder **classes**. In this folder stored static files for frontend like css, js scripts and etc. . On default, in folder this files:
 
@@ -965,15 +989,14 @@ this folder in folder **classes**. In this folder stored static files for fronte
 4.  **snippets.js** - in this file deifned methods on JS for fast inserting html markup of messages and topic blocks in page
     
 5.  **styles.css** - css file for forum pages
-    
 
-### templates
+### serv.py
+
+This python files impplementing Flask web app, and 
+
+## templates
 
 in this folder stored templates, uses for rendering pages via Jijna 2
-
-### python files
-
-This python files impplementing in class differnt parts of web app. About classes and their purpose writed in chapter **Classes**
 
 ## .gitignore
 

@@ -3,12 +3,12 @@ from app.classes.Serialisation.TableDataSerialisation import *
 
 import sqlite3
 import psycopg2
-
+import copy
 
 class topic:
 
     def __init__(self, DBWorker):
-        self.DBWorker = DBWorker
+        self.DBWorker = copy.copy(DBWorker)
 
     @TopicFormatWrapper
     def get(self, TopicId, format="obj"):

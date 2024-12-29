@@ -6,12 +6,12 @@ import sys
 sys.path.append("...")
 
 from app.classes.other.tools import *
-
+import copy
 
 class UserAPIController:
 
     def __init__(self, server_object):
-        self.server_object = server_object
+        self.server_object = copy.copy(server_object)
         self.bp = Blueprint('UserAPI controller', __name__, )
         self.register_routes()
 

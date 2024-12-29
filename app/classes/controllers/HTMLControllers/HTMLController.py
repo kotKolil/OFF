@@ -1,3 +1,4 @@
+import copy
 import sys
 
 sys.path.append("...")
@@ -13,7 +14,7 @@ from werkzeug.utils import secure_filename
 
 class HTMLController:
     def __init__(self, server_object):
-        self.server_object = server_object
+        self.server_object = copy.copy(server_object)
         self.bp = Blueprint('HTML controller', __name__)
         self.register_routes()
 

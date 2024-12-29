@@ -1,12 +1,12 @@
 from app.classes.other.tools import *
 from app.classes.Serialisation.TableDataSerialisation import *
 from random import *
-
+import copy
 
 class user:
 
     def __init__(self, db_worker):
-        self.db_worker = db_worker
+        self.db_worker = copy.copy(db_worker)
 
     @UserFormatWrapper
     def get(self, username="", password="", format="obj", token="", num=""):

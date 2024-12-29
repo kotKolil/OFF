@@ -6,12 +6,12 @@ sys.path.append("...")
 from flask_socketio import *
 import json as j
 from flask_jwt_extended import *
-
+import copy
 
 class WebSocketViews(object):
 
     def __init__(self, server_object):
-        self.server_object = server_object
+        self.server_object = copy.copy(server_object)
         self.SockIO = SocketIO(self.server_object.server)
 
         @self.SockIO.on("TopicDelete")

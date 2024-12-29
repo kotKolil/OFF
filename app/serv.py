@@ -1,4 +1,5 @@
 # external classes
+import copy
 import sys
 
 sys.path.append("..")
@@ -13,7 +14,7 @@ from app.classes.controllers.APIControllers.UserAPIController import *
 from app.classes.controllers.WebSocketsViews.WebSocketViews import *
 # importing HTML controllers
 from app.classes.controllers.HTMLControllers.HTMLController import *
-
+import copy
 
 class server:
 
@@ -40,8 +41,8 @@ class server:
         self.AdminLogoPath = AdminLogoPath
         self.ForumName = ForumName
         self.MailWorker = MailWorker
-        self.DBWorker = DBWorker
-        self.logger = logger
+        self.DBWorker = copy.copy(DBWorker)
+        self.logger = copy.copy(logger)
         self.server.config['UPLOAD_FOLDER'] = MEDIA_PREFIX
         self.server.config['SECRET_KEY'] = AppSecretKey
         self.server.config['JWT_SECRET_KEY'] = JwtSecretKey

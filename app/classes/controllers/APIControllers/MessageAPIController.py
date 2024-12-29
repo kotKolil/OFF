@@ -1,12 +1,12 @@
 from flask_jwt_extended import *
 from flask import Blueprint, request
-
+import copy
 
 class MessageAPIController:
 
     def __init__(self, server_object):
 
-        self.server_object = server_object
+        self.server_object = copy.copy(server_object)
         self.bp = Blueprint('my_controller', __name__)
         self.register_routes()
 
