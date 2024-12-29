@@ -324,4 +324,4 @@ OFF provides a comprehensive API for user management, topic handling, and messag
 - **Method:** DELETE
 - **Description:** Deletes specific message by its ID if authorized.
 
-This documentation serves as a comprehensive guide for developers  interacting with OFF Forum Engine, ensuring clarity and ease of use when implementing features related to forum management and API interactions. For further assistance or contributions, please visit our GitHub  repository at [kotKolil/OFF](https://github.com/kotKolil/OFF).
+This documentation serves as a comprehensive guide for developers  interacting with OFF Forum Engine, ensuring clarity and ease of use when implementing features related to forum management and API interactions. For further assistance or contributions, please visit our GitHub  repository at [kotKolil/OFF](https://github.com/kotKolil/OFF) and on web-site https://kotkolil.github.io/OFF/.
