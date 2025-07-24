@@ -11,14 +11,14 @@
         <form method="post" enctype="multipart/form-data"> 
             <H3>Creating new topic</H3>
             Enter name of new topic
-            <input name="name" type="text"><br>
+            <input name="name" type="text" required><br>
             Enter theme of new topic
-            <input name="theme" type = "text" ><br>
+            <input name="theme" type = "text" required><br>
             Enter description of you topic
-            <input name="about" type = "text" ><br>
+            <input name="about" type = "text" required ><br>
             Protected (only author can write messages):
-            <input type="checkbox" name = "protected"/>yes <p>
-            <input class="btn btn-oval"  type="submit" value="Create  Topic" />
+            <input type="checkbox" name = "protected" required>yes <p>
+            <input class="btn btn-oval"  type="submit" value="Create  Topic" /required>
             <br>
 
         </form>

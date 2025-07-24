@@ -10,16 +10,55 @@
     box-sizing: border-box;
 }
 
+button {
+    color:white;
+    background-color:#008000;
+    padding: 6px;
+    border-radius: 6px;
+    border: none
+}
+
 html {
     font-size: 14px;
     font-family: 'Titillium Web', sans-serif;
-    background-color: rgb(0, 0, 0);
+    background-color: #121212   ;
     color: #FEFEFE;
 }
 
+header {
+    display: flex;
+    max-width:50vw;
+    padding: auto;
+}
+
+article {
+    padding: 1vw;
+    width:70vw;
+    background-color:#191919;
+    float:right;
+    margin:1vw;
+}
+
+.leftbar {
+    padding: 10px;
+    display:flex;
+    position: relative;
+    float: right;
+    right: 4px;
+    width: 25vw;
+    align-items:left;
+    flex-direction:column;
+    height:40vh;
+
+}
+
+.leftbar {
+    font-size:25px;
+}
+
+
 a {
-    color: #FFFF;
-    font-weight: bolder;
+    color: #eee;
     text-decoration: none;
 }
 
@@ -112,7 +151,7 @@ input {
 /* For the tablets */
 
 @media screen and (min-width: 460px) and (max-width: 1024px) {
-    .container {
+            .container {
         margin: 15px;
         padding: 15px;
     }
@@ -461,6 +500,7 @@ footer {
 
 .content {
     flex: 80%;
+    margin: 20px;
 }
 
 .body {
@@ -495,6 +535,7 @@ footer {
     margin-bottom: 50px;
 }
 
+
 .comment-area textarea {
     width: 100%;
     min-height: 100px;
@@ -520,7 +561,6 @@ footer {
     margin-top: 30px;
     margin-left: 30px;
     padding-left: 5px;
-    border-left: 5px solid #008000;
 }
 
 
@@ -535,39 +575,14 @@ footer {
     text-align: center;
     color: #fff;
     text-decoration: none;
-    background-color: purple;
+    background-color: #008000;
     border-radius: 25px;
     font: bold 20px/50px Arial;
-    box-shadow: inset 0 2px 2px #cce464, inset 1px 0 3px #b2dc2d, inset -1px 0 3px #b2dc2d, inset 0 -2px 2px #89d301, 0 0 3px rgba(0, 0, 0, 0.24);
     position: relative;
-    text-shadow: 0 1px #45880d;
     outline: none;
 }
 
-.btn-oval:before {
-    content: "";
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    width: 100%;
-    height: 100%;
-    padding: 5px;
-    background: #d7d7d7;
-    z-index: -1;
-    border-radius: 20px;
-    box-shadow: inset 0 1px 2px #bbb;
-}
 
-.btn-oval:hover {
-    background-color: violet;
-    box-shadow: inset 0 1px 0 #e2f498, inset 0 2px 0 #ceec87, inset 0 3px 0 #c3e67c, inset 0 5px 0 #bae475, inset 1px 0 3px #b2dc2d, inset -1px 0 3px #b2dc2d, inset 0 -2px 2px #89d301, 0 0 3px rgba(0, 0, 0, 0.24);
-}
-
-.btn-oval:active {
-    background-color: blue violet;
-    box-shadow: inset 0 3px 7px #3c7b00;
-    padding: 1px 0 0 1px;
-}
 
 #UserData {
     float:left;
@@ -595,4 +610,11 @@ footer {
     float:bottom;
 
 
+}
+
+
+.body {
+    float:center;
+    background-color:#191919;
+    border-radius:7px;
 }

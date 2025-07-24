@@ -7,23 +7,7 @@
 <script src="/static/main.js"></script>
 <script src="/static/snippet.js"></script>
 <script src="/static/forum_scripts.js"></script>
-<script>
-
-    const socket = io();
-
-    function DeleteMessage (MsgId) {
-
-       var data = JSON.stringify( {"JWToken":getCookie("token"), "MessageId":MsgId })
-       socket.emit("MessageDelete", data)
-
-  }
-
-function ReplyToMsg(element) {
-  console.log(element);
-  $("#MsgInput").val(`<div style="border: 2px white solid;">${$(element).html()}</div>`);
-}
-
-</script>
+<script src="/static/topic_script.js"></script>
 
 <p style="color:red;" id="error"></p>
 <form method="POST" enctype="multipart/form-data" id="MsgForm">
@@ -32,13 +16,13 @@ function ReplyToMsg(element) {
   <input type="submit" value="Send Message">
 </form>
 <button id = "TopicDelete">delete topic</button>
+<hr>
 <div class="navigate">
   <span id="TopicInfo"></span>
 </div>
 
 <div id="Msgs"></div>
 
-<hr>
 
 
 {% endblock bo_dy %}

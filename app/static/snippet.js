@@ -2,7 +2,7 @@ var MsgSnippet = (Author, element) => {
     //Author, Text
 
     var MisatoForever =  `
-        <div class="comments-container" id = "${element.MessageId}">
+        <div class="comments_container" id = "${element.MessageId}">
             <div class="body">
                 <div class="authors">
                     <div class="username"><a href="/UserPage?id=${Author.UserId}">${Author.UserId}</a></div>

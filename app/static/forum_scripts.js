@@ -9,7 +9,7 @@ $(document).ready(async () => {
   }
 
   const TopicInfoVar = $("#TopicInfo");
-  const TopicHTML = $(`<p id = "StatusBar"> ${TopicData.time}|${TopicData.theme}|${TopicData.author}|${TopicData.about} </p>`);
+  const TopicHTML = $(`<p id = "StatusBar"> ${TopicData.time}|${TopicData.theme}|${TopicData.author} </p><div>${TopicData.about}</div>`);
   TopicInfoVar.append(TopicHTML);
 
   if (TopicData.protected == 1) {
@@ -89,7 +89,9 @@ $(document).ready(async () => {
     if (IsLogged(getCookie("token")) && $("#MsgForm").find('input[name="Message"]').val() !== "") {
       const TopicId = getQueryParam("id");
       const AuthToken = getCookie("token");
-      const message = $("#MsgForm").find('input[name="Message"]').val();
+      const message =  DOMPurify.sanitize( $("#MsgForm").find('input[name="Message"]').val() + reply )
+//        const message = $("#MsgForm").find('input[name="Message"]').val() + reply
+
       socket.emit(
         "message",
         JSON.stringify({
@@ -99,6 +101,8 @@ $(document).ready(async () => {
         })
       );
       $("#MsgForm").find('input[name="Message"]').val("");
+      numOfReply = 0;
+      console.log(numOfReply)
     } else {
       alert("please, log in or type your message");
     }

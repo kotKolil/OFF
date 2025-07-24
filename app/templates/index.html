@@ -2,29 +2,10 @@
 
 
 {% block bo_dy %}
-<a href="topic/create">Create Topic</a>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="/static/main.js"></script>
 <script src="/static/snippet.js"></script>
-<script>
-
-$("document").ready( async () => 
-        {
-            fetch("/api/topic/all")
-            .then( async  (response) => {
-                    return response.json()
-                }
-            )
-            .then ( async (data) => {
-                data.forEach( (element) => {
-                    $("#TopicList").append(TopicSnippet(element.theme, element.about, element.author, element.TopicId))
-                });
-            }
-        )
-    }
-)
-
-</script>
+<script src="/static/index_script.js"></script>
 
 <div id = "TopicList">
 
