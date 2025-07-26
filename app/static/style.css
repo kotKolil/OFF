@@ -8,6 +8,16 @@
 
 * {
     box-sizing: border-box;
+    color:#008000;
+}
+
+input {
+    color:black !important;
+}
+
+*::selection {
+    color:black;
+    background-color:#008000;
 }
 
 button {

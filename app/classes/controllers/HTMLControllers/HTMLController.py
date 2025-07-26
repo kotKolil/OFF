@@ -247,4 +247,4 @@ class HTMLController:
 
     @route("/FAQ")
     def FuYo(self):
-        return render("faq.html")
+        return render_template("faq.html")

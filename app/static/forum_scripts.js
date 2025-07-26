@@ -9,7 +9,9 @@ $(document).ready(async () => {
   }
 
   const TopicInfoVar = $("#TopicInfo");
+  console.log(TopicData)
   const TopicHTML = $(`<p id = "StatusBar"> ${TopicData.time}|${TopicData.theme}|${TopicData.author} </p><div>${TopicData.about}</div>`);
+  TopicInfoVar.append($(`<h3>${TopicData.name}</h3`))
   TopicInfoVar.append(TopicHTML);
 
   if (TopicData.protected == 1) {
