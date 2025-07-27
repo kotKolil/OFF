@@ -115,6 +115,7 @@ def TopicFormatWrapper(InputFunc):
                         "about": i[3],
                         "TopicId": i[4],
                         "protected": i[5],
+                        "image": i[6]
                     }
                     for i in func_data[0]
                 ]
@@ -130,6 +131,7 @@ def TopicFormatWrapper(InputFunc):
                     "about": func_data[0][0][3],
                     "TopicId": func_data[0][0][4],
                     "protected": func_data[0][0][5],
+                    "image": func_data[0][0][6]
                 }
             else:
                 raise TypeError("Unknown format of output data")

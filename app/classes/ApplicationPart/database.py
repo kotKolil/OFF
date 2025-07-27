@@ -34,7 +34,8 @@ def init_db(DBWorker: object):
             author TEXT REFERENCES user(UserId),
             about TEXT,
             TopicId TEXT PRIMARY KEY,
-            Protected BOOLEAN
+            Protected BOOLEAN,
+            image TEXT
         );
     """, param=())
 
@@ -47,7 +48,8 @@ def init_db(DBWorker: object):
             MessageId TEXT UNIQUE PRIMARY KEY,
             author TEXT REFERENCES user(UserId),
             text TEXT,
-            time TEXT
+            time TEXT,
+            image TEXT
         );
     """, param=())
 

@@ -70,6 +70,7 @@ class HTMLController:
             theme = request.form.get("theme")
             about = request.form.get("about")
             protected = request.form.get("protected")
+            file = request.files.get("pictures")
             if decode_token(request.cookies.get("token")):
                 jwt_data = decode_token(request.cookies.get("token").encode())
                 user_id = jwt_data["sub"]
@@ -81,8 +82,13 @@ class HTMLController:
                     return render("info.html", message="you are banned on this forum. Please, contact with moderators")
                 else:
                     try:
-                        self.server_object.DBWorker.topic().create(theme, user_data.UserId, about,
-                                                                   str((protected == "on") * 1), format="obj")
+                        if file.filename == '':
+                            return redirect(request.url)
+                        if file and allowed_file(file.filename):
+                            filename = secure_filename(file.filename)
+                            file.save(os.path.join(os.getcwd(), MEDIA_PREFIX, file.filename))
+                            self.server_object.DBWorker.topic().create(theme, user_data.UserId, about,
+                                                                   str((protected == "on") * 1), file.filename, format="obj")
                         return redirect("/")
                     except Exception as e:
                         return [0, str(e)]

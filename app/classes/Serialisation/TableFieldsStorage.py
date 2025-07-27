@@ -43,6 +43,7 @@ class TopicStorage:
         self.about = Data[0][3]
         self.TopicId = Data[0][4]
         self.protected = Data[0][5]
+        self.image = Data[0][6]
 
     def save(self):
         self.DBWorker(query="UPDATE topic SET theme = ?, about = ?, Protected = ? WHERE TopicId = ? ",
