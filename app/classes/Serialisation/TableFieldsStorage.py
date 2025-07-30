@@ -60,6 +60,7 @@ class MessagesStorage:
         self.author = Data[2]
         self.text = Data[3]
         self.time = Data[4]
+        self.image = Data[5]
 
     def save(self):
         self.DBWorker(query="UPDATE messages SET TopicId = ?, author = ?, text = ?, time = ? WHERE MessageId = ? ",

@@ -1,5 +1,6 @@
 var MsgSnippet = (Author, element) => {
     //Author, Text
+    console.log(element)
 
     var MisatoForever =  `
         <div class="comments_container" id = "${element.MessageId}">
@@ -14,6 +15,7 @@ var MsgSnippet = (Author, element) => {
                       <button onclick="ReplyToMsg('#${element.MessageId}')">reply to message</button>
                 </div>
                 <div class="content">
+                       <img width = 20% height = 20% src='/media/${element.image}' />
                         ${element.text}
                     <hr>
                     ${Author.citate}

@@ -1,12 +1,15 @@
 # external classes
+import random
 import sys
 
 sys.path.append("...")
 
 from flask_socketio import *
 import json as j
+from config import *
 from flask_jwt_extended import *
 import copy
+import base64
 
 class WebSocketViews(object):
 
@@ -57,6 +60,8 @@ class WebSocketViews(object):
             jwt_data = decode_token(message["JWToken"])
             user_id = jwt_data["sub"]
             topic_id = message["TopicId"]
+            image = message["ImgData"]
+            print(image)
             message = message["message"]
 
             user_data = self.server_object.DBWorker.user().get(username=user_id, format="obj")
@@ -64,8 +69,19 @@ class WebSocketViews(object):
 
             if user_data.IsBanned != 1 and user_data.IsActivated == 1 and topic_data.protected != 1:
 
+                #saving image
+                if image:
+                    bin_img = base64.b64decode( image.split(",", 1)[1] )
+                    img_type = image.split("/")[1].split(";")[0]
+                    img_name = f"{random.randint(1, 10**6)}.{img_type}"
+                    with open(os.path.join(os.getcwd(), MEDIA_PREFIX, img_name), "wb") as file:
+                        file.write(bin_img)
+                else:
+                    img_name = ""
+                print(img_name)
+
                 result = self.server_object.DBWorker.message().create(TopicId=topic_id, author=user_id, text=message,
-                                                                      format="json")
+                                                                      img = img_name, format="json")
 
                 user_data.NumOfPosts += 1
                 user_data.save()

@@ -38,13 +38,13 @@ class messages:
             self.DBWorker(query="DELETE from messages WHERE TopicId = ? ", param=[TopicId])
             return 1
 
-    def create(self, TopicId, author, text, format="obj"):
-        # TopicId, MessageId, author, text, time_of_publication
+    def create(self, TopicId, author, text, img, format="obj"):
+        # TopicId, MessageId, author, text, time_of_publication, img
 
         try:
             token = generate_id()
-            self.DBWorker(query="INSERT INTO messages VALUES (?, ?, ?, ?, ?)",
-                          param=[TopicId, token, author, text, get_current_time()])
+            self.DBWorker(query="INSERT INTO messages VALUES (?, ?, ?, ?, ?, ?)",
+                          param=[TopicId, token, author, text, get_current_time(), img])
             return self.get(MessageId=token, format=format)
         except sqlite3.IntegrityError or psycopg2.errors.UniqueViolation:
             return 0

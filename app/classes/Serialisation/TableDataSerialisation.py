@@ -68,7 +68,8 @@ def MessageFormatWrapper(InputFunc):
                             "MessageId": i[1],
                             "author": i[2],
                             "text": i[3],
-                            "time": i[4]
+                            "time": i[4],
+                            "image": i[5]
                         }
                         for i in func_data[0]
                     ]
@@ -83,7 +84,8 @@ def MessageFormatWrapper(InputFunc):
                         "MessageId": func_data[0][0][1],
                         "author": func_data[0][0][2],
                         "text": func_data[0][0][3],
-                        "time": func_data[0][0][4]
+                        "time": func_data[0][0][4],
+                        "image": func_data[0][0][5]
                     }
 
         except Exception:

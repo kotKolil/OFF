@@ -4,6 +4,7 @@ $(document).ready(async () => {
 
 
 
+
   if (TopicData.length === 0) {
     document.location.href = "/topic/create";
   }
@@ -21,7 +22,26 @@ $(document).ready(async () => {
 
   }
 
+  var ImgData = ""
 
+  function encodeImageFile() {
+
+    return new Promise( (resolve, reject) => {
+        var filesSelected = document.getElementById("FileInput").files;
+        if (filesSelected.length > 0) {
+          var fileToLoad = filesSelected[0];
+          var fileReader = new FileReader();
+
+          fileReader.onload = function(fileLoadedEvent) {
+            var srcData = fileLoadedEvent.target.result;
+            resolve(srcData);
+          }
+          fileReader.readAsDataURL(fileToLoad);
+        }
+        resolve("");
+      }
+  )
+}
 
   // defining socket var
   const socket = io();
@@ -87,13 +107,14 @@ $(document).ready(async () => {
   });
 
   // sending message
-  $("#MsgForm").submit((e) => {
+  $("#MsgForm").submit( async (e) => {
     e.preventDefault();
     if (IsLogged(getCookie("token")) && $("#MsgForm").find('input[name="Message"]').val() !== "") {
-      const TopicId = getQueryParam("id");
-      const AuthToken = getCookie("token");
-      const message =  DOMPurify.sanitize( $("#MsgForm").find('input[name="Message"]').val() + reply )
-//        const message = $("#MsgForm").find('input[name="Message"]').val() + reply
+      var TopicId = getQueryParam("id");
+      var AuthToken = getCookie("token");
+      var message =  DOMPurify.sanitize( $("#MsgForm").find('input[name="Message"]').val() + reply )
+      ImgData = await encodeImageFile()
+      console.log(ImgData)
 
       socket.emit(
         "message",
@@ -101,11 +122,11 @@ $(document).ready(async () => {
           JWToken: AuthToken,
           TopicId: TopicId,
           message: message,
+          ImgData: ImgData,
         })
       );
       $("#MsgForm").find('input[name="Message"]').val("");
       numOfReply = 0;
-      console.log(numOfReply)
     } else {
       alert("please, log in or type your message");
     }
